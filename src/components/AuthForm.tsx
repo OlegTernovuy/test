@@ -7,15 +7,17 @@ import {
     PaperAuthStyled,
 } from '../styled/Register.styled';
 
-const AuthForm = ({ title, link }) => {
-    const titlePage = link === 'login' ? 'Login' : 'Register';
+interface IFormProps {
+    title: string;
+    link: string;
+}
+
+const AuthForm = ({ title, link }: IFormProps) => {
     return (
         <Container component="main" maxWidth="xs">
             <AuthStyled>
                 <PaperAuthStyled elevation={3}>
-                    <FormTitle component="h1" variant="h5">
-                        {title}
-                    </FormTitle>
+                    <FormTitle variant="h5">{title}</FormTitle>
                     <FormAuthStyled>
                         <TextField
                             variant="outlined"
@@ -30,7 +32,7 @@ const AuthForm = ({ title, link }) => {
                             label="Password"
                         />
                         <Button type="submit" variant="contained" size="large">
-                            {titlePage}
+                            {title}
                         </Button>
                         <Box>
                             <Typography variant="body2">
@@ -38,7 +40,7 @@ const AuthForm = ({ title, link }) => {
                                     ? 'Already have an account'
                                     : 'Don`t have an account'}
                                 <LinkStyled to={`/${link}`}>
-                                    {titlePage}
+                                    {link === 'login' ? 'Login' : 'Register'}
                                 </LinkStyled>
                             </Typography>
                         </Box>

@@ -1,6 +1,7 @@
-import { Box, Paper, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
-import styled from "styled-components";
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+
+import { Box, Paper, Typography } from '@mui/material';
 
 const AuthStyled = styled(Box)`
     display: flex;
@@ -32,11 +33,4 @@ const LinkStyled = styled(Link)`
     color: ${({ theme }) => theme.color.primary};
 `;
 
-
-export {
-    AuthStyled,
-    FormTitle,
-    PaperAuthStyled,
-    FormAuthStyled,
-    LinkStyled
-};
+export { AuthStyled, FormTitle, PaperAuthStyled, FormAuthStyled, LinkStyled };

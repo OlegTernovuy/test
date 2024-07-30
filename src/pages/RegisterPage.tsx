@@ -1,4 +1,4 @@
-import AuthForm from '../components/AuthForm';
+import { AuthForm } from '../components';
 
 const RegisterPage = () => <AuthForm title="Register" link="login" />;
 
