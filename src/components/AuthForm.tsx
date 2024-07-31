@@ -1,14 +1,13 @@
 import { ReactNode } from 'react';
 
-import { Box, Button, Container, Divider, Typography } from '@mui/material';
+import { Box, Button, Container, Typography } from '@mui/material';
 import {
     AuthStyled,
     FormAuthStyled,
     FormTitle,
-    GoogleAuthButton,
     LinkStyled,
     PaperAuthStyled,
-} from '../styled/Register.styled';
+} from '../styled/AuthForm.styled';
 
 interface IFormProps {
     children: ReactNode;
@@ -28,23 +27,6 @@ const AuthForm = ({ title, link, onSubmit, children }: IFormProps) => {
                         <Button type="submit" variant="contained" size="large">
                             {title}
                         </Button>
-                        <Divider>
-                            <Typography variant="body2">or</Typography>
-                        </Divider>
-                        <GoogleAuthButton
-                            variant="outlined"
-                            size="large"
-                            startIcon={
-                                <img
-                                    src="/images/google-icon.png"
-                                    alt="Google logo"
-                                    width="24px"
-                                    height="24px"
-                                />
-                            }
-                        >
-                            Sign in with Google
-                        </GoogleAuthButton>
                         <Box>
                             <Typography variant="body2">
                                 {link === 'login'
