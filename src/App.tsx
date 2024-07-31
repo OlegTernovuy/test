@@ -1,8 +1,10 @@
 import { Navigate, Route, Routes } from 'react-router';
 
-import { LoginPage, RegisterPage } from './pages';
-import { AppWrapper } from './styled/AppWrapper.styled';
+import { HomePage, LoginPage, RegisterPage } from './pages';
 import { GlobalStyle } from './styled/GlobalStyle.styled';
+import { AppWrapper } from './styled/AppWrapper.styled';
+
+import { ProtectedRoute } from './components';
 
 function App() {
     return (
@@ -12,6 +14,14 @@ function App() {
                 <Route path="/" element={<Navigate to="/login" />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route
+                    path="/home"
+                    element={
+                        <ProtectedRoute>
+                            <HomePage />
+                        </ProtectedRoute>
+                    }
+                />
             </Routes>
         </AppWrapper>
     );
