@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { Box, Paper, Typography } from '@mui/material';
+import { Box, Button, Paper, Typography } from '@mui/material';
 
 const AuthStyled = styled(Box)`
     display: flex;
@@ -28,9 +28,22 @@ const FormAuthStyled = styled.form`
     width: 100%;
 `;
 
+const GoogleAuthButton = styled(Button)`
+    && {
+        color: ${({ theme }) => theme.color.black};
+    }
+`;
+
 const LinkStyled = styled(Link)`
     margin-left: 8px;
     color: ${({ theme }) => theme.color.primary};
 `;
 
-export { AuthStyled, FormTitle, PaperAuthStyled, FormAuthStyled, LinkStyled };
+export {
+    AuthStyled,
+    FormTitle,
+    PaperAuthStyled,
+    FormAuthStyled,
+    LinkStyled,
+    GoogleAuthButton,
+};

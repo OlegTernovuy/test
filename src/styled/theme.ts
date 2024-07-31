@@ -2,6 +2,7 @@ const theme = {
     color: {
         primary: '#1976D2',
         secondary: '#526e75',
+        black: '#1c1c1c'
     },
     media: {
         sm: '480px',
