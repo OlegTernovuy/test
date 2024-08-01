@@ -1,59 +1,53 @@
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { confirmPasswordReset } from 'firebase/auth';
+import { useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router';
 import { useFormik } from 'formik';
 
-import { AuthForm } from '../components';
+import { AuthForm } from '../../components';
 import { TextField } from '@mui/material';
 
-import { registerSchema } from '../utils/valiadtionSchema';
-import { IHandleAuth } from '../types';
-import { auth } from '../firebase';
+import { resetPasswordSchema } from '../../utils/valiadtionSchema';
+import { auth } from '../../firebase';
 
-interface IAuthForm {
-    email: string;
-    password: string;
-    confirmPassword: string;
-}
-
-const RegisterPage = () => {
+const ResetPassword = () => {
     const formik = useFormik({
         initialValues: {
-            email: '',
             password: '',
             confirmPassword: '',
-        } as IAuthForm,
-        validationSchema: registerSchema,
+        },
+        validationSchema: resetPasswordSchema,
         onSubmit: (values) => {
-            handleRegister({ email: values.email, password: values.password });
+            handleLogin(values.password);
         },
     });
 
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const oobCode: string | null = searchParams.get('oobCode');
 
-    const handleRegister = async ({ email, password }: IHandleAuth) => {
+    const handleLogin = async (password: string) => {
         if (!auth) {
             console.error('Firebase auth not initialized');
             return;
         }
         try {
-            await createUserWithEmailAndPassword(auth, email, password);
-            navigate('/home');
+            if (oobCode) {
+                await confirmPasswordReset(auth, oobCode, password);
+                navigate('/login');
+            } else {
+                console.error('oobCode is missing');
+            }
         } catch (error) {
-            console.error('Error creating user with email and password', error);
+            console.error('Error login user with email and password', error);
         }
     };
+
     return (
-        <AuthForm title="Register" link="login" onSubmit={formik.handleSubmit}>
-            <TextField
-                variant="outlined"
-                type="email"
-                label="Email"
-                name="email"
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email && formik.errors.email}
-            />
+        <AuthForm
+            title="Reset Password"
+            link="login"
+            onSubmit={formik.handleSubmit}
+        >
             <TextField
                 variant="outlined"
                 type="password"
@@ -86,4 +80,4 @@ const RegisterPage = () => {
     );
 };
 
-export default RegisterPage;
+export default ResetPassword;

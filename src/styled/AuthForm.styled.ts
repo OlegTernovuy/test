@@ -29,8 +29,29 @@ const FormAuthStyled = styled.form`
 `;
 
 const LinkStyled = styled(Link)`
+    text-decoration: none;
     margin-left: 8px;
     color: ${({ theme }) => theme.color.primary};
 `;
 
-export { AuthStyled, FormTitle, PaperAuthStyled, FormAuthStyled, LinkStyled };
+const ForgotPasswordStyled = styled(Typography)`
+    display: flex;
+    justify-content: end;
+`;
+
+const EmailSentBlockStyled = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 24px;
+`;
+
+export {
+    AuthStyled,
+    FormTitle,
+    PaperAuthStyled,
+    FormAuthStyled,
+    LinkStyled,
+    ForgotPasswordStyled,
+    EmailSentBlockStyled,
+};

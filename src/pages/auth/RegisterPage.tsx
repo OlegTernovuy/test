@@ -1,47 +1,49 @@
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router';
 import { useFormik } from 'formik';
 
-import { AuthForm } from '../components';
+import { AuthForm } from '../../components';
 import { TextField } from '@mui/material';
 
-import { loginSchema } from '../utils/valiadtionSchema';
-import { IHandleAuth } from '../types';
-import { auth } from '../firebase';
+import { registerSchema } from '../../utils/valiadtionSchema';
+import { IHandleAuth } from '../../types';
+import { auth } from '../../firebase';
 
 interface IAuthForm {
     email: string;
     password: string;
+    confirmPassword: string;
 }
 
-const LoginPage = () => {
+const RegisterPage = () => {
     const formik = useFormik({
         initialValues: {
             email: '',
             password: '',
+            confirmPassword: '',
         } as IAuthForm,
-        validationSchema: loginSchema,
+        validationSchema: registerSchema,
         onSubmit: (values) => {
-            handleLogin({ email: values.email, password: values.password });
+            handleRegister({ email: values.email, password: values.password });
         },
     });
 
     const navigate = useNavigate();
 
-    const handleLogin = async ({ email, password }: IHandleAuth) => {
+    const handleRegister = async ({ email, password }: IHandleAuth) => {
         if (!auth) {
             console.error('Firebase auth not initialized');
             return;
         }
         try {
-            await signInWithEmailAndPassword(auth, email, password);
+            await createUserWithEmailAndPassword(auth, email, password);
             navigate('/home');
         } catch (error) {
-            console.error('Error login user with email and password', error);
+            console.error('Error creating user with email and password', error);
         }
     };
     return (
-        <AuthForm title="Login" link="register" onSubmit={formik.handleSubmit}>
+        <AuthForm title="Register" link="login" onSubmit={formik.handleSubmit}>
             <TextField
                 variant="outlined"
                 type="email"
@@ -64,8 +66,24 @@ const LoginPage = () => {
                 }
                 helperText={formik.touched.password && formik.errors.password}
             />
+            <TextField
+                variant="outlined"
+                type="password"
+                label="Confirm password"
+                name="confirmPassword"
+                value={formik.values.confirmPassword}
+                onChange={formik.handleChange}
+                error={
+                    formik.touched.confirmPassword &&
+                    Boolean(formik.errors.confirmPassword)
+                }
+                helperText={
+                    formik.touched.confirmPassword &&
+                    formik.errors.confirmPassword
+                }
+            />
         </AuthForm>
     );
 };
 
-export default LoginPage;
+export default RegisterPage;
