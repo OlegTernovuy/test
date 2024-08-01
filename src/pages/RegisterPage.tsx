@@ -33,7 +33,7 @@ const RegisterPage = () => {
     const handleRegister = async ({ email, password }: IHandleAuth) => {
         try {
             await createUserWithEmailAndPassword(auth, email, password);
-            navigate('/login');
+            navigate('/home');
         } catch (error) {
             console.error('Error creating user with email and password', error);
         }

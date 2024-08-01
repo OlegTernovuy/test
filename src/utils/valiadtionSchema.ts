@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-const passwordRules = /^(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
+const passwordRules = /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
 
 const loginSchema = yup.object({
     email: yup
