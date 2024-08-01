@@ -1,9 +1,13 @@
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useNavigate } from 'react-router';
 import { useFormik } from 'formik';
 
 import { AuthForm } from '../components';
 import { TextField } from '@mui/material';
 
 import { loginSchema } from '../utils/valiadtionSchema';
+import { IHandleAuth } from '../types';
+import { auth } from '../firebase';
 
 interface IAuthForm {
     email: string;
@@ -18,9 +22,24 @@ const LoginPage = () => {
         } as IAuthForm,
         validationSchema: loginSchema,
         onSubmit: (values) => {
-            console.log(values);
+            handleLogin({ email: values.email, password: values.password });
         },
     });
+
+    const navigate = useNavigate();
+
+    const handleLogin = async ({ email, password }: IHandleAuth) => {
+        if (!auth) {
+            console.error('Firebase auth not initialized');
+            return;
+        }
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            navigate('/home');
+        } catch (error) {
+            console.error('Error login user with email and password', error);
+        }
+    };
     return (
         <AuthForm title="Login" link="register" onSubmit={formik.handleSubmit}>
             <TextField
