@@ -1,16 +1,32 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { FirebaseApp, FirebaseOptions, initializeApp } from 'firebase/app';
+import { Auth, getAuth } from 'firebase/auth';
 
-const firebaseConfig = {
-    apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-    authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SEND_ID,
-    appId: process.env.REACT_APP_FIREBASE_APP_ID,
-    measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+const getEnvVariable = (variable: string): string => {
+    const value = process.env[variable];
+    if (!value) {
+        throw new Error('Invalid environment variable');
+    }
+    return value;
 };
 
-const app = initializeApp(firebaseConfig);
+let auth: Auth | null = null;
 
-export const auth = getAuth(app);
+try {
+    const firebaseConfig: FirebaseOptions = {
+        apiKey: getEnvVariable('REACT_APP_FIREBASE_API_KEY'),
+        authDomain: getEnvVariable('REACT_APP_FIREBASE_AUTH_DOMAIN'),
+        projectId: getEnvVariable('REACT_APP_FIREBASE_PROJECT_ID'),
+        storageBucket: getEnvVariable('REACT_APP_FIREBASE_STORAGE_BUCKET'),
+        messagingSenderId: getEnvVariable(
+            'REACT_APP_FIREBASE_MESSAGING_SEND_ID'
+        ),
+        appId: getEnvVariable('REACT_APP_FIREBASE_APP_ID'),
+        measurementId: getEnvVariable('REACT_APP_FIREBASE_MEASUREMENT_ID'),
+    };
+    const app: FirebaseApp = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+} catch (error) {
+    console.error('Firebase initialization error:', error);
+}
+
+export { auth };

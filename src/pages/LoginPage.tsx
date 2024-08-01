@@ -29,6 +29,10 @@ const LoginPage = () => {
     const navigate = useNavigate();
 
     const handleLogin = async ({ email, password }: IHandleAuth) => {
+        if (!auth) {
+            console.error('Firebase auth not initialized');
+            return;
+        }
         try {
             await signInWithEmailAndPassword(auth, email, password);
             navigate('/home');

@@ -10,16 +10,23 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const [user, setUser] = useState<boolean | null>(null);
+    const [authInitialized, setAuthInitialized] = useState(false);
 
     useEffect(() => {
+        if (!auth) {
+            console.error('Firebase auth not initialized');
+            setAuthInitialized(true);
+            return;
+        }
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(!!currentUser);
+            setAuthInitialized(true);
         });
 
         return () => unsubscribe();
     }, []);
 
-    if (user === null) {
+    if (!authInitialized) {
         return <p>Loading...</p>;
     }
 
