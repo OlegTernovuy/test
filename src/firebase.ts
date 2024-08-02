@@ -9,7 +9,7 @@ const getEnvVariable = (variable: string): string => {
     return value;
 };
 
-let auth: Auth | null = null;
+let auth: Auth;
 
 try {
     const firebaseConfig: FirebaseOptions = {

@@ -24,10 +24,6 @@ const ForgotPassword = () => {
     const [emailSent, setEmailSent] = useState(false);
 
     const handleSubmitResetPassword = async (email: string) => {
-        if (!auth) {
-            console.error('Firebase auth not initialized');
-            return;
-        }
         try {
             await sendPasswordResetEmail(auth, email);
             setEmailSent(true);
@@ -54,8 +50,8 @@ const ForgotPassword = () => {
                 </AuthFormWrapper>
             ) : (
                 <AuthForm
-                    title="Reset password"
-                    link="register"
+                    title="Forgot password"
+                    hideLink
                     onSubmit={formik.handleSubmit}
                 >
                     <TextField

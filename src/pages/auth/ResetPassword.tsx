@@ -1,6 +1,7 @@
 import { confirmPasswordReset } from 'firebase/auth';
 import { useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router';
+import { useSnackbar } from 'notistack';
 import { useFormik } from 'formik';
 
 import { AuthForm } from '../../components';
@@ -23,29 +24,29 @@ const ResetPassword = () => {
 
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const { enqueueSnackbar } = useSnackbar();
     const oobCode: string | null = searchParams.get('oobCode');
 
     const handleLogin = async (password: string) => {
-        if (!auth) {
-            console.error('Firebase auth not initialized');
-            return;
-        }
         try {
             if (oobCode) {
                 await confirmPasswordReset(auth, oobCode, password);
                 navigate('/login');
+                enqueueSnackbar('Password successfully reset', {
+                    variant: 'success',
+                });
             } else {
                 console.error('oobCode is missing');
             }
         } catch (error) {
-            console.error('Error login user with email and password', error);
+            console.error('Error set new password', error);
         }
     };
 
     return (
         <AuthForm
             title="Reset Password"
-            link="login"
+            hideLink
             onSubmit={formik.handleSubmit}
         >
             <TextField

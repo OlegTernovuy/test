@@ -31,10 +31,6 @@ const RegisterPage = () => {
     const navigate = useNavigate();
 
     const handleRegister = async ({ email, password }: IHandleAuth) => {
-        if (!auth) {
-            console.error('Firebase auth not initialized');
-            return;
-        }
         try {
             await createUserWithEmailAndPassword(auth, email, password);
             navigate('/home');

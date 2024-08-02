@@ -11,11 +11,18 @@ import AuthFormWrapper from './AuthFormWrapper';
 interface IFormProps {
     children: ReactNode;
     title: string;
-    link: string;
+    link?: string;
     onSubmit: any;
+    hideLink?: boolean;
 }
 
-const AuthForm = ({ title, link, onSubmit, children }: IFormProps) => {
+const AuthForm = ({
+    title,
+    link,
+    onSubmit,
+    hideLink,
+    children,
+}: IFormProps) => {
     return (
         <AuthFormWrapper>
             <FormTitle variant="h5">{title}</FormTitle>
@@ -24,16 +31,18 @@ const AuthForm = ({ title, link, onSubmit, children }: IFormProps) => {
                 <Button type="submit" variant="contained" size="large">
                     {title}
                 </Button>
-                <Box>
-                    <Typography variant="body2">
-                        {link === 'login'
-                            ? 'Already have an account?'
-                            : 'Don`t have an account?'}
-                        <LinkStyled to={`/${link}`}>
-                            {link === 'login' ? 'Login' : 'Register'}
-                        </LinkStyled>
-                    </Typography>
-                </Box>
+                {!hideLink && (
+                    <Box>
+                        <Typography variant="body2">
+                            {link === 'login'
+                                ? 'Already have an account?'
+                                : 'Don`t have an account?'}
+                            <LinkStyled to={`/${link}`}>
+                                {link === 'login' ? 'Login' : 'Register'}
+                            </LinkStyled>
+                        </Typography>
+                    </Box>
+                )}
             </FormAuthStyled>
         </AuthFormWrapper>
     );
