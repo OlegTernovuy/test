@@ -1,4 +1,3 @@
-import { confirmPasswordReset } from 'firebase/auth';
 import { useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router';
 import { useSnackbar } from 'notistack';
@@ -8,9 +7,13 @@ import { AuthForm } from '../../components';
 import { TextField } from '@mui/material';
 
 import { resetPasswordSchema } from '../../utils/valiadtionSchema';
-import { auth } from '../../firebase';
+import { handleResetPassword } from '../../services/Auth.service';
 
 const ResetPassword = () => {
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const { enqueueSnackbar } = useSnackbar();
+    const oobCode: string | null = searchParams.get('oobCode');
     const formik = useFormik({
         initialValues: {
             password: '',
@@ -18,30 +21,15 @@ const ResetPassword = () => {
         },
         validationSchema: resetPasswordSchema,
         onSubmit: (values) => {
-            handleLogin(values.password);
+            const password = values.password;
+            handleResetPassword({
+                password,
+                navigate,
+                oobCode,
+                enqueueSnackbar,
+            });
         },
     });
-
-    const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
-    const { enqueueSnackbar } = useSnackbar();
-    const oobCode: string | null = searchParams.get('oobCode');
-
-    const handleLogin = async (password: string) => {
-        try {
-            if (oobCode) {
-                await confirmPasswordReset(auth, oobCode, password);
-                navigate('/login');
-                enqueueSnackbar('Password successfully reset', {
-                    variant: 'success',
-                });
-            } else {
-                console.error('oobCode is missing');
-            }
-        } catch (error) {
-            console.error('Error set new password', error);
-        }
-    };
 
     return (
         <AuthForm

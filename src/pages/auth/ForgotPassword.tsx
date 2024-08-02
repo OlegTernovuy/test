@@ -1,4 +1,3 @@
-import { sendPasswordResetEmail } from 'firebase/auth';
 import { useNavigate } from 'react-router';
 import { useFormik } from 'formik';
 import { useState } from 'react';
@@ -7,31 +6,22 @@ import { EmailSentBlockStyled } from '../../styled/AuthForm.styled';
 import { Button, TextField, Typography } from '@mui/material';
 import { AuthForm, AuthFormWrapper } from '../../components';
 
-import { auth } from '../../firebase';
+import { handleForgotPassword } from '../../services/Auth.service';
 
 const ForgotPassword = () => {
+    const navigate = useNavigate();
+    const [emailSent, setEmailSent] = useState(false);
+
     const formik = useFormik({
         initialValues: {
             email: '',
         },
-        onSubmit: (values) => {
-            handleSubmitResetPassword(values.email);
+        onSubmit: (values, { setErrors }) => {
+            const email = values.email;
+            handleForgotPassword({ email, setErrors, setEmailSent });
         },
     });
 
-    const navigate = useNavigate();
-    const [error, setError] = useState('');
-    const [emailSent, setEmailSent] = useState(false);
-
-    const handleSubmitResetPassword = async (email: string) => {
-        try {
-            await sendPasswordResetEmail(auth, email);
-            setEmailSent(true);
-        } catch (error) {
-            console.error('Error reset password', error);
-            setError((error as Error).message);
-        }
-    };
     return (
         <>
             {emailSent ? (
@@ -62,8 +52,10 @@ const ForgotPassword = () => {
                         required
                         value={formik.values.email}
                         onChange={formik.handleChange}
-                        error={Boolean(error)}
-                        helperText={error && error}
+                        error={
+                            formik.touched.email && Boolean(formik.errors.email)
+                        }
+                        helperText={formik.touched.email && formik.errors.email}
                     />
                 </AuthForm>
             )}
