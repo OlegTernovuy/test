@@ -1,4 +1,5 @@
 import { FirebaseApp, FirebaseOptions, initializeApp } from 'firebase/app';
+import { getFirestore, Firestore } from 'firebase/firestore';
 import { Auth, getAuth } from 'firebase/auth';
 
 const getEnvVariable = (variable: string): string => {
@@ -10,6 +11,7 @@ const getEnvVariable = (variable: string): string => {
 };
 
 let auth: Auth;
+let db: Firestore;
 
 try {
     const firebaseConfig: FirebaseOptions = {
@@ -25,8 +27,9 @@ try {
     };
     const app: FirebaseApp = initializeApp(firebaseConfig);
     auth = getAuth(app);
+    db = getFirestore(app);
 } catch (error) {
     console.error('Firebase initialization error:', error);
 }
 
-export { auth };
+export { auth, db };

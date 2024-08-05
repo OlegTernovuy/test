@@ -4,8 +4,9 @@ import {
     sendPasswordResetEmail,
     signInWithEmailAndPassword,
 } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 import {
     IAuthParams,
     IHandleForgotPassword,
@@ -15,7 +16,18 @@ import {
 const handleLogin = async ({ authData, setErrors, navigate }: IAuthParams) => {
     const { email, password } = authData;
     try {
-        await signInWithEmailAndPassword(auth, email, password);
+        const { user } = await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+
+        const userFireDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userFireDoc.exists() && userFireDoc.data().isDisabled) {
+            await auth.signOut();
+            console.log('User is disabled. Please contact the administrator');
+        }
+
         navigate('/home');
     } catch (error) {
         console.error('Error login user with email and password', error);
@@ -30,8 +42,18 @@ const handleRegister = async ({
 }: IAuthParams) => {
     const { email, password } = authData;
     try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        navigate('/home');
+        const { user } = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+
+        await setDoc(doc(db, 'users', user.uid), {
+            email: user.email,
+            isDisabled: true,
+        });
+        await auth.signOut();
+        navigate('/login');
     } catch (error) {
         console.error('Error creating user with email and password', error);
         setErrors({ email: (error as Error).message });
