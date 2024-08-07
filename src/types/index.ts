@@ -24,8 +24,18 @@ interface IHandleForgotPassword {
     setErrors: (errors: Partial<{ email: string }>) => void;
 }
 
+
+interface CustomIconButtonProps {
+    iconName: 'done' | 'stop' | 'playArrow' | 'pause' | 'replay' | 'mic';
+    [key: string]: any;
+    condition?: boolean | string;
+    color?: string;
+    onClick: () => void;
+}
+
 export {
     type IAuthParams,
     type IHandleResetPassword,
     type IHandleForgotPassword,
+    type CustomIconButtonProps
 };
