@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 import { useReactMediaRecorder } from 'react-media-recorder-2';
 
 import { Stop, PlayArrow, Pause, Replay, Mic, Done, FiberManualRecord, Cancel } from '@mui/icons-material';
-import { IconButton, DialogContent, Fab, Dialog, FormControl, InputLabel, MenuItem } from '@mui/material';
+import { IconButton, DialogContent, Fab, Dialog, FormControl, InputLabel, MenuItem, CircularProgress } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import {
     TitleMic,
@@ -14,7 +14,9 @@ import {
     AvesurferWrapper,
     ActionsWrapper,
     DialogActionsWrapper,
-    CancelIconButtonWrapp
+    CancelIconButtonWrapper,
+    CircularProgressWrapper,
+    TitleSelectWrapper
 } from "../styled/MicrophoneStyle";
 
 const SETTINGS_MIC = {
@@ -35,54 +37,71 @@ const getMediaDevices = (devices: IDevices[], name: IKind) => {
 }
 
 const MicrophoneAudioOutputPage = () => {
-    const [isRecording, setIsRecording] = useState(false);
-    const [isPlaying, setIsPlaying] = useState<boolean>(false);
-    const [tempFile, setTempFile] = useState<string | null>(null);
     const [open, setOpen] = useState(true);
+    const [tempFile, setTempFile] = useState<string | null>(null);
+    const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const [secondsRemaining, setSecondsRemaining] = useState<number>(0);
     const [playerReady, setPlayerReady] = useState<boolean>(false);
     const [audioInputArr, setAudioInputArr] = useState<IDevices[]>([]);
     const [audioOutputArr, setAudioOutputArr] = useState<IDevices[]>([]);
     const [selectedMic, setSelectedMic] = useState<string>('');
-    const [selectedOut, setSelectedOut] = useState<string>('');
+    const [selectedOutput, setSelectedOutput] = useState<string>('');
 
     const wavesurfer = useRef<WaveSurfer | null>(null);
-    const mediaStreamRef = useRef<any>(null);
+
+    const { status, startRecording, stopRecording, mediaBlobUrl } =
+        useReactMediaRecorder({
+            audio: selectedMic ? { deviceId: { exact: selectedMic } } : true,
+            video: false,
+            askPermissionOnMount: true
+        });
+
+    const isRecord = useMemo(() => {
+        return (status === 'idle' || status === 'stopped') && !tempFile
+    }, [status, tempFile]);
+
+      const isRecorded = useMemo(() => {
+        return status === 'stopped' && tempFile
+    }, [status, tempFile]);
+
 
     useEffect(() => {
        const getAllMicrophones = async () => {
-           await navigator.mediaDevices.getUserMedia({ audio: true });
+           try {
+               await navigator.mediaDevices.getUserMedia({ audio: true });
 
-           const devices = await navigator.mediaDevices.enumerateDevices();
-           const audioInputArr = getMediaDevices(devices, 'audioinput');
-           const audioOutputArr = getMediaDevices(devices, 'audiooutput');
+               const devices = await navigator.mediaDevices.enumerateDevices();
+               const audioInputArr = getMediaDevices(devices, 'audioinput');
+               const audioOutputArr = getMediaDevices(devices, 'audiooutput');
 
-           if (audioInputArr.length > 0) {
-               setSelectedMic(audioInputArr[0].deviceId); // Set the first available microphone
-               applyMediaStream(audioInputArr[0].deviceId); // Fetch media stream for the selected microphone
+               const audioInputId = audioInputArr[0].deviceId;
+               const audioOutputId = audioOutputArr[0].deviceId;
+
+               if (audioInputId) {
+                   setSelectedMic(audioInputId);
+               }
+               if (audioOutputId) {
+                   setSelectedOutput(audioOutputId);
+                   wavesurfer.current?.setSinkId(audioOutputId);
+               }
+               setAudioInputArr(audioInputArr)
+               setAudioOutputArr(audioOutputArr)
+           } catch (error) {
+               console.error('Error accessing media devices:', error);
            }
-           if (audioOutputArr.length > 0) {
-               setSelectedOut(audioOutputArr[0].deviceId); // Set the first available audio output
-           }
-           setAudioInputArr(audioInputArr)
-           setAudioOutputArr(audioOutputArr)
        }
 
         getAllMicrophones()
     }, []);
 
     useEffect(() => {
-        if (!isRecording) {
+        if (status !== 'recording') {
             setSecondsRemaining(0);
             return;
         }
 
         const progressFn = () => {
             setSecondsRemaining(oldSecondsRemaining => {
-                if (oldSecondsRemaining === 300) {
-                    setIsRecording(false);
-                    return 0;
-                }
                 return oldSecondsRemaining  + 1;
             })
         }
@@ -92,7 +111,7 @@ const MicrophoneAudioOutputPage = () => {
         return () => {
             clearInterval(timer);
         }
-    }, [isRecording])
+    }, [status])
 
     useEffect(() => {
         if (!open || (open && !tempFile)) return;
@@ -104,14 +123,21 @@ const MicrophoneAudioOutputPage = () => {
             barWidth: 2,
             normalize: true,
             fillParent: true,
-        })
+        } as any)
 
         if (wavesurfer.current) {
             wavesurfer.current?.on('ready', () => setPlayerReady(true))
             wavesurfer.current?.on('play', () => setIsPlaying(true))
             wavesurfer.current?.on('pause', () => setIsPlaying(false))
         }
-    }, [open, isRecording, tempFile])
+
+        return () => {
+            if (wavesurfer.current) {
+                setIsPlaying(false)
+                wavesurfer.current.destroy();
+            }
+        };
+    }, [open, status, tempFile])
 
     useEffect(() => {
         if (tempFile && wavesurfer.current) {
@@ -120,7 +146,17 @@ const MicrophoneAudioOutputPage = () => {
             wavesurfer.current = null;
             setTempFile(null);
         }
+
+        return () => {
+            if (wavesurfer.current) {
+                wavesurfer.current.destroy();
+            }
+        }
     }, [tempFile])
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    }
 
     const togglePlayback = () => {
         if (!isPlaying) {
@@ -128,20 +164,6 @@ const MicrophoneAudioOutputPage = () => {
         } else {
             wavesurfer.current?.pause()
         }
-    }
-
-    const applyMediaStream = async (id: string) => {
-        const stream = await navigator.mediaDevices.getUserMedia({
-            audio: {
-                deviceId: { exact: id }
-            }
-        });
-        let context = new AudioContext();
-        mediaStreamRef.current = context.createMediaStreamSource(stream) as any; // Update the ref with the new stream
-    };
-
-    const handleClickOpen = () => {
-        setOpen(true);
     }
 
     const BlobURLToFile = async (tempFile: string) => {
@@ -159,7 +181,6 @@ const MicrophoneAudioOutputPage = () => {
                 console.log({ file }, 'file', mediaBlobUrl, playerReady)
 
                 setTempFile(null);
-                setIsRecording(false);
                 setOpen(false);
             } catch (error) {
                 console.log(error);
@@ -168,7 +189,6 @@ const MicrophoneAudioOutputPage = () => {
     }
 
     const handleCancel = () => {
-        setIsRecording(false);
         setTempFile(null);
         setOpen(false);
         setSecondsRemaining(0);
@@ -177,26 +197,14 @@ const MicrophoneAudioOutputPage = () => {
     const handleChange = (event: SelectChangeEvent) => {
         const id = event.target.value;
         setSelectedMic(id);
-
-        mediaStreamRef.current = null;
-        setTimeout(() => {
-            applyMediaStream(id);
-        }, 1000) // Fetch the new media stream for the selected microphone
     }
 
     const handleChangeOutput = (event: SelectChangeEvent) => {
-        const id = event.target.value;
-        setSelectedOut(id);
+        const sinkId = event.target.value;
+        setSelectedOutput(sinkId);
+
+        wavesurfer.current?.setSinkId(sinkId);
     }
-
-    const { status, startRecording, stopRecording, mediaBlobUrl } =
-        useReactMediaRecorder({
-            audio: selectedMic ? { deviceId: { exact: selectedMic } } : true,
-            video: false,
-            customMediaStream: mediaStreamRef.current?.mediaStream,
-            askPermissionOnMount: true,
-
-        } as any);
 
     useEffect(() => {
         if(mediaBlobUrl) {
@@ -206,18 +214,28 @@ const MicrophoneAudioOutputPage = () => {
 
     const handleStartRecording = () => {
         setTempFile(null)
-        setIsRecording(true)
         startRecording()
     }
 
     const handleStopRecording = () => {
-        setIsRecording(false);
         stopRecording();
     };
 
+    const handleAudioOutputChange = () => {
+            setTempFile(null);
+            setSecondsRemaining(0);
+    }
+
+    if (!selectedMic && !selectedOutput) {
+        return (
+            <CircularProgressWrapper>
+                <CircularProgress />
+            </CircularProgressWrapper>
+        )
+    }
+
     return (
         <DivWrapper>
-            {status}
             <TitleMic>Microphone Audio Output</TitleMic>
             <Fab
                 color="default"
@@ -228,22 +246,22 @@ const MicrophoneAudioOutputPage = () => {
             <Dialog open={open}>
                 <DialogHeaderWrapper>
                     <DialogTitleWrapper>
-                        {isRecording && (
+                        {status === 'recording' && (
                             <span>
                                 {`Recording... ${secondsRemaining} seconds`}
                             </span>
                         )}
-                        {!isRecording && tempFile && <span>Review</span>}
-                        {!isRecording && !tempFile && <span>Record</span>}
+                        {isRecorded && <span>Review</span>}
+                        {isRecord && <span>Record</span>}
                     </DialogTitleWrapper>
-                    <CancelIconButtonWrapp onClick={handleCancel}>
+                    <CancelIconButtonWrapper onClick={handleCancel}>
                         <Cancel
-                            style={tempFile && !isRecording ? { color: 'red' } : {}}
+                            style={{ color: 'red' }}
                         />
-                    </CancelIconButtonWrapp>
+                    </CancelIconButtonWrapper>
                 </DialogHeaderWrapper>
                 <DialogContent>
-                    {tempFile && <AvesurferWrapper id="wavesurfer-id" /> }
+                    {tempFile && <AvesurferWrapper id="wavesurfer-id" />}
                 </DialogContent>
                 <DialogActionsWrapper>
                     {tempFile && (
@@ -261,29 +279,26 @@ const MicrophoneAudioOutputPage = () => {
                     )}
 
                     <ActionsWrapper>
-                        {!isRecording && !tempFile && (
+                        {isRecord && (
                             <IconButtonWrapper onClick={handleStartRecording}>
                                 <FiberManualRecord style={{ color: 'red' }}/>
                             </IconButtonWrapper>
                         )}
-                        {!isRecording && tempFile && (
+
+                        {isRecorded && (
                             <IconButton
-                                onClick={() => {
-                                    setIsRecording(false);
-                                    setTempFile(null);
-                                    setSecondsRemaining(0);
-                            }}>
+                                onClick={handleAudioOutputChange}>
                                 <Replay />
                             </IconButton>
                         )}
 
-                        {isRecording && (
-                            <IconButtonWrapper onClick={handleStopRecording}>
+                        {status === 'recording' && (
+                            <IconButtonWrapper $square onClick={handleStopRecording}>
                                 <Stop />
                             </IconButtonWrapper>
                         )}
 
-                        {tempFile && !isRecording && (
+                        {isRecorded && (
                             <IconButton onClick={handleDone}>
                                 <Done
                                     style={{ color: 'green' }} />
@@ -293,43 +308,37 @@ const MicrophoneAudioOutputPage = () => {
                 </DialogActionsWrapper>
 
                 <div style={{padding: 24}}>
-                    {selectedMic && (
-                        <div>
-                            <div style={{padding: '30px 0px'}}>Audio Input </div>
-                            <FormControl key="33" fullWidth>
-                                <InputLabel id="demo-input-select-label">select microphone please</InputLabel>
-                                <Select
-                                    labelId="demo-input-select-label"
-                                    id="demo-input-select"
-                                    value={selectedMic}
-                                    label="input"
-                                    onChange={handleChange}
-                                >
-                                    {audioInputArr && audioInputArr.map((device, index) => (
-                                        <MenuItem key={index} value={device.deviceId}>{device.label}</MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </div>
-                    )}
+                    <TitleSelectWrapper>Audio Input </TitleSelectWrapper>
+                    <FormControl key="33" fullWidth>
+                        <InputLabel id="demo-input-select-label">select microphone please</InputLabel>
+                        <Select
+                            labelId="demo-input-select-label"
+                            id="demo-input-select"
+                            value={selectedMic}
+                            label="input"
+                            onChange={handleChange}
+                        >
+                            {audioInputArr && audioInputArr.map((device, index) => (
+                                <MenuItem key={index} value={device.deviceId}>{device.label}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
 
-                    {selectedOut && (<div>
-                        <div style={{padding: '30px 0px'}}>Audio Output </div>
-                        <FormControl key="ds" fullWidth>
-                            <InputLabel id="demo-output-select-label">select audio output please</InputLabel>
-                            <Select
-                                labelId="demo-output-select-label"
-                                id="demo-output-select"
-                                value={selectedOut}
-                                label="input"
-                                onChange={handleChangeOutput}
-                            >
-                                {audioOutputArr && audioOutputArr.map((device, index) => (
-                                    <MenuItem key={index} value={device.deviceId}>{device.label}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </div>)}
+                    <TitleSelectWrapper>Audio Output </TitleSelectWrapper>
+                    <FormControl key="ds" fullWidth>
+                        <InputLabel id="demo-output-select-label">select audio output please</InputLabel>
+                        <Select
+                            labelId="demo-output-select-label"
+                            id="demo-output-select"
+                            value={selectedOutput}
+                            label="input"
+                            onChange={handleChangeOutput}
+                        >
+                            {audioOutputArr && audioOutputArr.map((device, index) => (
+                                <MenuItem key={index} value={device.deviceId}>{device.label}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                 </div>
             </Dialog>
         </DivWrapper>
