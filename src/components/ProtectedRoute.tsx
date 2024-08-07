@@ -1,23 +1,21 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
-import axios from 'axios';
+import { checkAuth } from '../services/Auth.service';
 
 interface ProtectedRouteProps {
     children: ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-    const [user, setUser] = useState<boolean | null>(null);
+    const [user, setUser] = useState(false);
     const [authInitialized, setAuthInitialized] = useState(false);
 
     useEffect(() => {
-        const checkAuth = async () => {
+        const authentificate = async () => {
             try {
-                const res = await axios.get('/auth/check-auth', {
-                    withCredentials: true,
-                });
-                setUser(!!res.data.user);
+                const data = await checkAuth();
+                setUser(!!data.user);
             } catch (error) {
                 console.error('Error checking authentification', error);
                 setUser(false);
@@ -26,7 +24,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
             }
         };
 
-        checkAuth();
+        authentificate();
     }, []);
 
     if (!authInitialized) {

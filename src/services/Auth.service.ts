@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 import {
     IAuthParams,
@@ -6,7 +6,7 @@ import {
     IHandleResetPassword,
 } from '../types';
 
-axios.defaults.baseURL = 'http://localhost:4200';
+axios.defaults.baseURL = 'http://localhost:4200/api';
 
 const handleLogin = async ({
     authData,
@@ -31,17 +31,10 @@ const handleLogin = async ({
             variant: 'success',
         });
         navigate('/home');
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error login user with email and password', error);
-        if (axios.isAxiosError(error)) {
-            const axiosError = error as AxiosError;
-            if (axiosError.response) {
-                const { data } = axiosError.response;
-                const errorMessage = (data as { message: string }).message;
-                setErrors({ email: errorMessage });
-            } else {
-                setErrors({ email: axiosError.message });
-            }
+        if (error.response && error.response.data.error) {
+            setErrors({ email: error.response.data.error });
         } else {
             setErrors({ email: (error as Error).message });
         }
@@ -64,19 +57,21 @@ const handleRegister = async ({
             variant: 'success',
         });
         navigate('/login');
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error creating user with email and password', error);
-        if (axios.isAxiosError(error)) {
-            const axiosError = error as AxiosError;
-            if (axiosError.response && axiosError.response.data) {
-                setErrors({ email: axiosError.response.data as string });
-            } else {
-                setErrors({ email: axiosError.message });
-            }
+        if (error.response && error.response.data.error) {
+            setErrors({ email: error.response.data.error });
         } else {
             setErrors({ email: (error as Error).message });
         }
     }
+};
+
+const checkAuth = async () => {
+    const res = await axios.get('/auth/check-auth', {
+        withCredentials: true,
+    });
+    return res.data;
 };
 
 const handleLogoutUser = async () => {
@@ -124,6 +119,7 @@ const handleForgotPassword = async ({
 };
 
 export {
+    checkAuth,
     handleLogin,
     handleRegister,
     handleLogoutUser,
