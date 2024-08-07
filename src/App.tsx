@@ -6,11 +6,11 @@ import {
     LoginPage,
     ResetPassword,
     RegisterPage,
+    MicrophoneAudioOutputPage
 } from './pages';
 import { GlobalStyle } from './styled/GlobalStyle.styled';
 import { AppWrapper } from './styled/AppWrapper.styled';
 import { ProtectedRoute } from './components';
-import MicrophoneAudioOutputPage from "./pages/MicrophoneAudioOutputPage";
 
 function App() {
     return (
