@@ -1,49 +1,44 @@
-import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router';
+import { useSnackbar } from 'notistack';
 import { useFormik } from 'formik';
 
-import { AuthForm } from '../components';
+import { AuthForm } from '../../components';
 import { TextField } from '@mui/material';
 
-import { registerSchema } from '../utils/valiadtionSchema';
-import { IHandleAuth } from '../types';
-import { auth } from '../firebase';
-
-interface IAuthForm {
-    email: string;
-    password: string;
-    confirmPassword: string;
-}
+import { registerSchema } from '../../utils/valiadtionSchema';
+import { handleRegister } from '../../services/Auth.service';
 
 const RegisterPage = () => {
+    const navigate = useNavigate();
+    const { enqueueSnackbar } = useSnackbar();
+
     const formik = useFormik({
         initialValues: {
             email: '',
             password: '',
             confirmPassword: '',
-        } as IAuthForm,
+        },
         validationSchema: registerSchema,
-        onSubmit: (values) => {
-            handleRegister({ email: values.email, password: values.password });
+        onSubmit: (values, { setErrors, setSubmitting }) => {
+            handleRegister({
+                authData: {
+                    email: values.email,
+                    password: values.password,
+                },
+                enqueueSnackbar,
+                setErrors,
+                navigate,
+            }).finally(() => setSubmitting(false));
         },
     });
 
-    const navigate = useNavigate();
-
-    const handleRegister = async ({ email, password }: IHandleAuth) => {
-        if (!auth) {
-            console.error('Firebase auth not initialized');
-            return;
-        }
-        try {
-            await createUserWithEmailAndPassword(auth, email, password);
-            navigate('/home');
-        } catch (error) {
-            console.error('Error creating user with email and password', error);
-        }
-    };
     return (
-        <AuthForm title="Register" link="login" onSubmit={formik.handleSubmit}>
+        <AuthForm
+            link="login"
+            title="Register"
+            onSubmit={formik.handleSubmit}
+            isSubmiting={formik.isSubmitting}
+        >
             <TextField
                 variant="outlined"
                 type="email"

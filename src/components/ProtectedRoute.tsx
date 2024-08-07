@@ -1,29 +1,30 @@
 import React, { ReactNode, useEffect, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
 import { Navigate } from 'react-router-dom';
 
-import { auth } from '../firebase';
+import { checkAuth } from '../services/Auth.service';
 
 interface ProtectedRouteProps {
     children: ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-    const [user, setUser] = useState<boolean | null>(null);
+    const [user, setUser] = useState(false);
     const [authInitialized, setAuthInitialized] = useState(false);
 
     useEffect(() => {
-        if (!auth) {
-            console.error('Firebase auth not initialized');
-            setAuthInitialized(true);
-            return;
-        }
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(!!currentUser);
-            setAuthInitialized(true);
-        });
+        const authentificate = async () => {
+            try {
+                const data = await checkAuth();
+                setUser(!!data.user);
+            } catch (error) {
+                console.error('Error checking authentification', error);
+                setUser(false);
+            } finally {
+                setAuthInitialized(true);
+            }
+        };
 
-        return () => unsubscribe();
+        authentificate();
     }, []);
 
     if (!authInitialized) {

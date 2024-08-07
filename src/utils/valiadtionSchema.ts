@@ -22,4 +22,15 @@ const registerSchema = loginSchema.shape({
         .oneOf([yup.ref('password')], 'Passwords must match'),
 });
 
-export { loginSchema, registerSchema };
+const resetPasswordSchema = yup.object({
+    password: yup
+        .string()
+        .required('Password is required')
+        .matches(passwordRules, 'Please enter a strong password'),
+    confirmPassword: yup
+        .string()
+        .required('Confirm password is required')
+        .oneOf([yup.ref('password')], 'Passwords must match'),
+});
+
+export { loginSchema, registerSchema, resetPasswordSchema };

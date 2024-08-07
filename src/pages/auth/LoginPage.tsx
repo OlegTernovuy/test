@@ -1,47 +1,44 @@
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router';
+import { useSnackbar } from 'notistack';
 import { useFormik } from 'formik';
 
-import { AuthForm } from '../components';
+import { ForgotPasswordStyled, LinkStyled } from '../../styled/AuthForm.styled';
+import { AuthForm } from '../../components';
 import { TextField } from '@mui/material';
 
-import { loginSchema } from '../utils/valiadtionSchema';
-import { IHandleAuth } from '../types';
-import { auth } from '../firebase';
-
-interface IAuthForm {
-    email: string;
-    password: string;
-}
+import { loginSchema } from '../../utils/valiadtionSchema';
+import { handleLogin } from '../../services/Auth.service';
 
 const LoginPage = () => {
+    const navigate = useNavigate();
+    const { enqueueSnackbar } = useSnackbar();
+
     const formik = useFormik({
         initialValues: {
             email: '',
             password: '',
-        } as IAuthForm,
+        },
         validationSchema: loginSchema,
-        onSubmit: (values) => {
-            handleLogin({ email: values.email, password: values.password });
+        onSubmit: (values, { setErrors, setSubmitting }) => {
+            handleLogin({
+                authData: {
+                    email: values.email,
+                    password: values.password,
+                },
+                enqueueSnackbar,
+                setErrors,
+                navigate,
+            }).finally(() => setSubmitting(false));
         },
     });
 
-    const navigate = useNavigate();
-
-    const handleLogin = async ({ email, password }: IHandleAuth) => {
-        if (!auth) {
-            console.error('Firebase auth not initialized');
-            return;
-        }
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            navigate('/home');
-        } catch (error) {
-            console.error('Error login user with email and password', error);
-        }
-    };
     return (
-        <AuthForm title="Login" link="register" onSubmit={formik.handleSubmit}>
+        <AuthForm
+            title="Login"
+            link="register"
+            onSubmit={formik.handleSubmit}
+            isSubmiting={formik.isSubmitting}
+        >
             <TextField
                 variant="outlined"
                 type="email"
@@ -64,6 +61,9 @@ const LoginPage = () => {
                 }
                 helperText={formik.touched.password && formik.errors.password}
             />
+            <ForgotPasswordStyled variant="body2">
+                <LinkStyled to="/forgot-password">Forgot Password?</LinkStyled>
+            </ForgotPasswordStyled>
         </AuthForm>
     );
 };

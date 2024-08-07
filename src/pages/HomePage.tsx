@@ -1,16 +1,11 @@
 import { useNavigate } from 'react-router';
-import { signOut } from 'firebase/auth';
 
-import { auth } from '../firebase';
+import { handleLogoutUser } from '../services/Auth.service';
 
 const HomePage = () => {
     const navigate = useNavigate();
     const handleLogout = async () => {
-        if (!auth) {
-            console.error('Firebase auth not initialized');
-            return;
-        }
-        await signOut(auth);
+        await handleLogoutUser();
         navigate('/login');
     };
     return (
