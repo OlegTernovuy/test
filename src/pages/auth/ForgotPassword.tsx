@@ -16,9 +16,11 @@ const ForgotPassword = () => {
         initialValues: {
             email: '',
         },
-        onSubmit: (values, { setErrors }) => {
+        onSubmit: (values, { setErrors, setSubmitting }) => {
             const email = values.email;
-            handleForgotPassword({ email, setErrors, setEmailSent });
+            handleForgotPassword({ email, setErrors, setEmailSent }).finally(
+                () => setSubmitting(false)
+            );
         },
     });
 
@@ -43,6 +45,7 @@ const ForgotPassword = () => {
                     title="Forgot password"
                     hideLink
                     onSubmit={formik.handleSubmit}
+                    isSubmiting={formik.isSubmitting}
                 >
                     <TextField
                         variant="outlined"

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router';
+import { useSnackbar } from 'notistack';
 import { useFormik } from 'formik';
 
 import { ForgotPasswordStyled, LinkStyled } from '../../styled/AuthForm.styled';
@@ -10,6 +11,7 @@ import { handleLogin } from '../../services/Auth.service';
 
 const LoginPage = () => {
     const navigate = useNavigate();
+    const { enqueueSnackbar } = useSnackbar();
 
     const formik = useFormik({
         initialValues: {
@@ -17,20 +19,26 @@ const LoginPage = () => {
             password: '',
         },
         validationSchema: loginSchema,
-        onSubmit: (values, { setErrors }) => {
+        onSubmit: (values, { setErrors, setSubmitting }) => {
             handleLogin({
                 authData: {
                     email: values.email,
                     password: values.password,
                 },
+                enqueueSnackbar,
                 setErrors,
                 navigate,
-            });
+            }).finally(() => setSubmitting(false));
         },
     });
 
     return (
-        <AuthForm title="Login" link="register" onSubmit={formik.handleSubmit}>
+        <AuthForm
+            title="Login"
+            link="register"
+            onSubmit={formik.handleSubmit}
+            isSubmiting={formik.isSubmitting}
+        >
             <TextField
                 variant="outlined"
                 type="email"

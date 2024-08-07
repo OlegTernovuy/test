@@ -14,6 +14,7 @@ interface IFormProps {
     link?: string;
     onSubmit: any;
     hideLink?: boolean;
+    isSubmiting?: boolean;
 }
 
 const AuthForm = ({
@@ -22,13 +23,19 @@ const AuthForm = ({
     onSubmit,
     hideLink,
     children,
+    isSubmiting,
 }: IFormProps) => {
     return (
         <AuthFormWrapper>
             <FormTitle variant="h5">{title}</FormTitle>
             <FormAuthStyled onSubmit={onSubmit}>
                 {children}
-                <Button type="submit" variant="contained" size="large">
+                <Button
+                    type="submit"
+                    variant="contained"
+                    disabled={isSubmiting}
+                    size="large"
+                >
                     {title}
                 </Button>
                 {!hideLink && (

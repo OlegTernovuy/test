@@ -20,14 +20,15 @@ const ResetPassword = () => {
             confirmPassword: '',
         },
         validationSchema: resetPasswordSchema,
-        onSubmit: (values) => {
+        onSubmit: (values, { setErrors, setSubmitting }) => {
             const password = values.password;
             handleResetPassword({
                 password,
                 navigate,
                 oobCode,
+                setErrors,
                 enqueueSnackbar,
-            });
+            }).finally(() => setSubmitting(false));
         },
     });
 
@@ -36,6 +37,7 @@ const ResetPassword = () => {
             title="Reset Password"
             hideLink
             onSubmit={formik.handleSubmit}
+            isSubmiting={formik.isSubmitting}
         >
             <TextField
                 variant="outlined"

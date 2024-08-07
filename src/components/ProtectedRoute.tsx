@@ -1,8 +1,7 @@
 import React, { ReactNode, useEffect, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
 import { Navigate } from 'react-router-dom';
 
-import { auth } from '../firebase';
+import axios from 'axios';
 
 interface ProtectedRouteProps {
     children: ReactNode;
@@ -13,17 +12,21 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const [authInitialized, setAuthInitialized] = useState(false);
 
     useEffect(() => {
-        if (!auth) {
-            console.error('Firebase auth not initialized');
-            setAuthInitialized(true);
-            return;
-        }
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(!!currentUser);
-            setAuthInitialized(true);
-        });
+        const checkAuth = async () => {
+            try {
+                const res = await axios.get('/auth/check-auth', {
+                    withCredentials: true,
+                });
+                setUser(!!res.data.user);
+            } catch (error) {
+                console.error('Error checking authentification', error);
+                setUser(false);
+            } finally {
+                setAuthInitialized(true);
+            }
+        };
 
-        return () => unsubscribe();
+        checkAuth();
     }, []);
 
     if (!authInitialized) {

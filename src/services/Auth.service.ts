@@ -1,37 +1,50 @@
-import {
-    confirmPasswordReset,
-    createUserWithEmailAndPassword,
-    sendPasswordResetEmail,
-    signInWithEmailAndPassword,
-} from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import axios, { AxiosError } from 'axios';
 
-import { auth, db } from '../firebase';
 import {
     IAuthParams,
     IHandleForgotPassword,
     IHandleResetPassword,
 } from '../types';
 
-const handleLogin = async ({ authData, setErrors, navigate }: IAuthParams) => {
+axios.defaults.baseURL = 'http://localhost:4200';
+
+const handleLogin = async ({
+    authData,
+    setErrors,
+    navigate,
+    enqueueSnackbar,
+}: IAuthParams) => {
     const { email, password } = authData;
+
     try {
-        const { user } = await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
+        const res = await axios.post(
+            '/auth/login',
+            {
+                email,
+                password,
+            },
+            {
+                withCredentials: true,
+            }
         );
-
-        const userFireDoc = await getDoc(doc(db, 'users', user.uid));
-        if (userFireDoc.exists() && userFireDoc.data().isDisabled) {
-            await auth.signOut();
-            console.log('User is disabled. Please contact the administrator');
-        }
-
+        enqueueSnackbar(res.data.message, {
+            variant: 'success',
+        });
         navigate('/home');
     } catch (error) {
         console.error('Error login user with email and password', error);
-        setErrors({ password: (error as Error).message });
+        if (axios.isAxiosError(error)) {
+            const axiosError = error as AxiosError;
+            if (axiosError.response) {
+                const { data } = axiosError.response;
+                const errorMessage = (data as { message: string }).message;
+                setErrors({ email: errorMessage });
+            } else {
+                setErrors({ email: axiosError.message });
+            }
+        } else {
+            setErrors({ email: (error as Error).message });
+        }
     }
 };
 
@@ -39,24 +52,38 @@ const handleRegister = async ({
     authData,
     setErrors,
     navigate,
+    enqueueSnackbar,
 }: IAuthParams) => {
     const { email, password } = authData;
     try {
-        const { user } = await createUserWithEmailAndPassword(
-            auth,
+        const res = await axios.post('/auth/register', {
             email,
-            password
-        );
-
-        await setDoc(doc(db, 'users', user.uid), {
-            email: user.email,
-            isDisabled: true,
+            password,
         });
-        await auth.signOut();
+        enqueueSnackbar(res.data.message, {
+            variant: 'success',
+        });
         navigate('/login');
     } catch (error) {
         console.error('Error creating user with email and password', error);
-        setErrors({ email: (error as Error).message });
+        if (axios.isAxiosError(error)) {
+            const axiosError = error as AxiosError;
+            if (axiosError.response && axiosError.response.data) {
+                setErrors({ email: axiosError.response.data as string });
+            } else {
+                setErrors({ email: axiosError.message });
+            }
+        } else {
+            setErrors({ email: (error as Error).message });
+        }
+    }
+};
+
+const handleLogoutUser = async () => {
+    try {
+        await axios.post('/auth/logout', {}, { withCredentials: true });
+    } catch (error) {
+        console.error('Error logout', error);
     }
 };
 
@@ -64,20 +91,21 @@ const handleResetPassword = async ({
     password,
     oobCode,
     navigate,
+    setErrors,
     enqueueSnackbar,
 }: IHandleResetPassword) => {
-    try {
-        if (oobCode) {
-            await confirmPasswordReset(auth, oobCode, password);
+    if (oobCode) {
+        try {
+            await axios.post('/auth/reset-password', { oobCode, password });
             navigate('/login');
             enqueueSnackbar('Password successfully reset', {
                 variant: 'success',
             });
-        } else {
-            console.error('oobCode is missing');
+        } catch (error) {
+            setErrors({ password: (error as Error).message });
         }
-    } catch (error) {
-        console.error('Error set new password', error);
+    } else {
+        console.error('oobCode is missing');
     }
 };
 
@@ -87,7 +115,7 @@ const handleForgotPassword = async ({
     setErrors,
 }: IHandleForgotPassword) => {
     try {
-        await sendPasswordResetEmail(auth, email);
+        await axios.post('/auth/forgot-password', { email });
         setEmailSent(true);
     } catch (error) {
         console.error('Error reset password', error);
@@ -98,6 +126,7 @@ const handleForgotPassword = async ({
 export {
     handleLogin,
     handleRegister,
+    handleLogoutUser,
     handleResetPassword,
     handleForgotPassword,
 };

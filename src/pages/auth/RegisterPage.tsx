@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router';
+import { useSnackbar } from 'notistack';
 import { useFormik } from 'formik';
 
 import { AuthForm } from '../../components';
@@ -9,6 +10,7 @@ import { handleRegister } from '../../services/Auth.service';
 
 const RegisterPage = () => {
     const navigate = useNavigate();
+    const { enqueueSnackbar } = useSnackbar();
 
     const formik = useFormik({
         initialValues: {
@@ -17,20 +19,26 @@ const RegisterPage = () => {
             confirmPassword: '',
         },
         validationSchema: registerSchema,
-        onSubmit: (values, { setErrors }) => {
+        onSubmit: (values, { setErrors, setSubmitting }) => {
             handleRegister({
                 authData: {
                     email: values.email,
                     password: values.password,
                 },
+                enqueueSnackbar,
                 setErrors,
                 navigate,
-            });
+            }).finally(() => setSubmitting(false));
         },
     });
 
     return (
-        <AuthForm title="Register" link="login" onSubmit={formik.handleSubmit}>
+        <AuthForm
+            link="login"
+            title="Register"
+            onSubmit={formik.handleSubmit}
+            isSubmiting={formik.isSubmitting}
+        >
             <TextField
                 variant="outlined"
                 type="email"

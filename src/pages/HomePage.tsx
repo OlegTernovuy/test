@@ -1,12 +1,11 @@
 import { useNavigate } from 'react-router';
-import { signOut } from 'firebase/auth';
 
-import { auth } from '../firebase';
+import { handleLogoutUser } from '../services/Auth.service';
 
 const HomePage = () => {
     const navigate = useNavigate();
     const handleLogout = async () => {
-        await signOut(auth);
+        await handleLogoutUser();
         navigate('/login');
     };
     return (
