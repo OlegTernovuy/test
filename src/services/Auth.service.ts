@@ -6,7 +6,7 @@ import {
     IHandleResetPassword,
 } from '../types';
 
-axios.defaults.baseURL = 'http://localhost:4200/api';
+axios.defaults.baseURL = 'https://loki-api2.axels.com.ua/api';
 
 const handleLogin = async ({
     authData,
