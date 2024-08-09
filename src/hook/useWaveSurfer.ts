@@ -1,18 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useReactMediaRecorder, StatusMessages } from "react-media-recorder-2";
 import WaveSurfer from 'wavesurfer.js';
-import { CustomIconButtonProps } from "../types";
-
-
-interface UseWaveSurferProps {
-    selectedOutput?: string;
-    selectedMic?: string;
-}
+import { CustomIconButtonProps, ICustomSelectProps } from "../types";
+import useAudioDevices from "./useAudioDevices";
 
 interface UseWaveSurferReturn {
     status: StatusMessages;
+    wavesurfer: React.MutableRefObject<WaveSurfer | null>;
     mediaBlobUrl?: string;
     actionButtons: CustomIconButtonProps[];
+    selectors: ICustomSelectProps[];
     startRecording: () => void;
 }
 
@@ -30,7 +27,9 @@ const WAVESURFER_SETTINGS = {
     fillParent: true,
 }
 
-const useWaveSurfer = ({ selectedOutput, selectedMic }: UseWaveSurferProps): UseWaveSurferReturn => {
+const useWaveSurfer = (): UseWaveSurferReturn => {
+    const { selectedInput, selectedOutput, selectors } = useAudioDevices();
+
     const [isPlaying, setIsPlaying] = useState(false);
     const [playerReady, setPlayerReady] = useState(false);
 
@@ -38,7 +37,7 @@ const useWaveSurfer = ({ selectedOutput, selectedMic }: UseWaveSurferProps): Use
 
     const { status, startRecording, stopRecording, mediaBlobUrl, clearBlobUrl } =
         useReactMediaRecorder({
-            audio: selectedMic ? { deviceId: { exact: selectedMic } } : true,
+            audio: selectedInput ? { deviceId: { exact: selectedInput } } : true,
             video: false,
             askPermissionOnMount: true
         });
@@ -78,9 +77,10 @@ const useWaveSurfer = ({ selectedOutput, selectedMic }: UseWaveSurferProps): Use
     }, [mediaBlobUrl])
 
     useEffect(() => {
-        if (selectedOutput && wavesurfer.current)
-        wavesurfer.current?.setSinkId(selectedOutput);
-    }, [selectedOutput]);
+        if (wavesurfer.current instanceof WaveSurfer && selectedOutput) {
+            wavesurfer.current?.setSinkId(selectedOutput);
+        }
+    }, [selectedOutput, wavesurfer.current]);
 
     const togglePlayback = () => {
         if (!isPlaying) {
@@ -121,8 +121,10 @@ const useWaveSurfer = ({ selectedOutput, selectedMic }: UseWaveSurferProps): Use
 
     return {
         status,
+        wavesurfer,
         mediaBlobUrl,
         actionButtons,
+        selectors,
         startRecording,
     };
 };
