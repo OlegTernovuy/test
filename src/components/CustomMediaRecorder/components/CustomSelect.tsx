@@ -2,23 +2,11 @@ import React from 'react';
 
 import { FormControl, MenuItem } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import {
-    TitleSelectStyled
-} from "../../../styled/CustomSelect.styled";
+import { TitleSelectStyled } from "../../../styled/CustomMediaRecorder.styled";
+import { OptionBase, ICustomSelectProps } from "../../../types";
 
-interface OptionBase {
-    value?: string;
-    label: string;
-}
 
-interface ICustomSelectProps<T extends OptionBase> {
-    title: string;
-    selected: string;
-    options: T[];
-    onHandleChange: (id: string) => void;
-}
-
-const CustomSelect = <T extends OptionBase>({ title, selected, options, onHandleChange }: ICustomSelectProps<T>) => {
+const CustomSelect:React.FC<ICustomSelectProps> =({ title, selected, options, onHandleChange }) => {
     const handleChange = (event: SelectChangeEvent) => {
         const id = event.target.value;
         onHandleChange(id);
