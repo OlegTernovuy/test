@@ -1,7 +1,7 @@
 import React from 'react';
-import { IconButtonStyled } from '../../../styled/CustomMediaRecorder.styled';
 import { Stop, PlayArrow, Pause, Replay, Mic, Done } from '@mui/icons-material';
-import { CustomIconButtonProps } from "../../../types";
+import { IconButtonStyled } from '../../styled/CustomMediaRecorder.styled';
+import { CustomIconButtonProps } from '../../types';
 
 const objectIcons = {
     'done': Done,

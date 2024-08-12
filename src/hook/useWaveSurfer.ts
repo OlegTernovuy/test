@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useReactMediaRecorder, StatusMessages } from "react-media-recorder-2";
+import { useReactMediaRecorder, StatusMessages } from 'react-media-recorder-2';
 import WaveSurfer from 'wavesurfer.js';
-import { CustomIconButtonProps, ICustomSelectProps } from "../types";
-import useAudioDevices from "./useAudioDevices";
+
+import { CustomIconButtonProps, ICustomSelectProps } from '../types';
+import useAudioDevices from './useAudioDevices';
 
 interface UseWaveSurferReturn {
     status: StatusMessages;
@@ -27,8 +28,9 @@ const WAVESURFER_SETTINGS = {
     fillParent: true,
 }
 
+// Custom hook that handles audio recording, WaveSurfer player setup, and UI interactions
 const useWaveSurfer = (): UseWaveSurferReturn => {
-    const { selectedInput, selectedOutput, selectors } = useAudioDevices();
+    const { selectedInput, selectedOutput, selectors } = useAudioDevices(); // Manage audio input/output devices
 
     const [isPlaying, setIsPlaying] = useState(false);
     const [playerReady, setPlayerReady] = useState(false);
@@ -40,8 +42,9 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
             audio: selectedInput ? { deviceId: { exact: selectedInput } } : true,
             video: false,
             askPermissionOnMount: true
-        });
+        }); // React hook to handle media recording
 
+    // Effect to initialize WaveSurfer when mediaBlobUrl is available
     useEffect(() => {
         if (!mediaBlobUrl) return;
 
@@ -61,6 +64,7 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
         };
     }, [status, mediaBlobUrl]);
 
+    // Effect to load the recorded audio into WaveSurfer when mediaBlobUrl changes
     useEffect(() => {
         if (mediaBlobUrl && wavesurfer.current) {
             wavesurfer.current?.load(mediaBlobUrl)
@@ -71,16 +75,17 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
 
         return () => {
             if (wavesurfer.current) {
-                wavesurfer.current.destroy();
+                wavesurfer.current.destroy(); // Cleanup WaveSurfer instance
             }
         }
     }, [mediaBlobUrl])
 
+    // Effect to update the output device for WaveSurfer
     useEffect(() => {
         if (wavesurfer.current instanceof WaveSurfer && selectedOutput) {
             wavesurfer.current?.setSinkId(selectedOutput);
         }
-    }, [selectedOutput, wavesurfer.current]);
+    }, [selectedOutput, wavesurfer]);
 
     const togglePlayback = () => {
         if (!isPlaying) {
@@ -90,6 +95,7 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
         }
     }
 
+    // Helper function to convert Blob URL to a File object
     const BlobURLToFile = async (tempFile: string) => {
         const response = await fetch(tempFile);
         const data = await response.blob();
@@ -111,6 +117,7 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
         }
     }
 
+    // Array of button configurations for UI actions
     const actionButtons: CustomIconButtonProps[] = [
         { condition: !isPlaying && mediaBlobUrl, iconName: 'playArrow', onClick: togglePlayback },
         { condition: isPlaying && mediaBlobUrl, iconName: 'pause', onClick: togglePlayback },

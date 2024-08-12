@@ -18,7 +18,12 @@ function App() {
             <GlobalStyle />
             <Routes>
                 <Route path="/" element={<Navigate to="/login" />} />
-                <Route path="/microphone" element={<AudioRecorderPage />}/>
+                <Route path="/microphone"
+                       element={
+                           <ProtectedRoute>
+                               <AudioRecorderPage />
+                           </ProtectedRoute>
+                       }/>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />

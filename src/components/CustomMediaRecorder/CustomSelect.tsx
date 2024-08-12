@@ -2,9 +2,8 @@ import React from 'react';
 
 import { FormControl, MenuItem } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { TitleSelectStyled } from "../../../styled/CustomMediaRecorder.styled";
-import { OptionBase, ICustomSelectProps } from "../../../types";
-
+import { TitleSelectStyled } from '../../styled/CustomMediaRecorder.styled';
+import { ICustomSelectProps } from '../../types';
 
 const CustomSelect:React.FC<ICustomSelectProps> =({ title, selected, options, onHandleChange }) => {
     const handleChange = (event: SelectChangeEvent) => {

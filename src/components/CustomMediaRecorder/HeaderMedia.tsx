@@ -1,6 +1,6 @@
 import React from 'react';
 import { StatusMessages } from 'react-media-recorder-2';
-import { HeaderStyled } from "../../../styled/CustomMediaRecorder.styled";
+import { HeaderStyled } from '../../styled/CustomMediaRecorder.styled';
 
 interface HeaderProps {
     status: StatusMessages;

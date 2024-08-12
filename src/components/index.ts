@@ -1,7 +1,7 @@
 import AuthFormWrapper from './auth/AuthFormWrapper';
 import ProtectedRoute from './ProtectedRoute';
 import AuthForm from './auth/AuthForm';
-import CustomMediaRecorder from './CustomMediaRecorder';
+import CustomMediaRecorder from './CustomMediaRecorder/CustomMediaRecorder';
 
 export {
     AuthForm,

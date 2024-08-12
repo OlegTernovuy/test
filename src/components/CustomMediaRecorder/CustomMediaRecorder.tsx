@@ -9,9 +9,11 @@ import {
     ActionsStyled,
     ActionsContentStyled,
     CircularProgressStyled
-} from "../../styled/CustomMediaRecorder.styled";
-import { HeaderMedia, CustomIconButton, CustomSelect } from "./components";
-import useWaveSurfer from "../../hook/useWaveSurfer";
+} from '../../styled/CustomMediaRecorder.styled';
+import CustomSelect from './CustomSelect';
+import HeaderMedia from './HeaderMedia';
+import CustomIconButton from './CustomIconButton';
+import useWaveSurfer from '../../hook/useWaveSurfer';
 
 const CustomMediaRecorder: React.FC = () => {
     const {

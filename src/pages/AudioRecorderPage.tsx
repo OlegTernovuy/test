@@ -1,6 +1,6 @@
 import React from 'react';
-import { CustomMediaRecorder  } from "../components";
-import { TitleMicStyled, DivStyled } from "../styled/AudioRecorderPage.styled";
+import { CustomMediaRecorder  } from '../components';
+import { TitleMicStyled, DivStyled } from '../styled/AudioRecorderPage.styled';
 
 const AudioRecorderPage = () => {
     return (

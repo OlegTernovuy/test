@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { OptionBase, ICustomSelectProps } from '../types';
 type IKind = 'audioinput' | 'audiooutput';
 
+// Function to filter and map media devices based on their type (audioinput/audiooutput)
 const getMediaDevices = (devices: MediaDeviceInfo[], name: IKind): OptionBase[] => {
     const copyDevices = [...devices]
 
@@ -16,12 +17,14 @@ const getMediaDevices = (devices: MediaDeviceInfo[], name: IKind): OptionBase[] 
     return [...devicesArr];
 }
 
+// Custom hook to manage audio devices (input and output)
 const useAudioDevices = () => {
     const [audioInputArr, setAudioInputArr] = useState<OptionBase[]>([]);
     const [audioOutputArr, setAudioOutputArr] = useState<OptionBase[]>([]);
     const [selectedInput, setSelectedInput] = useState<string>('');
     const [selectedOutput, setSelectedOutput] = useState<string>('');
 
+    // UseEffect to retrieve and set audio devices (microphones and speakers)
     useEffect(() => {
         const getAllMicrophones = async () => {
             try {
@@ -31,8 +34,13 @@ const useAudioDevices = () => {
                     await navigator.mediaDevices.getUserMedia({ audio: true });
                 }
 
+                // Get the list of all media devices (audio input/output, etc.)
                 const devices = await navigator.mediaDevices.enumerateDevices();
+
+                // Filter and format audio input devices (microphones)
                 const audioInputArr = getMediaDevices(devices, 'audioinput');
+
+                // Filter and format audio output devices (speakers, headphones)
                 const audioOutputArr = getMediaDevices(devices, 'audiooutput');
 
                 if (audioInputArr.length > 0) {
@@ -52,6 +60,7 @@ const useAudioDevices = () => {
         };
 
         getAllMicrophones()
+
         // Add a listener for the device change event
         navigator.mediaDevices.addEventListener('devicechange', getAllMicrophones);
         return () => {
