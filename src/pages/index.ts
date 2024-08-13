@@ -2,7 +2,14 @@ import ForgotPassword from './auth/ForgotPassword';
 import ResetPassword from './auth/ResetPassword';
 import RegisterPage from './auth/RegisterPage';
 import LoginPage from './auth/LoginPage';
-import HomePage from './HomePage';
+import ProjectsPage from './ProjectsPage';
 import AudioRecorderPage from './AudioRecorderPage';
 
-export { LoginPage, RegisterPage, HomePage, ForgotPassword, ResetPassword, AudioRecorderPage };
+export {
+    LoginPage,
+    RegisterPage,
+    ProjectsPage,
+    ForgotPassword,
+    ResetPassword,
+    AudioRecorderPage,
+};

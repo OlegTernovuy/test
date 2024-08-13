@@ -36,7 +36,6 @@ interface ICustomSelectProps {
     onHandleChange: (id: string) => void;
 }
 
-
 interface CustomIconButtonProps {
     iconName: 'done' | 'stop' | 'playArrow' | 'pause' | 'replay' | 'mic';
     [key: string]: any;
@@ -45,11 +44,24 @@ interface CustomIconButtonProps {
     onClick: () => void;
 }
 
+interface IAudioRecord {
+    id: string;
+    date: {
+        _seconds: number;
+        _nanoseconds: number;
+    };
+    author: string;
+    name: string;
+    project: string;
+    projectId: string;
+}
+
 export {
     type IAuthParams,
     type IHandleResetPassword,
     type IHandleForgotPassword,
     type OptionBase,
     type ICustomSelectProps,
-    type CustomIconButtonProps
+    type CustomIconButtonProps,
+    type IAudioRecord
 };

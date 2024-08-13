@@ -1,12 +1,9 @@
-import axios from 'axios';
-
 import {
     IAuthParams,
     IHandleForgotPassword,
     IHandleResetPassword,
 } from '../types';
-
-axios.defaults.baseURL = 'https://loki-api2.axels.com.ua/api';
+import axios from '../utils/axios';
 
 const handleLogin = async ({
     authData,
@@ -30,7 +27,7 @@ const handleLogin = async ({
         enqueueSnackbar(res.data.message, {
             variant: 'success',
         });
-        navigate('/home');
+        navigate('/projects');
     } catch (error: any) {
         console.error('Error login user with email and password', error);
         if (error.response && error.response.data.error) {
