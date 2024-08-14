@@ -8,7 +8,10 @@ import {
     AvesurferStyled,
     ActionsStyled,
     ActionsContentStyled,
-    CircularProgressStyled
+    CircularProgressStyled,
+    NameStyled,
+    AudioStyled,
+    MediaStyled,
 } from '../../styled/CustomMediaRecorder.styled';
 import CustomSelect from './CustomSelect';
 import HeaderMedia from './HeaderMedia';
@@ -21,6 +24,7 @@ const CustomMediaRecorder: React.FC = () => {
         mediaBlobUrl,
         actionButtons,
         selectors,
+        publicAudios,
         startRecording,
     } = useWaveSurfer();
 
@@ -33,23 +37,31 @@ const CustomMediaRecorder: React.FC = () => {
     }
     return (
         <DivStyled>
-            {selectors.map((selector, index) => (
-                <CustomSelect key={index} {...selector} />
-            ))}
-            <ActionsStyled>
-                <HeaderMedia status={status} mediaBlobUrl={mediaBlobUrl} />
-                {status !== 'recording' && !mediaBlobUrl && (
-                    <Fab onClick={startRecording} color="default">
-                        <Mic color={'secondary'} />
-                    </Fab>
-                )}
-                <ActionsContentStyled>
-                    {actionButtons.map((buttonInfo, index) =>
-                        <CustomIconButton key={index} {...buttonInfo}/>
+            <MediaStyled>
+                {selectors.map((selector, index) => (
+                    <CustomSelect key={index} {...selector} />
+                ))}
+                <ActionsStyled>
+                    <HeaderMedia status={status} mediaBlobUrl={mediaBlobUrl} />
+                    {status !== 'recording' && !mediaBlobUrl && (
+                        <Fab onClick={startRecording} color="default">
+                            <Mic color={'secondary'} />
+                        </Fab>
                     )}
-                </ActionsContentStyled>
-            </ActionsStyled>
-            {mediaBlobUrl && <AvesurferStyled id="wavesurfer-id" />}
+                    <ActionsContentStyled>
+                        {actionButtons.map((buttonInfo, index) =>
+                            <CustomIconButton key={index} {...buttonInfo}/>
+                        )}
+                    </ActionsContentStyled>
+                </ActionsStyled>
+                {mediaBlobUrl && <AvesurferStyled id="wavesurfer-id" />}
+            </MediaStyled>
+            {publicAudios && publicAudios.map((audio, index) => (
+                <AudioStyled key={index}>
+                    <NameStyled>{audio.name}</NameStyled>
+                    <audio key={index} src={audio.url} controls />
+                </AudioStyled>
+            ))}
         </DivStyled>
     )
 };

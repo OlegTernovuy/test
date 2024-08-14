@@ -4,15 +4,7 @@ import WaveSurfer from 'wavesurfer.js';
 
 import { CustomIconButtonProps, ICustomSelectProps } from '../types';
 import useAudioDevices from './useAudioDevices';
-
-interface UseWaveSurferReturn {
-    status: StatusMessages;
-    wavesurfer: React.MutableRefObject<WaveSurfer | null>;
-    mediaBlobUrl?: string;
-    actionButtons: CustomIconButtonProps[];
-    selectors: ICustomSelectProps[];
-    startRecording: () => void;
-}
+import { getMedia, putMedia } from "../services/Media.service";
 
 const WAVESURFER_SETTINGS = {
     container: '#wavesurfer-id',
@@ -23,12 +15,28 @@ const WAVESURFER_SETTINGS = {
     fillParent: true,
 }
 
+type AudioRecord = {
+    name: string;
+    url: string;
+};
+
+interface UseWaveSurferReturn {
+    status: StatusMessages;
+    wavesurfer: React.MutableRefObject<WaveSurfer | null>;
+    mediaBlobUrl?: string;
+    actionButtons: CustomIconButtonProps[];
+    selectors: ICustomSelectProps[];
+    publicAudios?: AudioRecord[];
+    startRecording: () => void;
+}
+
 // Custom hook that handles audio recording, WaveSurfer player setup, and UI interactions
 const useWaveSurfer = (): UseWaveSurferReturn => {
     const { selectedInput, selectedOutput, selectors } = useAudioDevices(); // Manage audio input/output devices
 
     const [isPlaying, setIsPlaying] = useState(false);
     const [playerReady, setPlayerReady] = useState(false);
+    const [publicAudios, setPublicAudios] = useState<AudioRecord[]>();
 
     const wavesurfer = useRef<WaveSurfer | null>(null);
 
@@ -90,6 +98,15 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
         }
     }
 
+    const getAudios = async () => {
+        const { data } = await getMedia();
+        setPublicAudios(data)
+    }
+    // Get Public audios
+    useEffect(() => {
+        getAudios();
+    }, [setPublicAudios]);
+
     const handleDone = async () => {
         if (mediaBlobUrl) {
             try {
@@ -97,9 +114,10 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
                 const response = await fetch(mediaBlobUrl);
                 const blob = await response.blob();
 
-                // Created file with Blob
-                const file = new File([blob], 'recording.wav', { type: blob.type });
-                console.log({ file }, 'file', mediaBlobUrl, playerReady);
+                const file = new File([blob], 'recording.mp3', { type: 'audio/mp3' });
+
+                await putMedia(file);
+                getAudios()
 
                 clearBlobUrl();
             } catch (error) {
@@ -123,6 +141,7 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
         mediaBlobUrl,
         actionButtons,
         selectors,
+        publicAudios,
         startRecording,
     };
 };

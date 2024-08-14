@@ -19,6 +19,22 @@ const DivStyled = styled.div`
   align-items: center;
 `
 
+const NameStyled = styled.div`
+  margin-bottom: 10px;
+`
+const AudioStyled = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  width: 504px;
+  margin-bottom: 15px;
+`
+
+const MediaStyled = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 460px
+`
 const AvesurferStyled = styled.div`
   width: 400px;
 `
@@ -68,7 +84,6 @@ const IconButtonStyled = styled(IconButton)<{ $square?: boolean }>`
   `}
 `
 
-
 const CircularProgressStyled = styled.div`
   display: flex;
   justify-content: center;
@@ -84,5 +99,8 @@ export {
     ActionsContentStyled,
     TitleSelectStyled,
     IconButtonStyled,
-    CircularProgressStyled
+    CircularProgressStyled,
+    AudioStyled,
+    NameStyled,
+    MediaStyled,
 };
