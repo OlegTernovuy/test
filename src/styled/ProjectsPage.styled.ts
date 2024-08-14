@@ -28,8 +28,7 @@ const CircularProgressWrapper = styled(Box)`
     display: flex;
     align-items: center;
     justify-content: center;
-    // background-color: ${({ theme }) => theme.color.background};
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: ${({ theme }) => theme.color.backgroundOpacity};
     z-index: 1;
 `;
 

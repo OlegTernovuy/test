@@ -4,6 +4,7 @@ const theme = {
         secondary: '#526e75',
         black: '#1c1c1c',
         background: '#f5f9ff',
+        backgroundOpacity: '#FFFFFFB2',
     },
     media: {
         sm: '480px',
