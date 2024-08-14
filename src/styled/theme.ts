@@ -2,7 +2,9 @@ const theme = {
     color: {
         primary: '#1976D2',
         secondary: '#526e75',
-        black: '#1c1c1c'
+        black: '#1c1c1c',
+        background: '#f5f9ff',
+        backgroundOpacity: '#FFFFFFB2',
     },
     media: {
         sm: '480px',
