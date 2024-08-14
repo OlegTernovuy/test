@@ -14,11 +14,6 @@ interface UseWaveSurferReturn {
     startRecording: () => void;
 }
 
-const SETTINGS_MIC = {
-    mimeType: 'audio/webm',
-    timeSlice: 1000,
-}
-
 const WAVESURFER_SETTINGS = {
     container: '#wavesurfer-id',
     height: 140,
@@ -95,22 +90,18 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
         }
     }
 
-    // Helper function to convert Blob URL to a File object
-    const BlobURLToFile = async (tempFile: string) => {
-        const response = await fetch(tempFile);
-        const data = await response.blob();
-        const metadata = { type: SETTINGS_MIC.mimeType}
-
-        return new File([data], 'mic_recording.webm', metadata);
-    }
-
     const handleDone = async () => {
         if (mediaBlobUrl) {
             try {
-                const file = await BlobURLToFile(mediaBlobUrl)
-                console.log({ file }, 'file', mediaBlobUrl, playerReady)
+                // Get Blob with Blob URL
+                const response = await fetch(mediaBlobUrl);
+                const blob = await response.blob();
 
-                clearBlobUrl()
+                // Created file with Blob
+                const file = new File([blob], 'recording.wav', { type: blob.type });
+                console.log({ file }, 'file', mediaBlobUrl, playerReady);
+
+                clearBlobUrl();
             } catch (error) {
                 console.log(error);
             }
