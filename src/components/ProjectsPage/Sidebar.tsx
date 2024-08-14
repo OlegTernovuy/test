@@ -3,9 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { SidebarHeader } from '../../styled/ProjectsPage.styled';
 import { Tab, Tabs } from '@mui/material';
 
-import { getProjects } from '../../services/Projects.service';
-import { IAudioRecord } from '../../types';
-import axios from '../../utils/axios';
+import useFetchData from '../../hook/useFetch';
 
 interface IProjects {
     id: string;
@@ -13,37 +11,11 @@ interface IProjects {
 }
 
 interface ISidebarProps {
-    setAudioRecords: React.Dispatch<React.SetStateAction<IAudioRecord[]>>;
-    setLoadings: React.Dispatch<React.SetStateAction<boolean>>;
+    setSelectedProjectId: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const Sidebar = ({ setAudioRecords, setLoadings }: ISidebarProps) => {
-    const [projects, setProjects] = useState<IProjects[]>([]);
+const Sidebar = ({ setSelectedProjectId }: ISidebarProps) => {
     const [selectProject, setSelectProject] = useState(0);
-
-    useEffect(() => {
-        const Projects = async () => {
-            const res = await getProjects();
-            setProjects(res?.data.data);
-        };
-        Projects();
-    }, []);
-
-    const handleAudioRecords = async (projectId: string) => {
-        // const res = await getAudioRecords(projectId);
-        try {
-            setLoadings(true);
-            const res = await axios.get(`/audio/${projectId}`, {
-                withCredentials: true,
-            });
-            setAudioRecords(res?.data.data);
-        } catch (error) {
-            console.error(error);
-            setLoadings(false);
-        } finally {
-            setLoadings(false);
-        }
-    };
 
     const handleSelectProject = (
         event: React.SyntheticEvent,
@@ -51,9 +23,23 @@ const Sidebar = ({ setAudioRecords, setLoadings }: ISidebarProps) => {
     ) => {
         setSelectProject(newProject);
     };
+
+    const { data: projects, fetchData } =
+        useFetchData<IProjects[]>(`/projects`);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
+    useEffect(() => {
+        if (projects && projects[selectProject]?.id) {
+            setSelectedProjectId(projects[selectProject].id);
+        }
+    }, [projects, selectProject, setSelectedProjectId]);
+
     return (
         <>
-            <SidebarHeader variant="h6">Projects name</SidebarHeader>
+            <SidebarHeader variant="h6">Projects</SidebarHeader>
             <Tabs
                 value={selectProject}
                 onChange={handleSelectProject}
@@ -64,7 +50,7 @@ const Sidebar = ({ setAudioRecords, setLoadings }: ISidebarProps) => {
                         <Tab
                             key={project.id}
                             label={project.name}
-                            onClick={() => handleAudioRecords(project.id)}
+                            onClick={() => setSelectedProjectId(project.id)}
                         />
                     ))}
             </Tabs>
