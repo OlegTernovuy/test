@@ -1,14 +1,24 @@
 import styled from 'styled-components';
 
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 
 const GridSidebar = styled(Grid)`
     background-color: ${({ theme }) => theme.color.background};
     height: 100vh;
 `;
 
-const SidebarHeader = styled(Typography)`
+const SidebarHeader = styled(Box)`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 8px 12px 0;
+`;
+
+const SliderTab = styled(Box)`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
 `;
 
 const GridAudioList = styled(Grid)`
@@ -38,4 +48,5 @@ export {
     GridAudioList,
     AudioRecordsTableWrapper,
     CircularProgressWrapper,
+    SliderTab,
 };
