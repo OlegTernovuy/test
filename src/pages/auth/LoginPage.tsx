@@ -7,11 +7,12 @@ import { AuthForm } from '../../components';
 import { TextField } from '@mui/material';
 
 import { loginSchema } from '../../utils/valiadtionSchema';
-import { handleLogin } from '../../services/Auth.service';
+import { useAuth } from '../../Providers/AuthProvider';
 
 const LoginPage = () => {
     const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
+    const { login } = useAuth();
 
     const formik = useFormik({
         initialValues: {
@@ -20,7 +21,7 @@ const LoginPage = () => {
         },
         validationSchema: loginSchema,
         onSubmit: (values, { setErrors, setSubmitting }) => {
-            handleLogin({
+            login({
                 authData: {
                     email: values.email,
                     password: values.password,

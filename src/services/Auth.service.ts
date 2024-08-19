@@ -5,16 +5,14 @@ import {
 } from '../types';
 import axios from '../utils/axios';
 
-const handleLogin = async ({
-    authData,
-    setErrors,
-    navigate,
-    enqueueSnackbar,
-}: IAuthParams) => {
-    const { email, password } = authData;
+interface IPropdLoginParams {
+    email: string;
+    password: string;
+}
 
+const handleLogin = async ({ email, password }: IPropdLoginParams) => {
     try {
-        const res = await axios.post(
+        return await axios.post(
             '/auth/login',
             {
                 email,
@@ -24,17 +22,9 @@ const handleLogin = async ({
                 withCredentials: true,
             }
         );
-        enqueueSnackbar(res.data.message, {
-            variant: 'success',
-        });
-        navigate('/projects');
     } catch (error: any) {
         console.error('Error login user with email and password', error);
-        if (error.response && error.response.data.error) {
-            setErrors({ email: error.response.data.error });
-        } else {
-            setErrors({ email: (error as Error).message });
-        }
+        throw error;
     }
 };
 
@@ -64,7 +54,7 @@ const handleRegister = async ({
     }
 };
 
-const checkAuth = async () => {
+const checkAuthService = async () => {
     const res = await axios.get('/auth/check-auth', {
         withCredentials: true,
     });
@@ -116,7 +106,7 @@ const handleForgotPassword = async ({
 };
 
 export {
-    checkAuth,
+    checkAuthService,
     handleLogin,
     handleRegister,
     handleLogoutUser,

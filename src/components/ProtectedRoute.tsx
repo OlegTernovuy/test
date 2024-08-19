@@ -1,37 +1,24 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React from 'react';
 import { Navigate } from 'react-router-dom';
 
-import { checkAuth } from '../services/Auth.service';
+import { useAuth } from '../Providers/AuthProvider';
 
 interface ProtectedRouteProps {
-    children: ReactNode;
+    children: JSX.Element;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-    const [user, setUser] = useState(false);
-    const [authInitialized, setAuthInitialized] = useState(false);
+    const { user, loading } = useAuth();
 
-    useEffect(() => {
-        const authentificate = async () => {
-            try {
-                const data = await checkAuth();
-                setUser(!!data.user);
-            } catch (error) {
-                console.error('Error checking authentification', error);
-                setUser(false);
-            } finally {
-                setAuthInitialized(true);
-            }
-        };
-
-        authentificate();
-    }, []);
-
-    if (!authInitialized) {
-        return <p>Loading...</p>;
+    if (loading) {
+        return <div>Loading...</div>;
     }
 
-    return user ? <>{children}</> : <Navigate to="/login" />;
+    if (!user) {
+        return <Navigate to="/login" replace />;
+    }
+
+    return children;
 };
 
 export default ProtectedRoute;
