@@ -1,20 +1,33 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-import { GridAudioList, GridSidebar } from '../styled/ProjectsPage.styled';
-import { AudioRecordsTable, Sidebar } from '../components';
-import { Grid } from '@mui/material';
+import {
+    CircularProgressWrapper,
+    GridAudioList,
+    GridSidebar,
+} from '../styled/ProjectsPage.styled';
+import { CircularProgress, Grid } from '@mui/material';
+import { AudioRecordsTable, ProjectDialog, Sidebar } from '../components';
 
 import useFetchData from '../hook/useFetch';
-import { IAudioRecord } from '../types';
-import ProjectDialog from '../components/ProjectsPage/ProjectDialog';
-import {
-    handleAddProject,
-    handleDeleteProject,
-    handleEditProject,
-} from '../services/Projects.service';
+import { IAudioRecord, IProjects } from '../types';
 
 const ProjectsPage = () => {
-    const [selectedProjectId, setSelectedProjectId] = useState<string>('');
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [dialogAction, setDialogAction] = useState<'add' | 'edit' | 'delete'>(
+        'add'
+    );
+    const [selectedProjectName, setSelectedProjectName] = useState<IProjects>({
+        id: '',
+        name: '',
+    });
+    const [selectedProjectId, setSelectedProjectId] = useState('');
+
+    const { data: projects, fetchData: fetchProjects } =
+        useFetchData<IProjects[]>(`/projects`);
+
+    const handleFetchProjects = useCallback(async () => {
+        await fetchProjects();
+    }, [fetchProjects]);
 
     const {
         data: audioRecords,
@@ -22,52 +35,77 @@ const ProjectsPage = () => {
         fetchData,
     } = useFetchData<IAudioRecord[]>(`/audio/${selectedProjectId}`);
 
+    const { loading: LoadingAddProject, fetchData: handleAddProject } =
+        useFetchData('/projects', {
+            method: 'POST',
+        });
+
+    const { loading: LoadingEditProject, fetchData: handleEditProject } =
+        useFetchData(`/projects/${selectedProjectName.id}`, {
+            method: 'PATCH',
+        });
+
+    const { loading: LoadingDeleteProject, fetchData: handleDeleteProject } =
+        useFetchData(`/projects/${selectedProjectName.id}`, {
+            method: 'DELETE',
+        });
+
+    useEffect(() => {
+        handleFetchProjects();
+    }, [handleFetchProjects]);
+
     useEffect(() => {
         if (selectedProjectId) {
             fetchData();
         }
-    }, [selectedProjectId, fetchData]);
+    }, [fetchData, selectedProjectId]);
 
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [dialogAction, setDialogAction] = useState<'add' | 'edit' | 'delete'>(
-        'add'
-    );
-    const [selectedProject, setSelectedProject] = useState('');
+    const handleConfirmAction = async (projectName: string) => {
+        const actions: Record<string, () => Promise<void>> = {
+            add: async () => {
+                await handleAddProject({ name: projectName });
+                setSelectedProjectName({ id: '', name: '' });
+            },
+            edit: async () => {
+                if (selectedProjectId) {
+                    await handleEditProject({ name: projectName });
+                    setSelectedProjectName({ id: '', name: '' });
+                }
+            },
+            delete: async () => {
+                if (selectedProjectName.id) {
+                    await handleDeleteProject();
+                }
+            },
+        };
 
-    // const handleOpenDialog = (
-    //     actionType: 'add' | 'edit' | 'delete',
-    //     projectName: string = ''
-    // ) => {
-    //     setDialogAction(actionType);
-    //     setSelectedProject(projectName);
-    //     setDialogOpen(true);
-    // };
-
-    const handleConfirmAction = (projectName: string) => {
-        if (dialogAction === 'add') {
-            setSelectedProject('');
-            handleAddProject(projectName);
-        } else if (dialogAction === 'edit') {
-            setSelectedProject('');
-            handleEditProject(projectName, selectedProjectId);
-        } else if (dialogAction === 'delete') {
-            handleDeleteProject(selectedProjectId);
+        if (actions[dialogAction]) {
+            await actions[dialogAction]();
+            await handleFetchProjects();
         }
     };
 
     const onClose = () => {
         setDialogOpen(false);
-        setSelectedProject('');
+        setSelectedProjectName({ id: '', name: '' });
     };
 
     return (
         <Grid container>
+            {(LoadingAddProject ||
+                LoadingEditProject ||
+                LoadingDeleteProject) && (
+                <CircularProgressWrapper>
+                    <CircularProgress />
+                </CircularProgressWrapper>
+            )}
             <GridSidebar item xs={2}>
                 <Sidebar
-                    setSelectedProjectId={setSelectedProjectId}
+                    projects={projects}
                     setDialogOpen={setDialogOpen}
                     setDialogAction={setDialogAction}
-                    setSelectedProject={setSelectedProject}
+                    setSelectedProjectName={setSelectedProjectName}
+                    setSelectedProjectId={setSelectedProjectId}
                 />
             </GridSidebar>
             <GridAudioList item xs={10}>
@@ -81,7 +119,7 @@ const ProjectsPage = () => {
                 onClose={onClose}
                 onConfirm={handleConfirmAction}
                 actionType={dialogAction}
-                projectName={selectedProject}
+                projectName={selectedProjectName.name}
             />
         </Grid>
     );

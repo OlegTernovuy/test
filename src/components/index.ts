@@ -4,6 +4,7 @@ import AuthForm from './auth/AuthForm';
 import CustomMediaRecorder from './CustomMediaRecorder/CustomMediaRecorder';
 import Sidebar from './ProjectsPage/Sidebar';
 import AudioRecordsTable from './ProjectsPage/AudioRecordsTable';
+import ProjectDialog from './ProjectsPage/ProjectDialog';
 
 export {
     AuthForm,
@@ -11,5 +12,6 @@ export {
     ProtectedRoute,
     CustomMediaRecorder,
     Sidebar,
-    AudioRecordsTable
+    AudioRecordsTable,
+    ProjectDialog,
 };

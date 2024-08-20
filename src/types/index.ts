@@ -56,6 +56,11 @@ interface IAudioRecord {
     projectId: string;
 }
 
+interface IProjects {
+    id: string;
+    name: string;
+}
+
 export {
     type IAuthParams,
     type IHandleResetPassword,
@@ -63,5 +68,6 @@ export {
     type OptionBase,
     type ICustomSelectProps,
     type CustomIconButtonProps,
-    type IAudioRecord
+    type IAudioRecord,
+    type IProjects,
 };

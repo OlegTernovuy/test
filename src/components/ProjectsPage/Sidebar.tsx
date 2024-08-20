@@ -1,33 +1,30 @@
 import React, { useEffect, useState } from 'react';
 
 import { SidebarHeader, SliderTab } from '../../styled/ProjectsPage.styled';
-import AddIcon from '@mui/icons-material/Add';
 import { Box, Button, IconButton, Tab, Tabs, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
-import useFetchData from '../../hook/useFetch';
 import { useAuth } from '../../Providers/AuthProvider';
-
-interface IProjects {
-    id: string;
-    name: string;
-}
+import { IProjects } from '../../types';
 
 interface ISidebarProps {
-    setSelectedProjectId: React.Dispatch<React.SetStateAction<string>>;
+    projects: IProjects[];
     setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
     setDialogAction: React.Dispatch<
         React.SetStateAction<'add' | 'edit' | 'delete'>
     >;
-    setSelectedProject: React.Dispatch<React.SetStateAction<string>>;
+    setSelectedProjectName: React.Dispatch<React.SetStateAction<IProjects>>;
+    setSelectedProjectId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const Sidebar = ({
-    setSelectedProjectId,
+    projects,
     setDialogOpen,
     setDialogAction,
-    setSelectedProject,
+    setSelectedProjectName,
+    setSelectedProjectId,
 }: ISidebarProps) => {
     const [selectProject, setSelectProject] = useState(0);
     const { isAdmin } = useAuth();
@@ -38,13 +35,6 @@ const Sidebar = ({
     ) => {
         setSelectProject(newProject);
     };
-
-    const { data: projects, fetchData } =
-        useFetchData<IProjects[]>(`/projects`);
-
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
 
     useEffect(() => {
         if (projects && projects[selectProject]?.id) {
@@ -86,9 +76,10 @@ const Sidebar = ({
                                                     e.stopPropagation();
                                                     setDialogOpen(true);
                                                     setDialogAction('edit');
-                                                    setSelectedProject(
-                                                        project.name
-                                                    );
+                                                    setSelectedProjectName({
+                                                        name: project.name,
+                                                        id: project.id,
+                                                    });
                                                 }}
                                             >
                                                 <EditIcon
@@ -101,6 +92,10 @@ const Sidebar = ({
                                                     e.stopPropagation();
                                                     setDialogOpen(true);
                                                     setDialogAction('delete');
+                                                    setSelectedProjectName({
+                                                        name: project.name,
+                                                        id: project.id,
+                                                    });
                                                 }}
                                             >
                                                 <DeleteIcon
