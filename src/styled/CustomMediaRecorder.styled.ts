@@ -32,22 +32,24 @@ const AudioStyled = styled.div`
 
 const MediaStyled = styled.div`
   display: flex;
-  flex-direction: column;
-  height: 460px
+  gap: 20px;
+  // flex-direction: column;
+  // height: 460px
 `
 const AvesurferStyled = styled.div`
-  width: 400px;
+  width: 200px;
+  height: 75px;
 `
 const ActionsStyled = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
-  margin-top: 20px;
-  width: 400px;
+  margin-top: 10px;
+  // width: 400px;
 `
 
 const ActionsContentStyled = styled.div`
-  margin: auto auto 20px auto;
+  margin-top: 10px;
   display: flex;
   justify-content: center;
   gap: 30px;
@@ -55,7 +57,7 @@ const ActionsContentStyled = styled.div`
 
 
 const HeaderStyled = styled.div`
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   text-align: right;
   margin-right: auto;
 `

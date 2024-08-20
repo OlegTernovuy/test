@@ -14,7 +14,7 @@ const CustomSelect:React.FC<ICustomSelectProps> =({ title, selected, options, on
     return (
         <div>
             <TitleSelectStyled>{title}</TitleSelectStyled>
-            <FormControl fullWidth>
+            <FormControl size='small' sx={{maxWidth: '200px'}}>
                 <Select
                     value={selected}
                     onChange={handleChange}

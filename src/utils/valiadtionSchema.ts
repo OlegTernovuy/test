@@ -33,4 +33,24 @@ const resetPasswordSchema = yup.object({
         .oneOf([yup.ref('password')], 'Passwords must match'),
 });
 
-export { loginSchema, registerSchema, resetPasswordSchema };
+const AddAudioRecordSchema = yup.object({
+    AudioName: yup
+        .string()
+        .required('Audio record name is required')
+        .min(3, 'Audio record must contain at least 5 characters'),
+    Author: yup
+        .string()
+        .required('Author is required')
+        .min(3, 'Author must contain at least 5 characters'),
+    Project: yup
+        .string()
+        .required('Project is required')
+        .min(3, 'Project must contain at least 5 characters'),
+});
+
+export {
+    loginSchema,
+    registerSchema,
+    resetPasswordSchema,
+    AddAudioRecordSchema,
+};

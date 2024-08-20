@@ -8,7 +8,7 @@ import { getMedia, putMedia } from "../services/Media.service";
 
 const WAVESURFER_SETTINGS = {
     container: '#wavesurfer-id',
-    height: 140,
+    height: 75,
     cursorWidth: 1,
     barWidth: 2,
     normalize: true,
