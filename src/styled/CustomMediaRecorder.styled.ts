@@ -44,7 +44,8 @@ const ActionsStyled = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
-  margin-top: 10px;
+  // margin-top: 10px;
+  padding-top: 10px;
   // width: 400px;
 `
 
@@ -57,7 +58,7 @@ const ActionsContentStyled = styled.div`
 
 
 const HeaderStyled = styled.div`
-  margin-bottom: 10px;
+  // margin-bottom: 10px;
   text-align: right;
   margin-right: auto;
 `

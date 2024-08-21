@@ -5,8 +5,7 @@ import {
     GridAudioList,
     GridSidebar,
 } from '../styled/ProjectsPage.styled';
-import { CircularProgress, Grid, IconButton } from '@mui/material';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { CircularProgress, Grid } from '@mui/material';
 import {
     AudioRecordDialog,
     AudioRecordsTable,
@@ -18,19 +17,25 @@ import {
 import useFetchData from '../hook/useFetch';
 import { IAudioRecord, IProjects } from '../types';
 import { useAuth } from '../Providers/AuthProvider';
+import AddAudioRecordForm from '../components/ProjectsPage/AddAudioRecordForm';
 
 const ProjectsPage = () => {
-    const { isAdmin } = useAuth();
+    const { isAdmin, user } = useAuth();
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogAction, setDialogAction] = useState<'add' | 'edit' | 'delete'>(
         'add'
     );
-    const [selectedProjectName, setSelectedProjectName] = useState<IProjects>({
-        id: '',
-        name: '',
-    });
-    const [selectedProjectId, setSelectedProjectId] = useState('');
+    const [selectedProjectForUpdate, setSelectedProjectForUpdate] =
+        useState<IProjects>({
+            id: '',
+            name: '',
+        });
+    const [selectedProjectForCreate, setSelectedProjectForCreate] =
+        useState<IProjects>({
+            id: '',
+            name: '',
+        });
 
     const [audioDialogOpen, setAudioDialogOpen] = useState(false);
     const [audioDialogAction, setAudioDialogAction] = useState<
@@ -50,7 +55,7 @@ const ProjectsPage = () => {
         data: audioRecords,
         loading,
         fetchData,
-    } = useFetchData<IAudioRecord[]>(`/audio/${selectedProjectId}`);
+    } = useFetchData<IAudioRecord[]>(`/audio/${selectedProjectForCreate.id}`);
 
     const { loading: LoadingAddProject, fetchData: handleAddProject } =
         useFetchData('/projects', {
@@ -58,12 +63,12 @@ const ProjectsPage = () => {
         });
 
     const { loading: LoadingEditProject, fetchData: handleEditProject } =
-        useFetchData(`/projects/${selectedProjectName.id}`, {
+        useFetchData(`/projects/${selectedProjectForUpdate.id}`, {
             method: 'PATCH',
         });
 
     const { loading: LoadingDeleteProject, fetchData: handleDeleteProject } =
-        useFetchData(`/projects/${selectedProjectName.id}`, {
+        useFetchData(`/projects/${selectedProjectForUpdate.id}`, {
             method: 'DELETE',
         });
 
@@ -72,25 +77,25 @@ const ProjectsPage = () => {
     }, [handleFetchProjects]);
 
     useEffect(() => {
-        if (selectedProjectId) {
+        if (selectedProjectForCreate.id) {
             fetchData();
         }
-    }, [fetchData, selectedProjectId]);
+    }, [fetchData, selectedProjectForCreate]);
 
     const handleConfirmAction = async (projectName: string) => {
         const actions: Record<string, () => Promise<void>> = {
             add: async () => {
                 await handleAddProject({ name: projectName });
-                setSelectedProjectName({ id: '', name: '' });
+                setSelectedProjectForUpdate({ id: '', name: '' });
             },
             edit: async () => {
-                if (selectedProjectId) {
+                if (selectedProjectForCreate) {
                     await handleEditProject({ name: projectName });
-                    setSelectedProjectName({ id: '', name: '' });
+                    setSelectedProjectForUpdate({ id: '', name: '' });
                 }
             },
             delete: async () => {
-                if (selectedProjectName.id) {
+                if (selectedProjectForUpdate.id) {
                     await handleDeleteProject();
                 }
             },
@@ -104,7 +109,7 @@ const ProjectsPage = () => {
 
     const onCloseProjectDialog = () => {
         setDialogOpen(false);
-        setSelectedProjectName({ id: '', name: '' });
+        setSelectedProjectForUpdate({ id: '', name: '' });
     };
 
     const onOpenAudioRecordDialog = () => {
@@ -130,44 +135,39 @@ const ProjectsPage = () => {
                     projects={projects}
                     setDialogOpen={setDialogOpen}
                     setDialogAction={setDialogAction}
-                    setSelectedProjectName={setSelectedProjectName}
-                    setSelectedProjectId={setSelectedProjectId}
+                    setSelectedProjectForUpdate={setSelectedProjectForUpdate}
+                    setSelectedProjectForCreate={setSelectedProjectForCreate}
                 />
             </GridSidebar>
             <GridAudioList item xs={10}>
-                {isAdmin && <CustomMediaRecorder />}
+                {isAdmin && (
+                    <CustomMediaRecorder
+                        author={user.email}
+                        project={selectedProjectForCreate.name}
+                        projectId={selectedProjectForCreate.id}
+                        fetchData={fetchData}
+                    />
+                )}
                 <AudioRecordsTable
                     audioRecords={audioRecords}
                     loading={loading}
                     onOpenAudioRecordDialog={onOpenAudioRecordDialog}
                     setAudioDialogAction={setAudioDialogAction}
                     onSelect={(record) => setSelectedAudioRecord(record)}
+                    fetchData={fetchData}
                 />
-                {isAdmin && projects.length > 0 && (
-                    <IconButton
-                        onClick={() => {
-                            onOpenAudioRecordDialog();
-                            setAudioDialogAction('add');
-                        }}
-                    >
-                        <AddCircleOutlineIcon
-                            color="primary"
-                            fontSize="large"
-                        />
-                    </IconButton>
-                )}
             </GridAudioList>
             <ProjectDialog
                 open={dialogOpen}
                 onClose={onCloseProjectDialog}
                 onConfirm={handleConfirmAction}
                 actionType={dialogAction}
-                projectName={selectedProjectName.name}
+                projectName={selectedProjectForUpdate.name}
             />
             <AudioRecordDialog
                 open={audioDialogOpen}
                 onClose={onCloseAudioRecordDialog}
-                projectId={selectedProjectId}
+                projectId={selectedProjectForCreate.id}
                 fetchData={fetchData}
                 actionType={audioDialogAction}
                 selectedAudioRecord={selectedAudioRecord}

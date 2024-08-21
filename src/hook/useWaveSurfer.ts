@@ -28,6 +28,7 @@ interface UseWaveSurferReturn {
     selectors: ICustomSelectProps[];
     publicAudios?: AudioRecord[];
     startRecording: () => void;
+    handleDone: () => Promise<void | ReturnType<typeof putMedia>>;
 }
 
 // Custom hook that handles audio recording, WaveSurfer player setup, and UI interactions
@@ -98,16 +99,9 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
         }
     }
 
-    const getAudios = async () => {
-        const { data } = await getMedia();
-        setPublicAudios(data)
-    }
-    // Get Public audios
-    useEffect(() => {
-        getAudios();
-    }, [setPublicAudios]);
+    const handleDone = async () => {        
+        console.log("mediaBlobUrl", mediaBlobUrl);
 
-    const handleDone = async () => {
         if (mediaBlobUrl) {
             try {
                 // Get Blob with Blob URL
@@ -116,10 +110,11 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
 
                 const file = new File([blob], 'recording.mp3', { type: 'audio/mp3' });
 
-                await putMedia(file);
-                getAudios()
+                const result = await putMedia(file);
 
                 clearBlobUrl();
+
+                return result;
             } catch (error) {
                 console.log(error);
             }
@@ -131,7 +126,7 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
         { condition: !isPlaying && mediaBlobUrl, iconName: 'playArrow', onClick: togglePlayback },
         { condition: isPlaying && mediaBlobUrl, iconName: 'pause', onClick: togglePlayback },
         { condition: status === 'stopped' && mediaBlobUrl, iconName: 'replay', onClick: clearBlobUrl },
-        { condition: status === 'recording', iconName: 'stop', onClick: stopRecording, $square: true, color: 'red' },
+        { condition: status === 'recording', iconName: 'stop', onClick: stopRecording, color: 'red' },
         { condition: status === 'stopped' && mediaBlobUrl, iconName: 'done', onClick: handleDone, color: 'green' },
     ]
 
@@ -143,6 +138,7 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
         selectors,
         publicAudios,
         startRecording,
+        handleDone
     };
 };
 

@@ -7,9 +7,12 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    TextField,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 import {
     AudioRecordsTableWrapper,
@@ -18,7 +21,11 @@ import {
 
 import { IAudioRecord } from '../../types';
 import { useAuth } from '../../Providers/AuthProvider';
-import { deleteAudioRecord } from '../../services/Media.service';
+import {
+    deleteAudioFile,
+    deleteAudioRecord,
+} from '../../services/Media.service';
+import { useState } from 'react';
 
 interface IAudioRecordProps {
     audioRecords: IAudioRecord[];
@@ -28,6 +35,7 @@ interface IAudioRecordProps {
         React.SetStateAction<'add' | 'edit' | 'delete'>
     >;
     onSelect: (record: IAudioRecord) => void;
+    fetchData: () => void;
 }
 
 const AudioRecordsTable = ({
@@ -36,6 +44,7 @@ const AudioRecordsTable = ({
     onOpenAudioRecordDialog,
     setAudioDialogAction,
     onSelect,
+    fetchData,
 }: IAudioRecordProps) => {
     const { isAdmin } = useAuth();
 
@@ -45,8 +54,44 @@ const AudioRecordsTable = ({
         return formattedDate;
     };
 
-    const handleDeleteAudioRecord = async (audioRecordId: string) => {
-        await deleteAudioRecord(audioRecordId);
+    const handleDeleteAudioRecord = async (
+        audioRecordId: string,
+        audioFileUrl: string
+    ) => {
+        try {
+            await deleteAudioRecord(audioRecordId);
+            await deleteAudioFile(audioFileUrl);
+            fetchData();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const [editingRecord, setEditingRecord] = useState<IAudioRecord | null>(
+        null
+    );
+    const [editedData, setEditedData] = useState<IAudioRecord | null>(null);
+
+    const startEditing = (record: IAudioRecord) => {
+        setEditingRecord(record);
+        setEditedData(record);
+    };
+
+    const handleSave = async () => {
+        if (editedData) {
+            try {
+                // await updateAudioRecord(editedData);
+                setEditingRecord(null);
+                fetchData();
+            } catch (error) {
+                console.error('Error updating record:', error);
+            }
+        }
+    };
+
+    const handleCancel = () => {
+        setEditingRecord(null);
+        setEditedData(null);
     };
 
     return (
@@ -63,6 +108,223 @@ const AudioRecordsTable = ({
                             <TableCell>Audio name</TableCell>
                             <TableCell>Author</TableCell>
                             <TableCell>Project</TableCell>
+                            <TableCell>Comment</TableCell>
+                            <TableCell>Audio</TableCell>
+                            <TableCell>Date</TableCell>
+                            {isAdmin && (
+                                <>
+                                    <TableCell>Edit</TableCell>
+                                    <TableCell>Delete</TableCell>
+                                </>
+                            )}
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {audioRecords &&
+                            (audioRecords.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={7}>
+                                        No Records
+                                    </TableCell>
+                                </TableRow>
+                            ) : (
+                                audioRecords.map((record) => (
+                                    <TableRow key={record.id}>
+                                        <TableCell>
+                                            {editingRecord?.id === record.id ? (
+                                                <TextField
+                                                    size="small"
+                                                    value={
+                                                        editedData?.name || ''
+                                                    }
+                                                    onChange={(e) =>
+                                                        setEditedData(
+                                                            (prev) => ({
+                                                                ...prev!,
+                                                                name: e.target
+                                                                    .value,
+                                                            })
+                                                        )
+                                                    }
+                                                />
+                                            ) : (
+                                                record.name
+                                            )}
+                                        </TableCell>
+                                        <TableCell>
+                                            {editingRecord?.id === record.id ? (
+                                                <TextField
+                                                    size="small"
+                                                    value={
+                                                        editedData?.author || ''
+                                                    }
+                                                    onChange={(e) =>
+                                                        setEditedData(
+                                                            (prev) => ({
+                                                                ...prev!,
+                                                                author: e.target
+                                                                    .value,
+                                                            })
+                                                        )
+                                                    }
+                                                />
+                                            ) : (
+                                                record.author
+                                            )}
+                                        </TableCell>
+                                        <TableCell>
+                                            {editingRecord?.id === record.id ? (
+                                                <TextField
+                                                    size="small"
+                                                    value={
+                                                        editedData?.project ||
+                                                        ''
+                                                    }
+                                                    onChange={(e) =>
+                                                        setEditedData(
+                                                            (prev) => ({
+                                                                ...prev!,
+                                                                project:
+                                                                    e.target
+                                                                        .value,
+                                                            })
+                                                        )
+                                                    }
+                                                />
+                                            ) : (
+                                                record.project
+                                            )}
+                                        </TableCell>
+                                        <TableCell>
+                                            {editingRecord?.id === record.id ? (
+                                                <TextField
+                                                    size="small"
+                                                    value={
+                                                        editedData?.comment ||
+                                                        ''
+                                                    }
+                                                    onChange={(e) =>
+                                                        setEditedData(
+                                                            (prev) => ({
+                                                                ...prev!,
+                                                                comment:
+                                                                    e.target
+                                                                        .value,
+                                                            })
+                                                        )
+                                                    }
+                                                />
+                                            ) : (
+                                                record.comment
+                                            )}
+                                        </TableCell>
+                                        <TableCell>
+                                            {editingRecord?.id === record.id ? (
+                                                <input
+                                                    type="file"
+                                                    onChange={(e) => {
+                                                        const file =
+                                                            e.target.files?.[0];
+                                                        if (file) {
+                                                            setEditedData(
+                                                                (prev) => ({
+                                                                    ...prev!,
+                                                                    audioFileUrl:
+                                                                        URL.createObjectURL(
+                                                                            file
+                                                                        ),
+                                                                })
+                                                            );
+                                                        }
+                                                    }}
+                                                />
+                                            ) : (
+                                                <audio
+                                                    src={record.audioFileUrl}
+                                                    controls
+                                                />
+                                            )}
+                                        </TableCell>
+                                        <TableCell>
+                                            {getDate(
+                                                record.date._seconds
+                                            ).toString()}
+                                        </TableCell>
+                                        {isAdmin && (
+                                            <>
+                                                <TableCell>
+                                                    {editingRecord?.id ===
+                                                    record.id ? (
+                                                        <>
+                                                            <IconButton
+                                                                onClick={
+                                                                    handleSave
+                                                                }
+                                                            >
+                                                                <SaveIcon
+                                                                    fontSize="small"
+                                                                    color="primary"
+                                                                />
+                                                            </IconButton>
+                                                            <IconButton
+                                                                onClick={
+                                                                    handleCancel
+                                                                }
+                                                            >
+                                                                <CancelIcon
+                                                                    fontSize="small"
+                                                                    color="secondary"
+                                                                />
+                                                            </IconButton>
+                                                        </>
+                                                    ) : (
+                                                        <IconButton
+                                                            onClick={() =>
+                                                                startEditing(
+                                                                    record
+                                                                )
+                                                            }
+                                                        >
+                                                            <EditIcon
+                                                                fontSize="small"
+                                                                color="primary"
+                                                            />
+                                                        </IconButton>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <IconButton
+                                                        onClick={() => {
+                                                            handleDeleteAudioRecord(
+                                                                record.id,
+                                                                record.audioFileUrl
+                                                            );
+                                                        }}
+                                                    >
+                                                        <DeleteIcon
+                                                            fontSize="small"
+                                                            color="primary"
+                                                        />
+                                                    </IconButton>
+                                                </TableCell>
+                                            </>
+                                        )}
+                                    </TableRow>
+                                ))
+                            ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
+            {/* <TableContainer>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Audio name</TableCell>
+                            <TableCell>Author</TableCell>
+                            <TableCell>Project</TableCell>
+                            <TableCell>Comment</TableCell>
+                            <TableCell>Audio</TableCell>
                             <TableCell>Date</TableCell>
                             {isAdmin && (
                                 <>
@@ -86,6 +348,15 @@ const AudioRecordsTable = ({
                                         <TableCell>{record.name}</TableCell>
                                         <TableCell>{record.author}</TableCell>
                                         <TableCell>{record.project}</TableCell>
+                                        <TableCell>{record.comment}</TableCell>
+                                        <TableCell>
+                                            {
+                                                <audio
+                                                    src={record.audioFileUrl}
+                                                    controls
+                                                />
+                                            }
+                                        </TableCell>
                                         <TableCell>
                                             {getDate(
                                                 record.date._seconds
@@ -112,12 +383,9 @@ const AudioRecordsTable = ({
                                                 <TableCell>
                                                     <IconButton
                                                         onClick={() => {
-                                                            // onOpenAudioRecordDialog();
-                                                            // setAudioDialogAction(
-                                                            //     'delete'
-                                                            // );
                                                             handleDeleteAudioRecord(
-                                                                record.id
+                                                                record.id,
+                                                                record.audioFileUrl
                                                             );
                                                         }}
                                                     >
@@ -134,7 +402,7 @@ const AudioRecordsTable = ({
                             ))}
                     </TableBody>
                 </Table>
-            </TableContainer>
+            </TableContainer> */}
         </AudioRecordsTableWrapper>
     );
 };

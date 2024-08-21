@@ -10,9 +10,12 @@ import {
 } from '@mui/material';
 import { AudioRecordForm } from '../../styled/AudioRecordDialog.styled';
 
-import { AddAudioRecordSchema } from '../../utils/valiadtionSchema';
-import { addAudioRecord } from '../../services/Media.service';
+import {
+    addAudioRecord,
+    updateAudioRecord,
+} from '../../services/Media.service';
 import { IAudioRecord } from '../../types';
+import { UpdateAudioRecordSchema } from '../../utils/valiadtionSchema';
 
 interface AudioRecordsDialogProps {
     open: boolean;
@@ -31,46 +34,45 @@ const AudioRecordDialog = ({
     actionType,
     selectedAudioRecord,
 }: AudioRecordsDialogProps) => {
-    console.log('selectedAudioRecord', selectedAudioRecord);
-
     const formik = useFormik({
         initialValues: {
-            AudioName: '',
-            Author: '',
-            Project: '',
+            name: '',
+            comment: '',
+            author: '',
+            project: '',
         },
-        validationSchema: AddAudioRecordSchema,
+        validationSchema: UpdateAudioRecordSchema,
         onSubmit: (values, { setSubmitting, resetForm }) => {
-            actionType === 'add'
-                ? addAudioRecord({
-                      name: values.AudioName,
-                      author: values.Author,
-                      project: values.Project,
-                      projectId: projectId,
-                  })
-                : addAudioRecord({
-                      name: values.AudioName,
-                      author: values.Author,
-                      project: values.Project,
-                      projectId: projectId,
-                  }).finally(() => {
-                      setSubmitting(false);
-                      fetchData();
-                      resetForm();
-                      onClose();
-                  });
+            // (actionType === 'add'
+            //     ? addAudioRecord({
+            //           name: values.AudioName,
+            //           author: values.Author,
+            //           project: values.Project,
+            //           projectId: projectId,
+            //       })
+            //     : updateAudioRecord(projectId, { // TODO
+            //           name: values.AudioName,
+            //           author: values.Author,
+            //           project: values.Project,
+            //       })
+            // ).finally(() => {
+            //     setSubmitting(false);
+            //     fetchData();
+            //     resetForm();
+            //     onClose();
+            // });
         },
     });
 
     useEffect(() => {
         if (selectedAudioRecord) {
             formik.setValues({
-                AudioName: selectedAudioRecord.name,
-                Author: selectedAudioRecord.author,
-                Project: selectedAudioRecord.project,
+                name: selectedAudioRecord.name,
+                author: selectedAudioRecord.author,
+                project: selectedAudioRecord.project,
+                comment: selectedAudioRecord.comment
             });
         } else {
-            // Очищуємо форму, якщо selectedAudioRecord пустий
             formik.resetForm();
         }
     }, [selectedAudioRecord]);
@@ -92,48 +94,48 @@ const AudioRecordDialog = ({
                                 variant="outlined"
                                 type="text"
                                 label="Audio name"
-                                name="AudioName"
-                                value={formik.values.AudioName}
+                                name="name"
+                                value={formik.values.name}
                                 onChange={formik.handleChange}
                                 error={
-                                    formik.touched.AudioName &&
-                                    Boolean(formik.errors.AudioName)
+                                    formik.touched.name &&
+                                    Boolean(formik.errors.name)
                                 }
                                 helperText={
-                                    formik.touched.AudioName &&
-                                    formik.errors.AudioName
+                                    formik.touched.name &&
+                                    formik.errors.name
                                 }
                             />
                             <TextField
                                 variant="outlined"
                                 type="text"
-                                label="Author"
-                                name="Author"
-                                value={formik.values.Author}
+                                label="author"
+                                name="author"
+                                value={formik.values.author}
                                 onChange={formik.handleChange}
                                 error={
-                                    formik.touched.Author &&
-                                    Boolean(formik.errors.Author)
+                                    formik.touched.author &&
+                                    Boolean(formik.errors.author)
                                 }
                                 helperText={
-                                    formik.touched.Author &&
-                                    formik.errors.Author
+                                    formik.touched.author &&
+                                    formik.errors.author
                                 }
                             />
                             <TextField
                                 variant="outlined"
                                 type="text"
-                                label="Project"
-                                name="Project"
-                                value={formik.values.Project}
+                                label="project"
+                                name="project"
+                                value={formik.values.project}
                                 onChange={formik.handleChange}
                                 error={
-                                    formik.touched.Project &&
-                                    Boolean(formik.errors.Project)
+                                    formik.touched.project &&
+                                    Boolean(formik.errors.project)
                                 }
                                 helperText={
-                                    formik.touched.Project &&
-                                    formik.errors.Project
+                                    formik.touched.project &&
+                                    formik.errors.project
                                 }
                             />
                         </>

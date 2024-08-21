@@ -1,25 +1,14 @@
-import React, { useEffect } from 'react';
-
-import { Mic } from '@mui/icons-material';
-import { CircularProgress, TextField, Button, IconButton } from '@mui/material';
-
-import {
-    AvesurferStyled,
-    ActionsStyled,
-    ActionsContentStyled,
-    CircularProgressStyled,
-    MediaStyled,
-    TitleSelectStyled,
-} from '../../styled/CustomMediaRecorder.styled';
-import CustomSelect from './CustomSelect';
-import HeaderMedia from './HeaderMedia';
-import CustomIconButton from './CustomIconButton';
-import useWaveSurfer from '../../hook/useWaveSurfer';
 import { useFormik } from 'formik';
-import { addAudioRecord } from '../../services/Media.service';
+import useWaveSurfer from '../../hook/useWaveSurfer';
 import { AddAudioRecordSchema } from '../../utils/valiadtionSchema';
+import { addAudioRecord } from '../../services/Media.service';
+import { useEffect } from 'react';
+import { TitleSelectStyled } from '../../styled/CustomMediaRecorder.styled';
+import { Button, TextField } from '@mui/material';
+import CustomMediaRecorder from '../CustomMediaRecorder/CustomMediaRecorder';
 import {
     AudioRecordFormStyled,
+    AudioRecordWrapper,
     SaveButtonStyled,
 } from '../../styled/AddAudioRecordForm.styled';
 
@@ -30,20 +19,13 @@ interface IAudioDataProps {
     fetchData: () => void;
 }
 
-const CustomMediaRecorder: React.FC<IAudioDataProps> = ({
+const AddAudioRecordForm = ({
     author,
     project,
     projectId,
     fetchData,
-}) => {
-    const {
-        status,
-        mediaBlobUrl,
-        actionButtons,
-        selectors,
-        startRecording,
-        handleDone,
-    } = useWaveSurfer();
+}: IAudioDataProps) => {
+    const { handleDone } = useWaveSurfer();
 
     const formik = useFormik({
         initialValues: {
@@ -54,10 +36,12 @@ const CustomMediaRecorder: React.FC<IAudioDataProps> = ({
             projectId: projectId,
             audioFileUrl: '',
         },
-        validationSchema: AddAudioRecordSchema,
+        // validationSchema: AddAudioRecordSchema,
         onSubmit: async (values, { setSubmitting, resetForm }) => {
             try {
                 const result = await handleDone();
+                // console.log(result);
+                
                 await addAudioRecord({
                     name: values.name,
                     comment: values.comment,
@@ -85,32 +69,9 @@ const CustomMediaRecorder: React.FC<IAudioDataProps> = ({
         }
     }, [project, projectId]);
 
-    if (!selectors[0].selected) {
-        return (
-            <CircularProgressStyled>
-                <CircularProgress />
-            </CircularProgressStyled>
-        );
-    }
     return (
-        <MediaStyled>
-            {selectors.map((selector, index) => (
-                <CustomSelect key={index} {...selector} />
-            ))}
-            <ActionsStyled>
-                <HeaderMedia status={status} mediaBlobUrl={mediaBlobUrl} />
-                {status !== 'recording' && !mediaBlobUrl && (
-                    <IconButton onClick={startRecording} size="small">
-                        <Mic color={'secondary'} />
-                    </IconButton>
-                )}
-                <ActionsContentStyled>
-                    {actionButtons.map((buttonInfo, index) => (
-                        <CustomIconButton key={index} {...buttonInfo} />
-                    ))}
-                </ActionsContentStyled>
-            </ActionsStyled>
-            {mediaBlobUrl && <AvesurferStyled id="wavesurfer-id" />}
+        <AudioRecordWrapper>
+            {/* <CustomMediaRecorder /> */}
             <AudioRecordFormStyled onSubmit={formik.handleSubmit}>
                 <div>
                     <TitleSelectStyled>Audio name</TitleSelectStyled>
@@ -151,8 +112,8 @@ const CustomMediaRecorder: React.FC<IAudioDataProps> = ({
                     </Button>
                 </SaveButtonStyled>
             </AudioRecordFormStyled>
-        </MediaStyled>
+        </AudioRecordWrapper>
     );
 };
 
-export default CustomMediaRecorder;
+export default AddAudioRecordForm;

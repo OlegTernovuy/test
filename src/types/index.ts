@@ -54,6 +54,8 @@ interface IAudioRecord {
     name: string;
     project: string;
     projectId: string;
+    comment: string;
+    audioFileUrl: string;
 }
 
 interface IProjects {
