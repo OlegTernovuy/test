@@ -5,19 +5,17 @@ import {
     GridAudioList,
     GridSidebar,
 } from '../styled/ProjectsPage.styled';
-import { CircularProgress, Grid } from '@mui/material';
 import {
-    AudioRecordDialog,
     AudioRecordsTable,
-    CustomMediaRecorder,
     ProjectDialog,
     Sidebar,
+    AddAudioRecordForm,
 } from '../components';
+import { CircularProgress, Grid } from '@mui/material';
 
 import useFetchData from '../hook/useFetch';
 import { IAudioRecord, IProjects } from '../types';
 import { useAuth } from '../Providers/AuthProvider';
-import AddAudioRecordForm from '../components/ProjectsPage/AddAudioRecordForm';
 
 const ProjectsPage = () => {
     const { isAdmin, user } = useAuth();
@@ -36,13 +34,6 @@ const ProjectsPage = () => {
             id: '',
             name: '',
         });
-
-    const [audioDialogOpen, setAudioDialogOpen] = useState(false);
-    const [audioDialogAction, setAudioDialogAction] = useState<
-        'add' | 'edit' | 'delete'
-    >('add');
-    const [selectedAudioRecord, setSelectedAudioRecord] =
-        useState<IAudioRecord | null>(null);
 
     const { data: projects, fetchData: fetchProjects } =
         useFetchData<IProjects[]>(`/projects`);
@@ -112,15 +103,6 @@ const ProjectsPage = () => {
         setSelectedProjectForUpdate({ id: '', name: '' });
     };
 
-    const onOpenAudioRecordDialog = () => {
-        setAudioDialogOpen(true);
-    };
-
-    const onCloseAudioRecordDialog = () => {
-        setAudioDialogOpen(false);
-        setSelectedAudioRecord(null);
-    };
-
     return (
         <Grid container>
             {(LoadingAddProject ||
@@ -141,7 +123,7 @@ const ProjectsPage = () => {
             </GridSidebar>
             <GridAudioList item xs={10}>
                 {isAdmin && (
-                    <CustomMediaRecorder
+                    <AddAudioRecordForm
                         author={user.email}
                         project={selectedProjectForCreate.name}
                         projectId={selectedProjectForCreate.id}
@@ -151,9 +133,6 @@ const ProjectsPage = () => {
                 <AudioRecordsTable
                     audioRecords={audioRecords}
                     loading={loading}
-                    onOpenAudioRecordDialog={onOpenAudioRecordDialog}
-                    setAudioDialogAction={setAudioDialogAction}
-                    onSelect={(record) => setSelectedAudioRecord(record)}
                     fetchData={fetchData}
                 />
             </GridAudioList>
@@ -163,14 +142,6 @@ const ProjectsPage = () => {
                 onConfirm={handleConfirmAction}
                 actionType={dialogAction}
                 projectName={selectedProjectForUpdate.name}
-            />
-            <AudioRecordDialog
-                open={audioDialogOpen}
-                onClose={onCloseAudioRecordDialog}
-                projectId={selectedProjectForCreate.id}
-                fetchData={fetchData}
-                actionType={audioDialogAction}
-                selectedAudioRecord={selectedAudioRecord}
             />
         </Grid>
     );

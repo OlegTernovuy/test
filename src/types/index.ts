@@ -1,3 +1,5 @@
+import { StatusMessages } from 'react-media-recorder-2';
+
 interface IAuthCred {
     email: string;
     password: string;
@@ -63,6 +65,17 @@ interface IProjects {
     name: string;
 }
 
+interface ICustomMediaRecorder {
+    status: StatusMessages;
+    mediaBlobUrl?: string;
+    actionButtons: CustomIconButtonProps[];
+    startRecording: () => void;
+}
+
+interface ICustomMediaRecorderForm extends ICustomMediaRecorder {
+    selectors: ICustomSelectProps[];
+}
+
 export {
     type IAuthParams,
     type IHandleResetPassword,
@@ -72,4 +85,6 @@ export {
     type CustomIconButtonProps,
     type IAudioRecord,
     type IProjects,
+    type ICustomMediaRecorder,
+    type ICustomMediaRecorderForm,
 };

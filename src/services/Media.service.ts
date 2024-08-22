@@ -9,10 +9,11 @@ interface IAddAudioRecord {
     audioFileUrl: string;
 }
 
-interface IUpdateAudioRecord {
+export interface IUpdateAudioRecord {
     name?: string;
     author?: string;
-    project?: string;
+    comment?: string;
+    audioFileUrl?: string;
 }
 
 const getMedia = async () => {
@@ -57,15 +58,33 @@ const updateAudioRecord = async (
     data: IUpdateAudioRecord
 ) => {
     try {
-        await axios.post(
-            `/audio/${audioRecordId}`,
-            {
-                name: data.name,
-                author: data.author,
-                project: data.project,
-            },
-            { withCredentials: true }
-        );
+        const filteredData = { ...data };
+
+        await axios.patch(`/audio/${audioRecordId}`, filteredData, {
+            withCredentials: true,
+        });
+    } catch (error) {
+        console.error('Error update audio record', error);
+    }
+};
+
+const updateAudioFile = async (
+    file: File,
+    oldFileUrl: string
+) => {
+    try {
+        console.log('file', file);
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('oldFileUrl', oldFileUrl);
+        const res = await axios.patch('/audioFile?project=loki', formData, {
+            withCredentials: true,
+        });
+        console.log(res.data);
+        
+
+        return res.data;
     } catch (error) {
         console.error('Error update audio record', error);
     }
@@ -99,4 +118,5 @@ export {
     deleteAudioRecord,
     updateAudioRecord,
     deleteAudioFile,
+    updateAudioFile
 };

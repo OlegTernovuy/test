@@ -1,16 +1,18 @@
-import { useFormik } from 'formik';
-import useWaveSurfer from '../../hook/useWaveSurfer';
-import { AddAudioRecordSchema } from '../../utils/valiadtionSchema';
-import { addAudioRecord } from '../../services/Media.service';
 import { useEffect } from 'react';
+import { useFormik } from 'formik';
+
+import { CustomRecordAudioForm } from '../index';
 import { TitleSelectStyled } from '../../styled/CustomMediaRecorder.styled';
-import { Button, TextField } from '@mui/material';
-import CustomMediaRecorder from '../CustomMediaRecorder/CustomMediaRecorder';
 import {
     AudioRecordFormStyled,
     AudioRecordWrapper,
     SaveButtonStyled,
 } from '../../styled/AddAudioRecordForm.styled';
+import { Button, TextField } from '@mui/material';
+
+import useWaveSurfer from '../../hook/useWaveSurfer';
+import { AddAudioRecordSchema } from '../../utils/valiadtionSchema';
+import { addAudioRecord } from '../../services/Media.service';
 
 interface IAudioDataProps {
     author: string;
@@ -25,30 +27,31 @@ const AddAudioRecordForm = ({
     projectId,
     fetchData,
 }: IAudioDataProps) => {
-    const { handleDone } = useWaveSurfer();
+    const waveSurferData = useWaveSurfer();
+    const { handleDone } = waveSurferData;
 
     const formik = useFormik({
         initialValues: {
             name: '',
             comment: '',
-            author: author,
-            project: project,
-            projectId: projectId,
+            author: author || '',
+            project: project || '',
+            projectId: projectId || '',
             audioFileUrl: '',
         },
-        // validationSchema: AddAudioRecordSchema,
+        validationSchema: AddAudioRecordSchema,
+        enableReinitialize: true,
         onSubmit: async (values, { setSubmitting, resetForm }) => {
             try {
                 const result = await handleDone();
-                // console.log(result);
-                
+
                 await addAudioRecord({
                     name: values.name,
                     comment: values.comment,
                     author: values.author,
                     project: values.project,
                     projectId: values.projectId,
-                    audioFileUrl: result.data.audioUrl,
+                    audioFileUrl: result,
                 });
                 fetchData();
                 resetForm();
@@ -61,17 +64,19 @@ const AddAudioRecordForm = ({
     });
 
     useEffect(() => {
-        if (project) {
-            formik.setFieldValue('project', project);
+        if (author || project || projectId) {
+            formik.setValues((prevValues) => ({
+                ...prevValues,
+                author: author || prevValues.author,
+                project: project || prevValues.project,
+                projectId: projectId || prevValues.projectId,
+            }));
         }
-        if (projectId) {
-            formik.setFieldValue('projectId', projectId);
-        }
-    }, [project, projectId]);
+    }, [author, project, projectId]);
 
     return (
         <AudioRecordWrapper>
-            {/* <CustomMediaRecorder /> */}
+            <CustomRecordAudioForm {...waveSurferData} />
             <AudioRecordFormStyled onSubmit={formik.handleSubmit}>
                 <div>
                     <TitleSelectStyled>Audio name</TitleSelectStyled>

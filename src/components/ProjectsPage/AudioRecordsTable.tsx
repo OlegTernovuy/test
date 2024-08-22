@@ -1,3 +1,10 @@
+import { useState } from 'react';
+
+import {
+    AudioRecordsTableWrapper,
+    CircularProgressWrapper,
+} from '../../styled/ProjectsPage.styled';
+import { CustomMediaRecorder } from '../index';
 import {
     CircularProgress,
     IconButton,
@@ -15,38 +22,34 @@ import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 
 import {
-    AudioRecordsTableWrapper,
-    CircularProgressWrapper,
-} from '../../styled/ProjectsPage.styled';
-
-import { IAudioRecord } from '../../types';
-import { useAuth } from '../../Providers/AuthProvider';
-import {
     deleteAudioFile,
     deleteAudioRecord,
+    IUpdateAudioRecord,
+    updateAudioRecord,
 } from '../../services/Media.service';
-import { useState } from 'react';
+import { IAudioRecord } from '../../types';
+import { useAuth } from '../../Providers/AuthProvider';
+import useWaveSurfer from '../../hook/useWaveSurfer';
 
 interface IAudioRecordProps {
     audioRecords: IAudioRecord[];
     loading: boolean;
-    onOpenAudioRecordDialog: () => void;
-    setAudioDialogAction: React.Dispatch<
-        React.SetStateAction<'add' | 'edit' | 'delete'>
-    >;
-    onSelect: (record: IAudioRecord) => void;
     fetchData: () => void;
 }
 
 const AudioRecordsTable = ({
     audioRecords,
     loading,
-    onOpenAudioRecordDialog,
-    setAudioDialogAction,
-    onSelect,
     fetchData,
 }: IAudioRecordProps) => {
     const { isAdmin } = useAuth();
+    const {
+        status,
+        mediaBlobUrl,
+        actionButtons,
+        startRecording,
+        handleUpdate,
+    } = useWaveSurfer();
 
     const getDate = (timestamp: number) => {
         const date = new Date(timestamp * 1000);
@@ -80,7 +83,18 @@ const AudioRecordsTable = ({
     const handleSave = async () => {
         if (editedData) {
             try {
-                // await updateAudioRecord(editedData);
+                let updatedData: IUpdateAudioRecord = {
+                    name: editedData.name,
+                    comment: editedData.comment,
+                    author: editedData.author,
+                };
+
+                if (mediaBlobUrl) {
+                    const result = await handleUpdate(editedData.audioFileUrl);
+                    updatedData.audioFileUrl = result;
+                }
+
+                await updateAudioRecord(editedData.id, updatedData);
                 setEditingRecord(null);
                 fetchData();
             } catch (error) {
@@ -172,29 +186,7 @@ const AudioRecordsTable = ({
                                                 record.author
                                             )}
                                         </TableCell>
-                                        <TableCell>
-                                            {editingRecord?.id === record.id ? (
-                                                <TextField
-                                                    size="small"
-                                                    value={
-                                                        editedData?.project ||
-                                                        ''
-                                                    }
-                                                    onChange={(e) =>
-                                                        setEditedData(
-                                                            (prev) => ({
-                                                                ...prev!,
-                                                                project:
-                                                                    e.target
-                                                                        .value,
-                                                            })
-                                                        )
-                                                    }
-                                                />
-                                            ) : (
-                                                record.project
-                                            )}
-                                        </TableCell>
+                                        <TableCell>{record.project}</TableCell>
                                         <TableCell>
                                             {editingRecord?.id === record.id ? (
                                                 <TextField
@@ -220,23 +212,15 @@ const AudioRecordsTable = ({
                                         </TableCell>
                                         <TableCell>
                                             {editingRecord?.id === record.id ? (
-                                                <input
-                                                    type="file"
-                                                    onChange={(e) => {
-                                                        const file =
-                                                            e.target.files?.[0];
-                                                        if (file) {
-                                                            setEditedData(
-                                                                (prev) => ({
-                                                                    ...prev!,
-                                                                    audioFileUrl:
-                                                                        URL.createObjectURL(
-                                                                            file
-                                                                        ),
-                                                                })
-                                                            );
-                                                        }
-                                                    }}
+                                                <CustomMediaRecorder
+                                                    status={status}
+                                                    mediaBlobUrl={mediaBlobUrl}
+                                                    actionButtons={
+                                                        actionButtons
+                                                    }
+                                                    startRecording={
+                                                        startRecording
+                                                    }
                                                 />
                                             ) : (
                                                 <audio
@@ -315,94 +299,6 @@ const AudioRecordsTable = ({
                     </TableBody>
                 </Table>
             </TableContainer>
-
-            {/* <TableContainer>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Audio name</TableCell>
-                            <TableCell>Author</TableCell>
-                            <TableCell>Project</TableCell>
-                            <TableCell>Comment</TableCell>
-                            <TableCell>Audio</TableCell>
-                            <TableCell>Date</TableCell>
-                            {isAdmin && (
-                                <>
-                                    <TableCell>Edit</TableCell>
-                                    <TableCell>Delete</TableCell>
-                                </>
-                            )}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {audioRecords &&
-                            (audioRecords.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={4}>
-                                        No Records
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                audioRecords.map((record) => (
-                                    <TableRow key={record.id}>
-                                        <TableCell>{record.name}</TableCell>
-                                        <TableCell>{record.author}</TableCell>
-                                        <TableCell>{record.project}</TableCell>
-                                        <TableCell>{record.comment}</TableCell>
-                                        <TableCell>
-                                            {
-                                                <audio
-                                                    src={record.audioFileUrl}
-                                                    controls
-                                                />
-                                            }
-                                        </TableCell>
-                                        <TableCell>
-                                            {getDate(
-                                                record.date._seconds
-                                            ).toString()}
-                                        </TableCell>
-                                        {isAdmin && (
-                                            <>
-                                                <TableCell>
-                                                    <IconButton
-                                                        onClick={() => {
-                                                            onOpenAudioRecordDialog();
-                                                            setAudioDialogAction(
-                                                                'edit'
-                                                            );
-                                                            onSelect(record);
-                                                        }}
-                                                    >
-                                                        <EditIcon
-                                                            fontSize="small"
-                                                            color="primary"
-                                                        />
-                                                    </IconButton>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <IconButton
-                                                        onClick={() => {
-                                                            handleDeleteAudioRecord(
-                                                                record.id,
-                                                                record.audioFileUrl
-                                                            );
-                                                        }}
-                                                    >
-                                                        <DeleteIcon
-                                                            fontSize="small"
-                                                            color="primary"
-                                                        />
-                                                    </IconButton>
-                                                </TableCell>
-                                            </>
-                                        )}
-                                    </TableRow>
-                                ))
-                            ))}
-                    </TableBody>
-                </Table>
-            </TableContainer> */}
         </AudioRecordsTableWrapper>
     );
 };

@@ -4,7 +4,7 @@ import WaveSurfer from 'wavesurfer.js';
 
 import { CustomIconButtonProps, ICustomSelectProps } from '../types';
 import useAudioDevices from './useAudioDevices';
-import { getMedia, putMedia } from "../services/Media.service";
+import { putMedia, updateAudioFile } from '../services/Media.service';
 
 const WAVESURFER_SETTINGS = {
     container: '#wavesurfer-id',
@@ -13,11 +13,6 @@ const WAVESURFER_SETTINGS = {
     barWidth: 2,
     normalize: true,
     fillParent: true,
-}
-
-type AudioRecord = {
-    name: string;
-    url: string;
 };
 
 interface UseWaveSurferReturn {
@@ -26,9 +21,9 @@ interface UseWaveSurferReturn {
     mediaBlobUrl?: string;
     actionButtons: CustomIconButtonProps[];
     selectors: ICustomSelectProps[];
-    publicAudios?: AudioRecord[];
     startRecording: () => void;
     handleDone: () => Promise<void | ReturnType<typeof putMedia>>;
+    handleUpdate: (oldFileUrl: string) => Promise<void | ReturnType<typeof putMedia>>;
 }
 
 // Custom hook that handles audio recording, WaveSurfer player setup, and UI interactions
@@ -37,16 +32,20 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
 
     const [isPlaying, setIsPlaying] = useState(false);
     const [playerReady, setPlayerReady] = useState(false);
-    const [publicAudios, setPublicAudios] = useState<AudioRecord[]>();
 
     const wavesurfer = useRef<WaveSurfer | null>(null);
 
-    const { status, startRecording, stopRecording, mediaBlobUrl, clearBlobUrl } =
-        useReactMediaRecorder({
-            audio: selectedInput ? { deviceId: { exact: selectedInput } } : true,
-            video: false,
-            askPermissionOnMount: true
-        }); // React hook to handle media recording
+    const {
+        status,
+        startRecording,
+        stopRecording,
+        mediaBlobUrl,
+        clearBlobUrl,
+    } = useReactMediaRecorder({
+        audio: selectedInput ? { deviceId: { exact: selectedInput } } : true,
+        video: false,
+        askPermissionOnMount: true,
+    }); // React hook to handle media recording
 
     // Effect to initialize WaveSurfer when mediaBlobUrl is available
     useEffect(() => {
@@ -71,18 +70,18 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
     // Effect to load the recorded audio into WaveSurfer when mediaBlobUrl changes
     useEffect(() => {
         if (mediaBlobUrl && wavesurfer.current) {
-            wavesurfer.current?.load(mediaBlobUrl)
+            wavesurfer.current?.load(mediaBlobUrl);
         } else {
             wavesurfer.current = null;
-            clearBlobUrl()
+            clearBlobUrl();
         }
 
         return () => {
             if (wavesurfer.current) {
                 wavesurfer.current.destroy(); // Cleanup WaveSurfer instance
             }
-        }
-    }, [mediaBlobUrl])
+        };
+    }, [mediaBlobUrl]);
 
     // Effect to update the output device for WaveSurfer
     useEffect(() => {
@@ -93,42 +92,81 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
 
     const togglePlayback = () => {
         if (!isPlaying) {
-            wavesurfer.current?.play()
+            wavesurfer.current?.play();
         } else {
-            wavesurfer.current?.pause()
+            wavesurfer.current?.pause();
         }
-    }
+    };
 
-    const handleDone = async () => {        
-        console.log("mediaBlobUrl", mediaBlobUrl);
-
+    const handleDone = async () => {
         if (mediaBlobUrl) {
             try {
                 // Get Blob with Blob URL
                 const response = await fetch(mediaBlobUrl);
                 const blob = await response.blob();
 
-                const file = new File([blob], 'recording.mp3', { type: 'audio/mp3' });
+                const file = new File([blob], 'recording.mp3', {
+                    type: 'audio/mp3',
+                });
 
                 const result = await putMedia(file);
 
                 clearBlobUrl();
 
-                return result;
+                return result.data.audioUrl;
             } catch (error) {
                 console.log(error);
             }
         }
-    }
+    };
+
+    const handleUpdate = async (oldFileUrl: string) => {
+        if (mediaBlobUrl) {
+            try {
+                // Get Blob with Blob URL
+                const response = await fetch(mediaBlobUrl);
+                const blob = await response.blob();
+
+                const file = new File([blob], 'recording.mp3', {
+                    type: 'audio/mp3',
+                });
+
+                const result = await updateAudioFile(file, oldFileUrl);                
+
+                clearBlobUrl();
+
+                return result.data.audioUrl;
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    };
 
     // Array of button configurations for UI actions
     const actionButtons: CustomIconButtonProps[] = [
-        { condition: !isPlaying && mediaBlobUrl, iconName: 'playArrow', onClick: togglePlayback },
-        { condition: isPlaying && mediaBlobUrl, iconName: 'pause', onClick: togglePlayback },
-        { condition: status === 'stopped' && mediaBlobUrl, iconName: 'replay', onClick: clearBlobUrl },
-        { condition: status === 'recording', iconName: 'stop', onClick: stopRecording, color: 'red' },
-        { condition: status === 'stopped' && mediaBlobUrl, iconName: 'done', onClick: handleDone, color: 'green' },
-    ]
+        {
+            condition: !isPlaying && mediaBlobUrl,
+            iconName: 'playArrow',
+            onClick: togglePlayback,
+        },
+        {
+            condition: isPlaying && mediaBlobUrl,
+            iconName: 'pause',
+            onClick: togglePlayback,
+        },
+        {
+            condition: status === 'stopped' && mediaBlobUrl,
+            iconName: 'replay',
+            onClick: clearBlobUrl,
+        },
+        {
+            condition: status === 'recording',
+            iconName: 'stop',
+            onClick: stopRecording,
+            color: 'red',
+        },
+        // { condition: status === 'stopped' && mediaBlobUrl, iconName: 'done', onClick: handleDone, color: 'green' },
+    ];
 
     return {
         status,
@@ -136,9 +174,9 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
         mediaBlobUrl,
         actionButtons,
         selectors,
-        publicAudios,
         startRecording,
-        handleDone
+        handleDone,
+        handleUpdate
     };
 };
 
