@@ -1,13 +1,17 @@
 import styled from 'styled-components';
 
-import { Box, Grid } from '@mui/material';
+import { Box, Grid, ListItem } from '@mui/material';
 
 const GridSidebar = styled(Grid)`
     background-color: ${({ theme }) => theme.color.background};
     height: 100vh;
 `;
 
-const SidebarHeader = styled(Box)`
+const SliderStyled = styled(Box)`
+    width: 240px;
+`
+
+const SidebarHeaderStyled = styled(Box)`
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -19,6 +23,20 @@ const SliderTab = styled(Box)`
     align-items: center;
     justify-content: space-between;
     width: 100%;
+`;
+
+const StyledListItem = styled(ListItem)<{ isSelected: boolean }>`
+    cursor: pointer;
+    background-color: ${({ isSelected }) =>
+        isSelected ? 'rgba(0, 0, 0, 0.08)' : 'transparent'};
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.04);
+    }
+`;
+
+const IconContainer = styled(Box)`
+    display: flex;
+    align-items: center;
 `;
 
 const GridAudioList = styled(Grid)`
@@ -42,11 +60,20 @@ const CircularProgressWrapper = styled(Box)`
     z-index: 1;
 `;
 
+const ProjectPageHeaderStyled = styled(Box)`
+    display: flex;
+    align-items: end;
+`;
+
 export {
     GridSidebar,
-    SidebarHeader,
+    SidebarHeaderStyled,
     GridAudioList,
     AudioRecordsTableWrapper,
     CircularProgressWrapper,
     SliderTab,
+    ProjectPageHeaderStyled,
+    SliderStyled,
+    StyledListItem,
+    IconContainer
 };

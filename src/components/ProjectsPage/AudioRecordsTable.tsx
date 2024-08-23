@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useFormik } from 'formik';
 
 import {
     AudioRecordsTableWrapper,
@@ -30,6 +31,7 @@ import {
 import { IAudioRecord } from '../../types';
 import { useAuth } from '../../Providers/AuthProvider';
 import useWaveSurfer from '../../hook/useWaveSurfer';
+import { UpdateAudioRecordSchema } from '../../utils/valiadtionSchema';
 
 interface IAudioRecordProps {
     audioRecords: IAudioRecord[];
@@ -70,42 +72,52 @@ const AudioRecordsTable = ({
         }
     };
 
-    const [editingRecord, setEditingRecord] = useState<IAudioRecord | null>(
-        null
-    );
-    const [editedData, setEditedData] = useState<IAudioRecord | null>(null);
+    const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
 
-    const startEditing = (record: IAudioRecord) => {
-        setEditingRecord(record);
-        setEditedData(record);
-    };
-
-    const handleSave = async () => {
-        if (editedData) {
+    const formik = useFormik({
+        initialValues: {
+            name: '',
+            comment: '',
+            author: '',
+            audioFileUrl: '',
+        },
+        validationSchema: UpdateAudioRecordSchema,
+        enableReinitialize: true,
+        onSubmit: async (values, { setSubmitting }) => {
             try {
                 let updatedData: IUpdateAudioRecord = {
-                    name: editedData.name,
-                    comment: editedData.comment,
-                    author: editedData.author,
+                    name: values.name,
+                    comment: values.comment,
+                    author: values.author,
                 };
-
                 if (mediaBlobUrl) {
-                    const result = await handleUpdate(editedData.audioFileUrl);
+                    const result = await handleUpdate(values.audioFileUrl);
                     updatedData.audioFileUrl = result;
                 }
-
-                await updateAudioRecord(editedData.id, updatedData);
-                setEditingRecord(null);
+                if (editingRecordId)
+                    await updateAudioRecord(editingRecordId, updatedData);
+                setEditingRecordId(null);
                 fetchData();
             } catch (error) {
-                console.error('Error updating record:', error);
+                console.error('Error submitting the form: ', error);
+            } finally {
+                setSubmitting(false);
             }
-        }
+        },
+    });
+
+    const startEditing = (record: IAudioRecord) => {
+        setEditingRecordId(record.id);
+        formik.setValues({
+            name: record.name,
+            author: record.author,
+            comment: record.comment,
+            audioFileUrl: record.audioFileUrl,
+        });
     };
 
-    const handleCancel = () => {
-        setEditingRecord(null);
-        setEditedData(null);
+    const cancelEditing = () => {
+        setEditingRecordId(null);
     };
 
     return (
@@ -120,8 +132,8 @@ const AudioRecordsTable = ({
                     <TableHead>
                         <TableRow>
                             <TableCell>Audio name</TableCell>
-                            <TableCell>Author</TableCell>
-                            <TableCell>Project</TableCell>
+                            {/* <TableCell>Author</TableCell>
+                            <TableCell>Project</TableCell> */}
                             <TableCell>Comment</TableCell>
                             <TableCell>Audio</TableCell>
                             <TableCell>Date</TableCell>
@@ -145,20 +157,13 @@ const AudioRecordsTable = ({
                                 audioRecords.map((record) => (
                                     <TableRow key={record.id}>
                                         <TableCell>
-                                            {editingRecord?.id === record.id ? (
+                                            {editingRecordId === record.id ? (
                                                 <TextField
                                                     size="small"
-                                                    value={
-                                                        editedData?.name || ''
-                                                    }
-                                                    onChange={(e) =>
-                                                        setEditedData(
-                                                            (prev) => ({
-                                                                ...prev!,
-                                                                name: e.target
-                                                                    .value,
-                                                            })
-                                                        )
+                                                    name="name"
+                                                    value={formik.values.name}
+                                                    onChange={
+                                                        formik.handleChange
                                                     }
                                                 />
                                             ) : (
@@ -166,44 +171,15 @@ const AudioRecordsTable = ({
                                             )}
                                         </TableCell>
                                         <TableCell>
-                                            {editingRecord?.id === record.id ? (
+                                            {editingRecordId === record.id ? (
                                                 <TextField
                                                     size="small"
+                                                    name="comment"
                                                     value={
-                                                        editedData?.author || ''
+                                                        formik.values.comment
                                                     }
-                                                    onChange={(e) =>
-                                                        setEditedData(
-                                                            (prev) => ({
-                                                                ...prev!,
-                                                                author: e.target
-                                                                    .value,
-                                                            })
-                                                        )
-                                                    }
-                                                />
-                                            ) : (
-                                                record.author
-                                            )}
-                                        </TableCell>
-                                        <TableCell>{record.project}</TableCell>
-                                        <TableCell>
-                                            {editingRecord?.id === record.id ? (
-                                                <TextField
-                                                    size="small"
-                                                    value={
-                                                        editedData?.comment ||
-                                                        ''
-                                                    }
-                                                    onChange={(e) =>
-                                                        setEditedData(
-                                                            (prev) => ({
-                                                                ...prev!,
-                                                                comment:
-                                                                    e.target
-                                                                        .value,
-                                                            })
-                                                        )
+                                                    onChange={
+                                                        formik.handleChange
                                                     }
                                                 />
                                             ) : (
@@ -211,7 +187,7 @@ const AudioRecordsTable = ({
                                             )}
                                         </TableCell>
                                         <TableCell>
-                                            {editingRecord?.id === record.id ? (
+                                            {editingRecordId === record.id ? (
                                                 <CustomMediaRecorder
                                                     status={status}
                                                     mediaBlobUrl={mediaBlobUrl}
@@ -237,12 +213,12 @@ const AudioRecordsTable = ({
                                         {isAdmin && (
                                             <>
                                                 <TableCell>
-                                                    {editingRecord?.id ===
+                                                    {editingRecordId ===
                                                     record.id ? (
                                                         <>
                                                             <IconButton
-                                                                onClick={
-                                                                    handleSave
+                                                                onClick={() =>
+                                                                    formik.handleSubmit()
                                                                 }
                                                             >
                                                                 <SaveIcon
@@ -252,7 +228,7 @@ const AudioRecordsTable = ({
                                                             </IconButton>
                                                             <IconButton
                                                                 onClick={
-                                                                    handleCancel
+                                                                    cancelEditing
                                                                 }
                                                             >
                                                                 <CancelIcon

@@ -1,44 +1,85 @@
 import React, { useEffect, useState } from 'react';
 
-import { SidebarHeader, SliderTab } from '../../styled/ProjectsPage.styled';
-import { Box, Button, IconButton, Tab, Tabs, Typography } from '@mui/material';
+import {
+    IconContainer,
+    SidebarHeaderStyled,
+    SliderStyled,
+    StyledListItem,
+} from '../../styled/ProjectsPage.styled';
+import {
+    Box,
+    Button,
+    Drawer,
+    IconButton,
+    List,
+    ListItemText,
+    TextField,
+    Typography,
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import CloseIcon from '@mui/icons-material/Close';
+import CheckIcon from '@mui/icons-material/Check';
 
 import { useAuth } from '../../Providers/AuthProvider';
 import { IProjects } from '../../types';
+import useFetchData from '../../hook/useFetch';
 
 interface ISidebarProps {
     projects: IProjects[];
-    setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    setDialogAction: React.Dispatch<
-        React.SetStateAction<'add' | 'edit' | 'delete'>
-    >;
-    setSelectedProjectForUpdate: React.Dispatch<
-        React.SetStateAction<IProjects>
-    >;
     setSelectedProjectForCreate: React.Dispatch<
         React.SetStateAction<IProjects>
     >;
+    open: boolean;
+    toggleDrawer: () => void;
+    fetchProjects: () => void;
 }
 
-const Sidebar = ({
+const Sidebar: React.FC<ISidebarProps> = ({
     projects,
-    setDialogOpen,
-    setDialogAction,
-    setSelectedProjectForUpdate,
     setSelectedProjectForCreate,
-}: ISidebarProps) => {
+    open,
+    toggleDrawer,
+    fetchProjects,
+}) => {
     const [selectProject, setSelectProject] = useState(0);
+    const [newProjectName, setNewProjectName] = useState('');
+    const [selectedProjectUpdate, setSelectedProjectUpdate] = useState<
+        string | null
+    >(null);
+    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
+        null
+    );
+    const [isAddingProject, setIsAddingProject] = useState(false);
     const { isAdmin } = useAuth();
 
-    const handleSelectProject = (
-        event: React.SyntheticEvent,
-        newProject: number
-    ) => {
-        setSelectProject(newProject);
+    const handleSelectProject = (id: string, name: string) => {
+        setSelectProject(projects.findIndex((project) => project.id === id));
+        setSelectedProjectForCreate({ id, name });
     };
+
+    const handleEditProject = (id: string, name: string) => {
+        setSelectedProjectUpdate(id);
+        setNewProjectName(name);
+    };
+
+    const { loading: LoadingAddProject, fetchData: addProject } = useFetchData(
+        '/projects',
+        {
+            method: 'POST',
+        }
+    );
+
+    const { loading: LoadingEditProject, fetchData: editProject } =
+        useFetchData(`/projects/${selectedProjectId}`, {
+            method: 'PATCH',
+        });
+
+    const { loading: LoadingDeleteProject, fetchData: deleteProject } =
+        useFetchData(`/projects/${selectedProjectId}`, {
+            method: 'DELETE',
+        });
 
     useEffect(() => {
         if (projects && projects[selectProject]?.id) {
@@ -49,82 +90,154 @@ const Sidebar = ({
         }
     }, [projects, selectProject, setSelectedProjectForCreate]);
 
+    const handleSaveEdit = async () => {
+        if (newProjectName.trim() && selectedProjectUpdate !== null) {
+            await editProject({ name: newProjectName });
+            await fetchProjects();
+            setNewProjectName('');
+            setSelectedProjectUpdate(null);
+        }
+    };
+
+    const handleDeleteProject = async () => {
+        await deleteProject();
+        await fetchProjects();
+    };
+
+    const handleAddProject = async () => {
+        if (newProjectName.trim()) {
+            await addProject({ name: newProjectName });
+            await fetchProjects();
+            setNewProjectName('');
+            setIsAddingProject(false);
+        }
+    };
+
+    const handleCancel = () => {
+        setNewProjectName('');
+        setSelectedProjectUpdate(null);
+        setIsAddingProject(false);
+    };
+
     return (
-        <>
-            <SidebarHeader>
-                <Typography variant="h6">Projects</Typography>
-                {isAdmin && (
-                    <Button
-                        onClick={() => {
-                            setDialogOpen(true);
-                            setDialogAction('add');
-                        }}
-                    >
-                        <AddIcon />
-                    </Button>
+        <Drawer open={open} onClose={toggleDrawer}>
+            <SliderStyled>
+                <SidebarHeaderStyled>
+                    <Typography variant="h6">Projects</Typography>
+                    {isAdmin && (
+                        <Button onClick={() => setIsAddingProject(true)}>
+                            <AddIcon />
+                        </Button>
+                    )}
+                </SidebarHeaderStyled>
+                {isAddingProject && (
+                    <Box display="flex" alignItems="center" marginBottom={2}>
+                        <TextField
+                            value={newProjectName}
+                            onChange={(e) => setNewProjectName(e.target.value)}
+                            placeholder="Project name"
+                            variant="outlined"
+                            size="small"
+                            fullWidth
+                        />
+                        <IconButton onClick={handleAddProject}>
+                            <CheckIcon />
+                        </IconButton>
+                        <IconButton onClick={handleCancel}>
+                            <CloseIcon />
+                        </IconButton>
+                    </Box>
                 )}
-            </SidebarHeader>
-            <Tabs
-                value={selectProject}
-                onChange={handleSelectProject}
-                orientation="vertical"
-            >
-                {projects &&
-                    projects.map((project) => (
-                        <Tab
+                <List>
+                    {projects.map((project, index) => (
+                        <StyledListItem
                             key={project.id}
-                            label={
-                                <SliderTab>
-                                    <Typography>{project.name}</Typography>
-                                    {isAdmin && (
-                                        <Box>
+                            onClick={() => {
+                                handleSelectProject(project.id, project.name);
+                                toggleDrawer();
+                            }}
+                            isSelected={selectProject === index}
+                        >
+                            <ListItemText
+                                primary={
+                                    selectedProjectUpdate === project.id ? (
+                                        <Box display="flex" alignItems="center">
+                                            <TextField
+                                                value={newProjectName}
+                                                onChange={(e) =>
+                                                    setNewProjectName(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                variant="outlined"
+                                                size="small"
+                                                fullWidth
+                                                onClick={(e) =>
+                                                    e.stopPropagation()
+                                                }
+                                            />
                                             <IconButton
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    setDialogOpen(true);
-                                                    setDialogAction('edit');
-                                                    setSelectedProjectForUpdate(
-                                                        {
-                                                            name: project.name,
-                                                            id: project.id,
-                                                        }
-                                                    );
+                                                    handleSaveEdit();
                                                 }}
                                             >
-                                                <EditIcon
-                                                    fontSize="small"
-                                                    color="primary"
-                                                />
+                                                <CheckIcon />
                                             </IconButton>
                                             <IconButton
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    setDialogOpen(true);
-                                                    setDialogAction('delete');
-                                                    setSelectedProjectForUpdate(
-                                                        {
-                                                            name: project.name,
-                                                            id: project.id,
-                                                        }
-                                                    );
+                                                    handleCancel();
                                                 }}
                                             >
-                                                <DeleteIcon
-                                                    fontSize="small"
-                                                    color="primary"
-                                                />
+                                                <CloseIcon />
                                             </IconButton>
                                         </Box>
-                                    )}
-                                </SliderTab>
-                            }
-                            onClick={() =>
-                                setSelectedProjectForCreate(project)
-                            }
-                        />
+                                    ) : (
+                                        <Typography>{project.name}</Typography>
+                                    )
+                                }
+                            />
+                            {isAdmin &&
+                                selectedProjectUpdate !== project.id && (
+                                    <IconContainer>
+                                        <IconButton
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedProjectId(
+                                                    project.id
+                                                );
+                                                handleEditProject(
+                                                    project.id,
+                                                    project.name
+                                                );
+                                            }}
+                                        >
+                                            <EditIcon
+                                                fontSize="small"
+                                                color="primary"
+                                            />
+                                        </IconButton>
+                                        <IconButton
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                const projectId = project.id;
+                                                setSelectedProjectId(projectId);
+                                                handleDeleteProject();
+                                            }}
+                                        >
+                                            <DeleteIcon
+                                                fontSize="small"
+                                                color="primary"
+                                            />
+                                        </IconButton>
+                                    </IconContainer>
+                                )}
+                        </StyledListItem>
                     ))}
-            </Tabs>
-        </>
+                </List>
+            </SliderStyled>
+        </Drawer>
     );
 };
 

@@ -68,21 +68,14 @@ const updateAudioRecord = async (
     }
 };
 
-const updateAudioFile = async (
-    file: File,
-    oldFileUrl: string
-) => {
+const updateAudioFile = async (file: File, oldFileUrl: string) => {
     try {
-        console.log('file', file);
-        
         const formData = new FormData();
         formData.append('file', file);
         formData.append('oldFileUrl', oldFileUrl);
         const res = await axios.patch('/audioFile?project=loki', formData, {
             withCredentials: true,
         });
-        console.log(res.data);
-        
 
         return res.data;
     } catch (error) {
@@ -118,5 +111,5 @@ export {
     deleteAudioRecord,
     updateAudioRecord,
     deleteAudioFile,
-    updateAudioFile
+    updateAudioFile,
 };

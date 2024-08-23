@@ -1,17 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 
-import {
-    CircularProgressWrapper,
-    GridAudioList,
-    GridSidebar,
-} from '../styled/ProjectsPage.styled';
-import {
-    AudioRecordsTable,
-    ProjectDialog,
-    Sidebar,
-    AddAudioRecordForm,
-} from '../components';
-import { CircularProgress, Grid } from '@mui/material';
+import { ProjectPageHeaderStyled } from '../styled/ProjectsPage.styled';
+import { AudioRecordsTable, Sidebar, AddAudioRecordForm } from '../components';
+import { Box, Button } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 
 import useFetchData from '../hook/useFetch';
 import { IAudioRecord, IProjects } from '../types';
@@ -20,15 +12,15 @@ import { useAuth } from '../Providers/AuthProvider';
 const ProjectsPage = () => {
     const { isAdmin, user } = useAuth();
 
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [dialogAction, setDialogAction] = useState<'add' | 'edit' | 'delete'>(
-        'add'
-    );
-    const [selectedProjectForUpdate, setSelectedProjectForUpdate] =
-        useState<IProjects>({
-            id: '',
-            name: '',
+    const [open, setOpen] = useState(false);
+
+    const toggleDrawer = () => {
+        setOpen((prevOpen) => {
+            return !prevOpen;
         });
+    };
+
+    //store data about the currently selected project
     const [selectedProjectForCreate, setSelectedProjectForCreate] =
         useState<IProjects>({
             id: '',
@@ -48,21 +40,6 @@ const ProjectsPage = () => {
         fetchData,
     } = useFetchData<IAudioRecord[]>(`/audio/${selectedProjectForCreate.id}`);
 
-    const { loading: LoadingAddProject, fetchData: handleAddProject } =
-        useFetchData('/projects', {
-            method: 'POST',
-        });
-
-    const { loading: LoadingEditProject, fetchData: handleEditProject } =
-        useFetchData(`/projects/${selectedProjectForUpdate.id}`, {
-            method: 'PATCH',
-        });
-
-    const { loading: LoadingDeleteProject, fetchData: handleDeleteProject } =
-        useFetchData(`/projects/${selectedProjectForUpdate.id}`, {
-            method: 'DELETE',
-        });
-
     useEffect(() => {
         handleFetchProjects();
     }, [handleFetchProjects]);
@@ -73,77 +50,36 @@ const ProjectsPage = () => {
         }
     }, [fetchData, selectedProjectForCreate]);
 
-    const handleConfirmAction = async (projectName: string) => {
-        const actions: Record<string, () => Promise<void>> = {
-            add: async () => {
-                await handleAddProject({ name: projectName });
-                setSelectedProjectForUpdate({ id: '', name: '' });
-            },
-            edit: async () => {
-                if (selectedProjectForCreate) {
-                    await handleEditProject({ name: projectName });
-                    setSelectedProjectForUpdate({ id: '', name: '' });
-                }
-            },
-            delete: async () => {
-                if (selectedProjectForUpdate.id) {
-                    await handleDeleteProject();
-                }
-            },
-        };
-
-        if (actions[dialogAction]) {
-            await actions[dialogAction]();
-            await handleFetchProjects();
-        }
-    };
-
-    const onCloseProjectDialog = () => {
-        setDialogOpen(false);
-        setSelectedProjectForUpdate({ id: '', name: '' });
-    };
-
     return (
-        <Grid container>
-            {(LoadingAddProject ||
-                LoadingEditProject ||
-                LoadingDeleteProject) && (
-                <CircularProgressWrapper>
-                    <CircularProgress />
-                </CircularProgressWrapper>
-            )}
-            <GridSidebar item xs={2}>
-                <Sidebar
-                    projects={projects}
-                    setDialogOpen={setDialogOpen}
-                    setDialogAction={setDialogAction}
-                    setSelectedProjectForUpdate={setSelectedProjectForUpdate}
-                    setSelectedProjectForCreate={setSelectedProjectForCreate}
-                />
-            </GridSidebar>
-            <GridAudioList item xs={10}>
-                {isAdmin && (
-                    <AddAudioRecordForm
-                        author={user.email}
-                        project={selectedProjectForCreate.name}
-                        projectId={selectedProjectForCreate.id}
-                        fetchData={fetchData}
-                    />
-                )}
+        <Box>
+            <Sidebar
+                projects={projects}
+                setSelectedProjectForCreate={setSelectedProjectForCreate}
+                open={open}
+                toggleDrawer={toggleDrawer}
+                fetchProjects={fetchProjects}
+            />
+            <Box>
+                <ProjectPageHeaderStyled>
+                    <Button onClick={() => toggleDrawer()}>
+                        <MenuIcon fontSize="large" />
+                    </Button>
+                    {isAdmin && (
+                        <AddAudioRecordForm
+                            author={user.email}
+                            project={selectedProjectForCreate.name}
+                            projectId={selectedProjectForCreate.id}
+                            fetchData={fetchData}
+                        />
+                    )}
+                </ProjectPageHeaderStyled>
                 <AudioRecordsTable
                     audioRecords={audioRecords}
                     loading={loading}
                     fetchData={fetchData}
                 />
-            </GridAudioList>
-            <ProjectDialog
-                open={dialogOpen}
-                onClose={onCloseProjectDialog}
-                onConfirm={handleConfirmAction}
-                actionType={dialogAction}
-                projectName={selectedProjectForUpdate.name}
-            />
-        </Grid>
+            </Box>
+        </Box>
     );
 };
 

@@ -1,6 +1,7 @@
 import * as yup from 'yup';
 
 const passwordRules = /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+const audioFileUrl = /https:\/\/storage.googleapis.com\/axels-loki.appspot.com/
 
 const loginSchema = yup.object({
     email: yup
@@ -37,25 +38,26 @@ const UpdateAudioRecordSchema = yup.object({
     name: yup
         .string()
         .required('Audio record name is required')
-        .min(3, 'Audio record must contain at least 5 characters'),
+        .min(3, 'Audio record must contain at least 3 characters'),
     author: yup
         .string()
+        .email()
         .required('Author is required')
-        .min(3, 'Author must contain at least 5 characters'),
-    project: yup
+        .min(3, 'Author must contain at least 3 characters'),
+    comment: yup.string(),
+    audioFileUrl: yup
         .string()
-        .required('Project is required')
-        .min(3, 'Project must contain at least 5 characters'),
+        .matches(audioFileUrl, 'Must contain base url'),
 });
 
 const AddAudioRecordSchema = UpdateAudioRecordSchema.shape({
-    comment: yup.string(),
     projectId: yup
         .string()
-        .min(3, 'projectId must contain at least 5 characters'),
-    audioFileUrl: yup
+        .min(3, 'projectId must contain at least 3 characters'),
+    project: yup
         .string()
-        .min(3, 'audioFileUrl must contain at least 5 characters'),
+        .required('Project is required')
+        .min(3, 'Project must contain at least 3 characters'),
 });
 
 export {
@@ -63,5 +65,5 @@ export {
     registerSchema,
     resetPasswordSchema,
     UpdateAudioRecordSchema,
-    AddAudioRecordSchema
+    AddAudioRecordSchema,
 };
