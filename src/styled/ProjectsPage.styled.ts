@@ -1,28 +1,17 @@
 import styled from 'styled-components';
 
 import { Box, Grid, ListItem } from '@mui/material';
-
-const GridSidebar = styled(Grid)`
-    background-color: ${({ theme }) => theme.color.background};
-    height: 100vh;
-`;
+import { FlexCenterStyled } from './GlobalStyle.styled';
 
 const SliderStyled = styled(Box)`
     width: 240px;
-`
-
-const SidebarHeaderStyled = styled(Box)`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 12px 0;
 `;
 
-const SliderTab = styled(Box)`
+const SidebarHeaderStyled = styled(FlexCenterStyled)`
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    width: 100%;
+    gap: 8px;
+    padding: 8px 12px 0;
 `;
 
 const StyledListItem = styled(ListItem)<{ isSelected: boolean }>`
@@ -34,10 +23,13 @@ const StyledListItem = styled(ListItem)<{ isSelected: boolean }>`
     }
 `;
 
-const IconContainer = styled(Box)`
-    display: flex;
-    align-items: center;
+const IconContainer = styled(FlexCenterStyled)``;
+
+const AddProjectFormStyled = styled(FlexCenterStyled)`
+    margin: 4px 4px 8px;
 `;
+
+const EditProjectFormStyled = styled(FlexCenterStyled)``;
 
 const GridAudioList = styled(Grid)`
     padding: 12px;
@@ -66,14 +58,14 @@ const ProjectPageHeaderStyled = styled(Box)`
 `;
 
 export {
-    GridSidebar,
     SidebarHeaderStyled,
     GridAudioList,
     AudioRecordsTableWrapper,
     CircularProgressWrapper,
-    SliderTab,
     ProjectPageHeaderStyled,
     SliderStyled,
     StyledListItem,
-    IconContainer
+    IconContainer,
+    AddProjectFormStyled,
+    EditProjectFormStyled,
 };

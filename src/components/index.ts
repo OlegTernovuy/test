@@ -4,7 +4,6 @@ import AuthForm from './auth/AuthForm';
 import CustomMediaRecorder from './CustomMediaRecorder/CustomMediaRecorder';
 import Sidebar from './ProjectsPage/Sidebar';
 import AudioRecordsTable from './ProjectsPage/AudioRecordsTable';
-import ProjectDialog from './ProjectsPage/ProjectDialog';
 import CustomIconButton from './CustomMediaRecorder/CustomIconButton';
 import CustomRecordAudioForm from './CustomMediaRecorder/CustomRecordAudioForm';
 import CustomSelect from './CustomMediaRecorder/CustomSelect';
@@ -18,7 +17,6 @@ export {
     CustomMediaRecorder,
     Sidebar,
     AudioRecordsTable,
-    ProjectDialog,
     CustomIconButton,
     CustomRecordAudioForm,
     CustomSelect,

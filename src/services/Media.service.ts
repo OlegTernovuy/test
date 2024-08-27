@@ -1,3 +1,7 @@
+import { useState } from 'react';
+
+import useFetch from '../hook/useFetch';
+import { IAudioRecord } from '../types';
 import axios from '../utils/axios';
 
 interface IAddAudioRecord {
@@ -16,12 +20,26 @@ export interface IUpdateAudioRecord {
     audioFileUrl?: string;
 }
 
-const getMedia = async () => {
-    const res = await axios.get('/audioFile?project=loki', {
-        withCredentials: true,
-    });
+const useFetchAudioRecords = () => {
+    const [data, setData] = useState<IAudioRecord[]>([]);
+    const { loading, error, makeRequest } = useFetch();
 
-    return res.data;
+    const fetchAudioRecord = async (projectId: string) => {
+        try {
+            const result = await makeRequest({
+                url: `/audio/${projectId}`,
+                method: 'GET',
+                withCredentials: true,
+            });
+
+            setData(result.data);
+        } catch (err) {
+            console.error('Failed to fetch audio records', err);
+            setData([]);
+        }
+    };
+
+    return { data, fetchAudioRecord, loading, error };
 };
 
 const putMedia = async (file: File) => {
@@ -83,33 +101,38 @@ const updateAudioFile = async (file: File, oldFileUrl: string) => {
     }
 };
 
-const deleteAudioRecord = async (audioRecordId: string) => {
-    try {
-        await axios.delete(`/audio/${audioRecordId}`, {
-            withCredentials: true,
-        });
-    } catch (error) {
-        console.error('Error delete audio record', error);
-    }
-};
+const useDeleteAudioRecord = () => {
+    const { loading, error, makeRequest } = useFetch();
 
-const deleteAudioFile = async (audioFileUrl: string) => {
-    try {
-        await axios.delete(`/audioFile`, {
-            data: { audioFileUrl },
-            withCredentials: true,
-        });
-    } catch (error) {
-        console.error('Error delete audio file', error);
-    }
+    const deleteAudioRecord = async (
+        audioRecordId: string,
+        audioFileUrl: string
+    ) => {
+        try {
+            await makeRequest({
+                url: `audioFile`,
+                method: 'DELETE',
+                data: { audioFileUrl },
+                withCredentials: true,
+            });
+            await makeRequest({
+                url: `/audio/${audioRecordId}`,
+                method: 'DELETE',
+                withCredentials: true,
+            });
+        } catch (err) {
+            console.error('Failed to delete audio record', err);
+        }
+    };
+
+    return { deleteAudioRecord, loading, error };
 };
 
 export {
-    getMedia,
+    useFetchAudioRecords,
     putMedia,
     addAudioRecord,
-    deleteAudioRecord,
     updateAudioRecord,
-    deleteAudioFile,
     updateAudioFile,
+    useDeleteAudioRecord,
 };

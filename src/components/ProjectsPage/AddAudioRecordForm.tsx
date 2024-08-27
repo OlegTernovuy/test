@@ -18,7 +18,7 @@ interface IAudioDataProps {
     author: string;
     project: string;
     projectId: string;
-    fetchData: () => void;
+    fetchData: (projectId: string) => void;
 }
 
 const AddAudioRecordForm = ({
@@ -45,6 +45,10 @@ const AddAudioRecordForm = ({
             try {
                 const result = await handleDone();
 
+                if (!result) {
+                    throw new Error('Audio file URL is required.');
+                }
+
                 await addAudioRecord({
                     name: values.name,
                     comment: values.comment,
@@ -53,7 +57,7 @@ const AddAudioRecordForm = ({
                     projectId: values.projectId,
                     audioFileUrl: result,
                 });
-                fetchData();
+                fetchData(projectId);
                 resetForm();
             } catch (error) {
                 console.error('Error submitting the form: ', error);
@@ -112,7 +116,11 @@ const AddAudioRecordForm = ({
                     />
                 </div>
                 <SaveButtonStyled>
-                    <Button variant="contained" type="submit">
+                    <Button
+                        variant="contained"
+                        type="submit"
+                        disabled={formik.isSubmitting}
+                    >
                         Save
                     </Button>
                 </SaveButtonStyled>

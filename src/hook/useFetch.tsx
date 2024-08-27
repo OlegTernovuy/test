@@ -1,40 +1,41 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
+import { AxiosRequestConfig } from 'axios';
 
 import axios from '../utils/axios';
 
-type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
-
-interface UseFetchDataOptions {
-    method?: RequestMethod;
-    body?: any;
+interface ApiRequestOptions extends AxiosRequestConfig {
+    onSuccess?: (data: any) => void;
+    onError?: (error: any) => void;
 }
 
-const useFetchData = <T,>(url: string, options: UseFetchDataOptions = {}) => {
-    const [data, setData] = useState<T | []>([]);
+const useFetch = () => {
     const [loading, setLoading] = useState(false);
-    const { method = 'GET' } = options;
+    const [error, setError] = useState<string | null>(null);
 
-    const fetchData = useCallback(
-        async (body: any = options.body) => {
-            setLoading(true);
-            try {
-                const response = await axios.request({
-                    url,
-                    method,
-                    data: body,
-                    withCredentials: true,
-                });
-                setData(response.data.data);
-            } catch (err: any) {
-                console.error(err.message);
-            } finally {
-                setLoading(false);
+    const makeRequest = async (
+        config: AxiosRequestConfig,
+        { onSuccess, onError }: ApiRequestOptions = {}
+    ) => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const response = await axios(config);
+            if (onSuccess) {
+                onSuccess(response.data);
             }
-        },
-        [url, method, options.body]
-    );
+            return response.data;
+        } catch (err: any) {
+            setError(err.message);
+            if (onError) {
+                onError(err);
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    return { data, loading, fetchData };
+    return { loading, error, makeRequest };
 };
 
-export default useFetchData;
+export default useFetch;

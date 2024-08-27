@@ -23,10 +23,9 @@ import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 
 import {
-    deleteAudioFile,
-    deleteAudioRecord,
     IUpdateAudioRecord,
     updateAudioRecord,
+    useDeleteAudioRecord,
 } from '../../services/Media.service';
 import { IAudioRecord } from '../../types';
 import { useAuth } from '../../Providers/AuthProvider';
@@ -36,13 +35,15 @@ import { UpdateAudioRecordSchema } from '../../utils/valiadtionSchema';
 interface IAudioRecordProps {
     audioRecords: IAudioRecord[];
     loading: boolean;
-    fetchData: () => void;
+    fetchData: (projectId: string) => void;
+    projectId: string;
 }
 
 const AudioRecordsTable = ({
     audioRecords,
     loading,
     fetchData,
+    projectId,
 }: IAudioRecordProps) => {
     const { isAdmin } = useAuth();
     const {
@@ -64,13 +65,15 @@ const AudioRecordsTable = ({
         audioFileUrl: string
     ) => {
         try {
-            await deleteAudioRecord(audioRecordId);
-            await deleteAudioFile(audioFileUrl);
-            fetchData();
+            await deleteAudioRecord(audioRecordId, audioFileUrl);
+            fetchData(projectId);
         } catch (error) {
             console.error(error);
         }
     };
+
+    const { deleteAudioRecord, loading: deleteLoading } =
+        useDeleteAudioRecord();
 
     const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
 
@@ -97,7 +100,7 @@ const AudioRecordsTable = ({
                 if (editingRecordId)
                     await updateAudioRecord(editingRecordId, updatedData);
                 setEditingRecordId(null);
-                fetchData();
+                fetchData(projectId);
             } catch (error) {
                 console.error('Error submitting the form: ', error);
             } finally {
@@ -122,7 +125,7 @@ const AudioRecordsTable = ({
 
     return (
         <AudioRecordsTableWrapper>
-            {loading && (
+            {(loading || formik.isSubmitting || deleteLoading) && (
                 <CircularProgressWrapper>
                     <CircularProgress />
                 </CircularProgressWrapper>
@@ -132,8 +135,6 @@ const AudioRecordsTable = ({
                     <TableHead>
                         <TableRow>
                             <TableCell>Audio name</TableCell>
-                            {/* <TableCell>Author</TableCell>
-                            <TableCell>Project</TableCell> */}
                             <TableCell>Comment</TableCell>
                             <TableCell>Audio</TableCell>
                             <TableCell>Date</TableCell>

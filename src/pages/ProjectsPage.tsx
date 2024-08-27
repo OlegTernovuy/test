@@ -1,13 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect} from 'react';
 
 import { ProjectPageHeaderStyled } from '../styled/ProjectsPage.styled';
 import { AudioRecordsTable, Sidebar, AddAudioRecordForm } from '../components';
 import { Box, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
-import useFetchData from '../hook/useFetch';
-import { IAudioRecord, IProjects } from '../types';
 import { useAuth } from '../Providers/AuthProvider';
+import { useFetchProject } from '../services/Projects.service';
+import { useFetchAudioRecords } from '../services/Media.service';
+import { IProjects } from '../types';
 
 const ProjectsPage = () => {
     const { isAdmin, user } = useAuth();
@@ -27,28 +28,18 @@ const ProjectsPage = () => {
             name: '',
         });
 
-    const { data: projects, fetchData: fetchProjects } =
-        useFetchData<IProjects[]>(`/projects`);
-
-    const handleFetchProjects = useCallback(async () => {
-        await fetchProjects();
-    }, [fetchProjects]);
-
-    const {
-        data: audioRecords,
-        loading,
-        fetchData,
-    } = useFetchData<IAudioRecord[]>(`/audio/${selectedProjectForCreate.id}`);
+    const { data: projects, fetchProjects } = useFetchProject();
+    const { data: audioRecords, fetchAudioRecord, loading } = useFetchAudioRecords();
 
     useEffect(() => {
-        handleFetchProjects();
-    }, [handleFetchProjects]);
+        fetchProjects();
+    }, []);
 
     useEffect(() => {
         if (selectedProjectForCreate.id) {
-            fetchData();
+            fetchAudioRecord(selectedProjectForCreate.id);
         }
-    }, [fetchData, selectedProjectForCreate]);
+    }, [selectedProjectForCreate]);
 
     return (
         <Box>
@@ -69,14 +60,15 @@ const ProjectsPage = () => {
                             author={user.email}
                             project={selectedProjectForCreate.name}
                             projectId={selectedProjectForCreate.id}
-                            fetchData={fetchData}
+                            fetchData={fetchAudioRecord}
                         />
                     )}
                 </ProjectPageHeaderStyled>
                 <AudioRecordsTable
                     audioRecords={audioRecords}
                     loading={loading}
-                    fetchData={fetchData}
+                    fetchData={fetchAudioRecord}
+                    projectId={selectedProjectForCreate.id}
                 />
             </Box>
         </Box>

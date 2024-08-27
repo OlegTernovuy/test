@@ -1,35 +1,85 @@
-import axios from '../utils/axios';
+import { useState } from 'react';
 
-const handleAddProject = async (projectName: string) => {
-    try {
-        await axios.post(
-            '/projects',
-            { name: projectName },
-            { withCredentials: true }
+import useFetch from '../hook/useFetch';
+import { IProjects } from '../types';
+
+const useFetchProject = () => {
+    const [data, setData] = useState<IProjects[]>([]);
+    const { loading, error, makeRequest } = useFetch();
+
+    const fetchProjects = async () => {
+        try {
+            const result = await makeRequest({
+                url: '/projects',
+                method: 'GET',
+                withCredentials: true,
+            });
+
+            setData(result.data);
+        } catch (err) {
+            console.error('Failed to fetch projects', err);
+            setData([]);
+        }
+    };
+
+    return { data, fetchProjects, loading, error };
+};
+
+const useAddProject = () => {
+    const { loading, error, makeRequest } = useFetch();
+
+    const addProject = async (projectName: string, onSuccess: () => void) => {
+        await makeRequest(
+            {
+                url: '/projects',
+                method: 'POST',
+                data: { name: projectName },
+                withCredentials: true,
+            },
+            { onSuccess }
         );
-    } catch (error) {
-        console.error('Error logout', error);
-    }
+    };
+
+    return { addProject, loading, error };
 };
 
-const handleEditProject = async (projectName: string, projectId: string) => {
-    try {
-        await axios.patch(
-            `/projects/${projectId}`,
-            { name: projectName },
-            { withCredentials: true }
+const useEditProject = () => {
+    const { loading, error, makeRequest } = useFetch();
+
+    const editProject = async (
+        projectId: string,
+        projectName: string,
+        onSuccess: () => void
+    ) => {
+        await makeRequest(
+            {
+                url: `/projects/${projectId}`,
+                method: 'PATCH',
+                data: { name: projectName },
+                withCredentials: true,
+            },
+            { onSuccess }
         );
-    } catch (error) {
-        console.error('Error logout', error);
-    }
+    };
+
+    return { editProject, loading, error };
 };
 
-const handleDeleteProject = async (projectId: string) => {
-    try {
-        await axios.delete(`/projects/${projectId}`, { withCredentials: true });
-    } catch (error) {
-        console.error('Error logout', error);
-    }
+const useDeleteProject = () => {
+    const { loading, error, makeRequest } = useFetch();
+
+    const deleteProject = async (projectId: string, onSuccess: () => void) => {
+        await makeRequest(
+            {
+                url: `/projects/${projectId}`,
+                method: 'DELETE',
+                withCredentials: true,
+            },
+            { onSuccess }
+        );
+    };
+
+    return { deleteProject, loading, error };
 };
 
-export { handleAddProject, handleEditProject, handleDeleteProject };
+export { useFetchProject, useAddProject, useEditProject, useDeleteProject };

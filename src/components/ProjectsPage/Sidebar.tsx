@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 
 import {
+    AddProjectFormStyled,
+    EditProjectFormStyled,
     IconContainer,
     SidebarHeaderStyled,
     SliderStyled,
     StyledListItem,
 } from '../../styled/ProjectsPage.styled';
 import {
-    Box,
-    Button,
     Drawer,
     IconButton,
     List,
@@ -16,15 +16,21 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import CloseIcon from '@mui/icons-material/Close';
-import CheckIcon from '@mui/icons-material/Check';
+import {
+    AddCircle as AddCircleIcon,
+    Edit as EditIcon,
+    Delete as DeleteIcon,
+    Check as CheckIcon,
+    Close as CloseIcon,
+} from '@mui/icons-material';
 
 import { useAuth } from '../../Providers/AuthProvider';
 import { IProjects } from '../../types';
-import useFetchData from '../../hook/useFetch';
+import {
+    useAddProject,
+    useDeleteProject,
+    useEditProject,
+} from '../../services/Projects.service';
 
 interface ISidebarProps {
     projects: IProjects[];
@@ -48,11 +54,12 @@ const Sidebar: React.FC<ISidebarProps> = ({
     const [selectedProjectUpdate, setSelectedProjectUpdate] = useState<
         string | null
     >(null);
-    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
-        null
-    );
     const [isAddingProject, setIsAddingProject] = useState(false);
     const { isAdmin } = useAuth();
+
+    const { addProject, loading: addLoading } = useAddProject();
+    const { editProject, loading: editLoading } = useEditProject();
+    const { deleteProject, loading: deleteLoading } = useDeleteProject();
 
     const handleSelectProject = (id: string, name: string) => {
         setSelectProject(projects.findIndex((project) => project.id === id));
@@ -64,23 +71,6 @@ const Sidebar: React.FC<ISidebarProps> = ({
         setNewProjectName(name);
     };
 
-    const { loading: LoadingAddProject, fetchData: addProject } = useFetchData(
-        '/projects',
-        {
-            method: 'POST',
-        }
-    );
-
-    const { loading: LoadingEditProject, fetchData: editProject } =
-        useFetchData(`/projects/${selectedProjectId}`, {
-            method: 'PATCH',
-        });
-
-    const { loading: LoadingDeleteProject, fetchData: deleteProject } =
-        useFetchData(`/projects/${selectedProjectId}`, {
-            method: 'DELETE',
-        });
-
     useEffect(() => {
         if (projects && projects[selectProject]?.id) {
             setSelectedProjectForCreate({
@@ -90,24 +80,21 @@ const Sidebar: React.FC<ISidebarProps> = ({
         }
     }, [projects, selectProject, setSelectedProjectForCreate]);
 
-    const handleSaveEdit = async () => {
+    const handleSaveEdit = async (id: string) => {
         if (newProjectName.trim() && selectedProjectUpdate !== null) {
-            await editProject({ name: newProjectName });
-            await fetchProjects();
+            await editProject(id, newProjectName, fetchProjects);
             setNewProjectName('');
             setSelectedProjectUpdate(null);
         }
     };
 
-    const handleDeleteProject = async () => {
-        await deleteProject();
-        await fetchProjects();
+    const handleDeleteProject = async (id: string) => {
+        await deleteProject(id, fetchProjects);
     };
 
     const handleAddProject = async () => {
         if (newProjectName.trim()) {
-            await addProject({ name: newProjectName });
-            await fetchProjects();
+            await addProject(newProjectName, fetchProjects);
             setNewProjectName('');
             setIsAddingProject(false);
         }
@@ -125,13 +112,13 @@ const Sidebar: React.FC<ISidebarProps> = ({
                 <SidebarHeaderStyled>
                     <Typography variant="h6">Projects</Typography>
                     {isAdmin && (
-                        <Button onClick={() => setIsAddingProject(true)}>
-                            <AddIcon />
-                        </Button>
+                        <IconButton onClick={() => setIsAddingProject(true)}>
+                            <AddCircleIcon color='primary'/>
+                        </IconButton>
                     )}
                 </SidebarHeaderStyled>
                 {isAddingProject && (
-                    <Box display="flex" alignItems="center" marginBottom={2}>
+                    <AddProjectFormStyled>
                         <TextField
                             value={newProjectName}
                             onChange={(e) => setNewProjectName(e.target.value)}
@@ -140,13 +127,16 @@ const Sidebar: React.FC<ISidebarProps> = ({
                             size="small"
                             fullWidth
                         />
-                        <IconButton onClick={handleAddProject}>
+                        <IconButton
+                            onClick={handleAddProject}
+                            disabled={addLoading}
+                        >
                             <CheckIcon />
                         </IconButton>
                         <IconButton onClick={handleCancel}>
                             <CloseIcon />
                         </IconButton>
-                    </Box>
+                    </AddProjectFormStyled>
                 )}
                 <List>
                     {projects.map((project, index) => (
@@ -161,7 +151,7 @@ const Sidebar: React.FC<ISidebarProps> = ({
                             <ListItemText
                                 primary={
                                     selectedProjectUpdate === project.id ? (
-                                        <Box display="flex" alignItems="center">
+                                        <EditProjectFormStyled>
                                             <TextField
                                                 value={newProjectName}
                                                 onChange={(e) =>
@@ -179,8 +169,9 @@ const Sidebar: React.FC<ISidebarProps> = ({
                                             <IconButton
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    handleSaveEdit();
+                                                    handleSaveEdit(project.id);
                                                 }}
+                                                disabled={editLoading}
                                             >
                                                 <CheckIcon />
                                             </IconButton>
@@ -192,7 +183,7 @@ const Sidebar: React.FC<ISidebarProps> = ({
                                             >
                                                 <CloseIcon />
                                             </IconButton>
-                                        </Box>
+                                        </EditProjectFormStyled>
                                     ) : (
                                         <Typography>{project.name}</Typography>
                                     )
@@ -204,14 +195,12 @@ const Sidebar: React.FC<ISidebarProps> = ({
                                         <IconButton
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                setSelectedProjectId(
-                                                    project.id
-                                                );
                                                 handleEditProject(
                                                     project.id,
                                                     project.name
                                                 );
                                             }}
+                                            disabled={editLoading}
                                         >
                                             <EditIcon
                                                 fontSize="small"
@@ -221,10 +210,9 @@ const Sidebar: React.FC<ISidebarProps> = ({
                                         <IconButton
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                const projectId = project.id;
-                                                setSelectedProjectId(projectId);
-                                                handleDeleteProject();
+                                                handleDeleteProject(project.id);
                                             }}
+                                            disabled={deleteLoading}
                                         >
                                             <DeleteIcon
                                                 fontSize="small"
