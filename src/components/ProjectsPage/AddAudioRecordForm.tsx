@@ -1,14 +1,17 @@
 import { useEffect } from 'react';
 import { useFormik } from 'formik';
 
-import { CustomRecordAudioForm } from '../index';
-import { TitleSelectStyled } from '../../styled/CustomMediaRecorder.styled';
+import { CustomMediaRecorder, CustomSelect } from '../index';
+import {
+    CircularProgressStyled,
+    InputsSelectStyled,
+    MediaStyled,
+} from '../../styled/CustomMediaRecorder.styled';
 import {
     AudioRecordFormStyled,
     AudioRecordWrapper,
-    SaveButtonStyled,
 } from '../../styled/AddAudioRecordForm.styled';
-import { Button, TextField } from '@mui/material';
+import { CircularProgress, TextField } from '@mui/material';
 
 import useWaveSurfer from '../../hook/useWaveSurfer';
 import { AddAudioRecordSchema } from '../../utils/valiadtionSchema';
@@ -27,8 +30,15 @@ const AddAudioRecordForm = ({
     projectId,
     fetchData,
 }: IAudioDataProps) => {
-    const waveSurferData = useWaveSurfer();
-    const { handleDone } = waveSurferData;
+    const {
+        handleDone,
+        status,
+        mediaBlobUrl,
+        actionButtons,
+        selectors,
+        startRecording,
+        stopRecording,
+    } = useWaveSurfer();
 
     const formik = useFormik({
         initialValues: {
@@ -78,14 +88,26 @@ const AddAudioRecordForm = ({
         }
     }, [author, project, projectId]);
 
+    if (!selectors[0].selected) {
+        return (
+            <CircularProgressStyled>
+                <CircularProgress />
+            </CircularProgressStyled>
+        );
+    }
+
     return (
         <AudioRecordWrapper>
-            <CustomRecordAudioForm {...waveSurferData} />
             <AudioRecordFormStyled onSubmit={formik.handleSubmit}>
-                <div>
-                    <TitleSelectStyled>Audio name</TitleSelectStyled>
+                <MediaStyled>
+                    <InputsSelectStyled>
+                        {selectors.map((selector, index) => (
+                            <CustomSelect key={index} {...selector} />
+                        ))}
+                    </InputsSelectStyled>
                     <TextField
                         variant="outlined"
+                        label="Audio name"
                         type="text"
                         size="small"
                         name="name"
@@ -96,13 +118,11 @@ const AddAudioRecordForm = ({
                         }
                         helperText={formik.touched.name && formik.errors.name}
                     />
-                </div>
-                <div>
-                    <TitleSelectStyled>Comment</TitleSelectStyled>
                     <TextField
-                        variant="outlined"
                         type="text"
-                        size="small"
+                        label="Comment"
+                        multiline
+                        rows={4}
                         name="comment"
                         value={formik.values.comment}
                         onChange={formik.handleChange}
@@ -114,16 +134,16 @@ const AddAudioRecordForm = ({
                             formik.touched.comment && formik.errors.comment
                         }
                     />
-                </div>
-                <SaveButtonStyled>
-                    <Button
-                        variant="contained"
-                        type="submit"
-                        disabled={formik.isSubmitting}
-                    >
-                        Save
-                    </Button>
-                </SaveButtonStyled>
+                </MediaStyled>
+                <CustomMediaRecorder
+                    status={status}
+                    mediaBlobUrl={mediaBlobUrl}
+                    actionButtons={actionButtons}
+                    startRecording={startRecording}
+                    stopRecording={stopRecording}
+                    disabled={formik.isSubmitting}
+                    isAddingFroms
+                />
             </AudioRecordFormStyled>
         </AudioRecordWrapper>
     );

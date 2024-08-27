@@ -70,6 +70,9 @@ interface ICustomMediaRecorder {
     mediaBlobUrl?: string;
     actionButtons: CustomIconButtonProps[];
     startRecording: () => void;
+    stopRecording?: () => void;
+    disabled?: boolean;
+    isAddingFroms?: boolean;
 }
 
 interface ICustomMediaRecorderForm extends ICustomMediaRecorder {

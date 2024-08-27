@@ -22,6 +22,7 @@ interface UseWaveSurferReturn {
     actionButtons: CustomIconButtonProps[];
     selectors: ICustomSelectProps[];
     startRecording: () => void;
+    stopRecording: () => void;
     handleDone: () => Promise<void | ReturnType<typeof putMedia>>;
     handleUpdate: (oldFileUrl: string) => Promise<void | ReturnType<typeof putMedia>>;
 }
@@ -159,13 +160,6 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
             iconName: 'replay',
             onClick: clearBlobUrl,
         },
-        {
-            condition: status === 'recording',
-            iconName: 'stop',
-            onClick: stopRecording,
-            color: 'red',
-        },
-        // { condition: status === 'stopped' && mediaBlobUrl, iconName: 'done', onClick: handleDone, color: 'green' },
     ];
 
     return {
@@ -175,6 +169,7 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
         actionButtons,
         selectors,
         startRecording,
+        stopRecording,
         handleDone,
         handleUpdate
     };

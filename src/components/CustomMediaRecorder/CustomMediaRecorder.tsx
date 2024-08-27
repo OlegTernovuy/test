@@ -4,10 +4,11 @@ import {
     AvesurferStyled,
     ActionsStyled,
     ActionsContentStyled,
+    AudioRecorderStyled,
+    ListenAudioStyled,
+    ActionsButtonStyled,
 } from '../../styled/CustomMediaRecorder.styled';
-import { Mic } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
-import { CustomIconButton, HeaderMedia } from '../index';
+import { CustomIconButton } from '../index';
 
 import { ICustomMediaRecorder } from '../../types';
 
@@ -16,24 +17,43 @@ const CustomMediaRecorder: React.FC<ICustomMediaRecorder> = ({
     mediaBlobUrl,
     actionButtons,
     startRecording,
+    stopRecording,
+    disabled,
+    isAddingFroms,
 }) => {
     return (
-        <>
+        <AudioRecorderStyled>
             <ActionsStyled>
-                <HeaderMedia status={status} mediaBlobUrl={mediaBlobUrl} />
-                {status !== 'recording' && !mediaBlobUrl && (
-                    <IconButton onClick={startRecording} size="small">
-                        <Mic color={'secondary'} />
-                    </IconButton>
+                {status !== 'recording' && !mediaBlobUrl ? (
+                    <ActionsButtonStyled onClick={startRecording}>
+                        Start
+                    </ActionsButtonStyled>
+                ) : status === 'recording' ? (
+                    <ActionsButtonStyled onClick={stopRecording}>
+                        Stop
+                    </ActionsButtonStyled>
+                ) : (
+                    ''
                 )}
+                {isAddingFroms && (
+                    <ActionsButtonStyled
+                        variant="contained"
+                        type="submit"
+                        disabled={disabled}
+                    >
+                        Save
+                    </ActionsButtonStyled>
+                )}
+            </ActionsStyled>
+            <ListenAudioStyled>
+                {mediaBlobUrl && <AvesurferStyled id="wavesurfer-id" />}
                 <ActionsContentStyled>
                     {actionButtons.map((buttonInfo, index) => (
                         <CustomIconButton key={index} {...buttonInfo} />
                     ))}
                 </ActionsContentStyled>
-            </ActionsStyled>
-            {mediaBlobUrl && <AvesurferStyled id="wavesurfer-id" />}
-        </>
+            </ListenAudioStyled>
+        </AudioRecorderStyled>
     );
 };
 

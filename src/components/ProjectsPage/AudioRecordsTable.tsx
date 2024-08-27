@@ -4,39 +4,39 @@ import { useFormik } from 'formik';
 import {
     AudioRecordsTableWrapper,
     CircularProgressWrapper,
+    StyledCommentCell,
+    StyledTableBody,
+    StyledTableCell,
+    StyledTableHead,
+    StyledTextarea,
 } from '../../styled/ProjectsPage.styled';
-import { CustomMediaRecorder } from '../index';
+import { CustomMediaRecorder, EditAudioPopover } from '../index';
 import {
     CircularProgress,
     IconButton,
     Table,
-    TableBody,
-    TableCell,
     TableContainer,
-    TableHead,
     TableRow,
     TextField,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Cancel';
+import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
 
 import {
     IUpdateAudioRecord,
     updateAudioRecord,
     useDeleteAudioRecord,
 } from '../../services/Media.service';
-import { IAudioRecord } from '../../types';
+import { IAudioRecord, IProjects } from '../../types';
 import { useAuth } from '../../Providers/AuthProvider';
 import useWaveSurfer from '../../hook/useWaveSurfer';
 import { UpdateAudioRecordSchema } from '../../utils/valiadtionSchema';
+import ProjectTitleSearchComponent from './ProjectTitleSearchComponent';
 
 interface IAudioRecordProps {
     audioRecords: IAudioRecord[];
     loading: boolean;
     fetchData: (projectId: string) => void;
-    projectId: string;
+    projectId: IProjects;
 }
 
 const AudioRecordsTable = ({
@@ -51,6 +51,7 @@ const AudioRecordsTable = ({
         mediaBlobUrl,
         actionButtons,
         startRecording,
+        stopRecording,
         handleUpdate,
     } = useWaveSurfer();
 
@@ -66,7 +67,7 @@ const AudioRecordsTable = ({
     ) => {
         try {
             await deleteAudioRecord(audioRecordId, audioFileUrl);
-            fetchData(projectId);
+            fetchData(projectId.id);
         } catch (error) {
             console.error(error);
         }
@@ -100,7 +101,7 @@ const AudioRecordsTable = ({
                 if (editingRecordId)
                     await updateAudioRecord(editingRecordId, updatedData);
                 setEditingRecordId(null);
-                fetchData(projectId);
+                fetchData(projectId.id);
             } catch (error) {
                 console.error('Error submitting the form: ', error);
             } finally {
@@ -130,34 +131,32 @@ const AudioRecordsTable = ({
                     <CircularProgress />
                 </CircularProgressWrapper>
             )}
+            <ProjectTitleSearchComponent projectName={projectId.name} />
             <TableContainer>
                 <Table>
-                    <TableHead>
+                    <StyledTableHead>
                         <TableRow>
-                            <TableCell>Audio name</TableCell>
-                            <TableCell>Comment</TableCell>
-                            <TableCell>Audio</TableCell>
-                            <TableCell>Date</TableCell>
-                            {isAdmin && (
-                                <>
-                                    <TableCell>Edit</TableCell>
-                                    <TableCell>Delete</TableCell>
-                                </>
-                            )}
+                            <StyledTableCell>Audio name</StyledTableCell>
+                            <StyledCommentCell width="400px">
+                                Comment
+                            </StyledCommentCell>
+                            <StyledTableCell>Audio</StyledTableCell>
+                            <StyledTableCell>Date</StyledTableCell>
+                            {isAdmin && <StyledTableCell>Edit</StyledTableCell>}
                         </TableRow>
-                    </TableHead>
-                    <TableBody>
+                    </StyledTableHead>
+                    <StyledTableBody>
                         {audioRecords &&
                             (audioRecords.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={7}>
+                                    <StyledTableCell colSpan={7}>
                                         No Records
-                                    </TableCell>
+                                    </StyledTableCell>
                                 </TableRow>
                             ) : (
                                 audioRecords.map((record) => (
                                     <TableRow key={record.id}>
-                                        <TableCell>
+                                        <StyledTableCell>
                                             {editingRecordId === record.id ? (
                                                 <TextField
                                                     size="small"
@@ -170,11 +169,12 @@ const AudioRecordsTable = ({
                                             ) : (
                                                 record.name
                                             )}
-                                        </TableCell>
-                                        <TableCell>
+                                        </StyledTableCell>
+                                        <StyledTableCell>
                                             {editingRecordId === record.id ? (
-                                                <TextField
-                                                    size="small"
+                                                <StyledTextarea
+                                                    multiline
+                                                    rows={4}
                                                     name="comment"
                                                     value={
                                                         formik.values.comment
@@ -186,8 +186,8 @@ const AudioRecordsTable = ({
                                             ) : (
                                                 record.comment
                                             )}
-                                        </TableCell>
-                                        <TableCell>
+                                        </StyledTableCell>
+                                        <StyledTableCell>
                                             {editingRecordId === record.id ? (
                                                 <CustomMediaRecorder
                                                     status={status}
@@ -198,6 +198,9 @@ const AudioRecordsTable = ({
                                                     startRecording={
                                                         startRecording
                                                     }
+                                                    stopRecording={
+                                                        stopRecording
+                                                    }
                                                 />
                                             ) : (
                                                 <audio
@@ -205,15 +208,15 @@ const AudioRecordsTable = ({
                                                     controls
                                                 />
                                             )}
-                                        </TableCell>
-                                        <TableCell>
+                                        </StyledTableCell>
+                                        <StyledTableCell>
                                             {getDate(
                                                 record.date._seconds
                                             ).toString()}
-                                        </TableCell>
+                                        </StyledTableCell>
                                         {isAdmin && (
                                             <>
-                                                <TableCell>
+                                                <StyledTableCell>
                                                     {editingRecordId ===
                                                     record.id ? (
                                                         <>
@@ -222,58 +225,34 @@ const AudioRecordsTable = ({
                                                                     formik.handleSubmit()
                                                                 }
                                                             >
-                                                                <SaveIcon
-                                                                    fontSize="small"
-                                                                    color="primary"
-                                                                />
+                                                                <CheckIcon />
                                                             </IconButton>
                                                             <IconButton
                                                                 onClick={
                                                                     cancelEditing
                                                                 }
                                                             >
-                                                                <CancelIcon
-                                                                    fontSize="small"
-                                                                    color="secondary"
-                                                                />
+                                                                <CloseIcon />
                                                             </IconButton>
                                                         </>
                                                     ) : (
-                                                        <IconButton
-                                                            onClick={() =>
-                                                                startEditing(
-                                                                    record
-                                                                )
+                                                        <EditAudioPopover
+                                                            record={record}
+                                                            startEditing={
+                                                                startEditing
                                                             }
-                                                        >
-                                                            <EditIcon
-                                                                fontSize="small"
-                                                                color="primary"
-                                                            />
-                                                        </IconButton>
-                                                    )}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <IconButton
-                                                        onClick={() => {
-                                                            handleDeleteAudioRecord(
-                                                                record.id,
-                                                                record.audioFileUrl
-                                                            );
-                                                        }}
-                                                    >
-                                                        <DeleteIcon
-                                                            fontSize="small"
-                                                            color="primary"
+                                                            handleDeleteAudioRecord={
+                                                                handleDeleteAudioRecord
+                                                            }
                                                         />
-                                                    </IconButton>
-                                                </TableCell>
+                                                    )}
+                                                </StyledTableCell>
                                             </>
                                         )}
                                     </TableRow>
                                 ))
                             ))}
-                    </TableBody>
+                    </StyledTableBody>
                 </Table>
             </TableContainer>
         </AudioRecordsTableWrapper>

@@ -1,8 +1,11 @@
-import { useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 
-import { ProjectPageHeaderStyled } from '../styled/ProjectsPage.styled';
+import {
+    MenuAudioFormHeaderStyled,
+    ProjectPageHeaderStyled,
+} from '../styled/ProjectsPage.styled';
 import { AudioRecordsTable, Sidebar, AddAudioRecordForm } from '../components';
-import { Box, Button } from '@mui/material';
+import { Avatar, Box, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
 import { useAuth } from '../Providers/AuthProvider';
@@ -29,7 +32,11 @@ const ProjectsPage = () => {
         });
 
     const { data: projects, fetchProjects } = useFetchProject();
-    const { data: audioRecords, fetchAudioRecord, loading } = useFetchAudioRecords();
+    const {
+        data: audioRecords,
+        fetchAudioRecord,
+        loading,
+    } = useFetchAudioRecords();
 
     useEffect(() => {
         fetchProjects();
@@ -52,23 +59,26 @@ const ProjectsPage = () => {
             />
             <Box>
                 <ProjectPageHeaderStyled>
-                    <Button onClick={() => toggleDrawer()}>
-                        <MenuIcon fontSize="large" />
-                    </Button>
-                    {isAdmin && (
-                        <AddAudioRecordForm
-                            author={user.email}
-                            project={selectedProjectForCreate.name}
-                            projectId={selectedProjectForCreate.id}
-                            fetchData={fetchAudioRecord}
-                        />
-                    )}
+                    <MenuAudioFormHeaderStyled>
+                        <Button onClick={() => toggleDrawer()}>
+                            <MenuIcon fontSize="large" />
+                        </Button>
+                        {isAdmin && (
+                            <AddAudioRecordForm
+                                author={user.email}
+                                project={selectedProjectForCreate.name}
+                                projectId={selectedProjectForCreate.id}
+                                fetchData={fetchAudioRecord}
+                            />
+                        )}
+                    </MenuAudioFormHeaderStyled>
+                    <Avatar>L</Avatar>
                 </ProjectPageHeaderStyled>
                 <AudioRecordsTable
                     audioRecords={audioRecords}
                     loading={loading}
                     fetchData={fetchAudioRecord}
-                    projectId={selectedProjectForCreate.id}
+                    projectId={selectedProjectForCreate}
                 />
             </Box>
         </Box>

@@ -12,7 +12,7 @@ const AudioRecordFormStyled = styled.form`
 
 const SaveButtonStyled = styled.div`
     display: flex;
-    align-items: end;
+    align-items: start;
 `;
 
 export { SaveButtonStyled, AudioRecordFormStyled, AudioRecordWrapper };
