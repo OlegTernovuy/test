@@ -17,7 +17,7 @@ function App() {
         <AppWrapper>
             <GlobalStyle />
             <Routes>
-                <Route path="/" element={<Navigate to="/login" />} />
+                <Route path="/" element={<Navigate to="/projects" />} />
                 <Route
                     path="/microphone"
                     element={

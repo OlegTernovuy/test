@@ -1,31 +1,31 @@
 import React from 'react';
 
-import { FormControl, MenuItem } from '@mui/material';
+import { MenuItem } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { TitleSelectStyled } from '../../styled/CustomMediaRecorder.styled';
 import { ICustomSelectProps } from '../../types';
+import { CustomFormSelectStyled } from '../../styled/AddAudioRecordForm.styled';
 
-const CustomSelect:React.FC<ICustomSelectProps> =({ title, selected, options, onHandleChange }) => {
+const CustomSelect: React.FC<ICustomSelectProps> = ({
+    selected,
+    options,
+    onHandleChange,
+}) => {
     const handleChange = (event: SelectChangeEvent) => {
         const id = event.target.value;
         onHandleChange(id);
-    }
+    };
 
     return (
-        <div>
-            <TitleSelectStyled>{title}</TitleSelectStyled>
-            <FormControl fullWidth>
-                <Select
-                    value={selected}
-                    onChange={handleChange}
-                >
-                    {options.map((option, index) => (
-                        <MenuItem key={index} value={option.value}>{option.label}</MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-        </div>
-)
+        <CustomFormSelectStyled size="small">
+            <Select value={selected} onChange={handleChange}>
+                {options.map((option, index) => (
+                    <MenuItem key={index} value={option.value}>
+                        {option.label}
+                    </MenuItem>
+                ))}
+            </Select>
+        </CustomFormSelectStyled>
+    );
 };
 
 export default CustomSelect;

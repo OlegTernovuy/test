@@ -1,24 +1,41 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
+import { AxiosRequestConfig } from 'axios';
 
 import axios from '../utils/axios';
 
-const useFetchData = <T,>(url: string) => {
-    const [data, setData] = useState<T | []>([]);
-    const [loading, setLoading] = useState(false);
+interface ApiRequestOptions extends AxiosRequestConfig {
+    onSuccess?: (data: any) => void;
+    onError?: (error: any) => void;
+}
 
-    const fetchData = useCallback(async () => {
+const useFetch = () => {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const makeRequest = async (
+        config: AxiosRequestConfig,
+        { onSuccess, onError }: ApiRequestOptions = {}
+    ) => {
         setLoading(true);
+        setError(null);
+
         try {
-            const response = await axios.get(url, { withCredentials: true });
-            setData(response.data.data);
+            const response = await axios(config);
+            if (onSuccess) {
+                onSuccess(response.data);
+            }
+            return response.data;
         } catch (err: any) {
-            console.error(err.message);
+            setError(err.message);
+            if (onError) {
+                onError(err);
+            }
         } finally {
             setLoading(false);
         }
-    }, [url]);
+    };
 
-    return { data, loading, fetchData };
+    return { loading, error, makeRequest };
 };
 
-export default useFetchData;
+export default useFetch;

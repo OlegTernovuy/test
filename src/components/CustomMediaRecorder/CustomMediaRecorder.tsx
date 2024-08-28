@@ -1,57 +1,60 @@
 import React from 'react';
 
-import { Mic } from '@mui/icons-material';
-import { Fab, CircularProgress } from '@mui/material';
-
 import {
-    DivStyled,
     AvesurferStyled,
     ActionsStyled,
     ActionsContentStyled,
-    CircularProgressStyled
+    AudioRecorderStyled,
+    ListenAudioStyled,
+    ActionsButtonStyled,
 } from '../../styled/CustomMediaRecorder.styled';
-import CustomSelect from './CustomSelect';
-import HeaderMedia from './HeaderMedia';
-import CustomIconButton from './CustomIconButton';
-import useWaveSurfer from '../../hook/useWaveSurfer';
+import { CustomIconButton } from '../index';
 
-const CustomMediaRecorder: React.FC = () => {
-    const {
-        status,
-        mediaBlobUrl,
-        actionButtons,
-        selectors,
-        startRecording,
-    } = useWaveSurfer();
+import { ICustomMediaRecorder } from '../../types';
 
-    if (!selectors[0].selected) {
-        return (
-            <CircularProgressStyled>
-                <CircularProgress />
-            </CircularProgressStyled>
-        )
-    }
+const CustomMediaRecorder: React.FC<ICustomMediaRecorder> = ({
+    status,
+    mediaBlobUrl,
+    actionButtons,
+    startRecording,
+    stopRecording,
+    disabled,
+    isAddingFroms,
+}) => {
     return (
-        <DivStyled>
-            {selectors.map((selector, index) => (
-                <CustomSelect key={index} {...selector} />
-            ))}
+        <AudioRecorderStyled>
             <ActionsStyled>
-                <HeaderMedia status={status} mediaBlobUrl={mediaBlobUrl} />
-                {status !== 'recording' && !mediaBlobUrl && (
-                    <Fab onClick={startRecording} color="default">
-                        <Mic color={'secondary'} />
-                    </Fab>
+                {status !== 'recording' && !mediaBlobUrl ? (
+                    <ActionsButtonStyled onClick={startRecording}>
+                        Start
+                    </ActionsButtonStyled>
+                ) : status === 'recording' ? (
+                    <ActionsButtonStyled onClick={stopRecording}>
+                        Stop
+                    </ActionsButtonStyled>
+                ) : (
+                    ''
                 )}
-                <ActionsContentStyled>
-                    {actionButtons.map((buttonInfo, index) =>
-                        <CustomIconButton key={index} {...buttonInfo}/>
-                    )}
-                </ActionsContentStyled>
+                {isAddingFroms && (
+                    <ActionsButtonStyled
+                        variant="contained"
+                        type="submit"
+                        disabled={disabled}
+                    >
+                        Save
+                    </ActionsButtonStyled>
+                )}
             </ActionsStyled>
-            {mediaBlobUrl && <AvesurferStyled id="wavesurfer-id" />}
-        </DivStyled>
-    )
+            <ListenAudioStyled>
+                {mediaBlobUrl && <AvesurferStyled id="wavesurfer-id" />}
+                <ActionsContentStyled>
+                    {actionButtons.map((buttonInfo, index) => (
+                        <CustomIconButton key={index} {...buttonInfo} />
+                    ))}
+                </ActionsContentStyled>
+            </ListenAudioStyled>
+        </AudioRecorderStyled>
+    );
 };
 
 export default CustomMediaRecorder;

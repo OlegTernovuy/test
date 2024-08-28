@@ -6,6 +6,7 @@ import { SnackbarProvider } from 'notistack';
 
 import App from './App';
 
+import { AuthProvider } from './Providers/AuthProvider';
 import { theme } from './styled/theme';
 
 const root = ReactDOM.createRoot(
@@ -14,11 +15,13 @@ const root = ReactDOM.createRoot(
 root.render(
     <React.StrictMode>
         <BrowserRouter>
-            <SnackbarProvider>
-                <ThemeProvider theme={theme}>
-                    <App />
-                </ThemeProvider>
-            </SnackbarProvider>
+            <AuthProvider>
+                <SnackbarProvider>
+                    <ThemeProvider theme={theme}>
+                        <App />
+                    </ThemeProvider>
+                </SnackbarProvider>
+            </AuthProvider>
         </BrowserRouter>
     </React.StrictMode>
 );

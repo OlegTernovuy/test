@@ -1,39 +1,89 @@
 import { useState, useEffect } from 'react';
 
-import { GridAudioList, GridSidebar } from '../styled/ProjectsPage.styled';
-import { AudioRecordsTable, Sidebar } from '../components';
-import { Grid } from '@mui/material';
+import {
+    MenuAudioFormHeaderStyled,
+    ProjectPageHeaderStyled,
+} from '../styled/ProjectsPage.styled';
+import { AudioRecordsTable, Sidebar, AddAudioRecordForm } from '../components';
+import { Avatar, Box, Button, IconButton } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 
-import useFetchData from '../hook/useFetch';
-import { IAudioRecord } from '../types';
+import { useAuth } from '../Providers/AuthProvider';
+import { useFetchProject } from '../services/Projects.service';
+import { useFetchAudioRecords } from '../services/Media.service';
+import { IProjects } from '../types';
 
 const ProjectsPage = () => {
-    const [selectedProjectId, setSelectedProjectId] = useState<string>('');
+    const { isAdmin, user, logout } = useAuth();
 
+    const [open, setOpen] = useState(false);
+
+    const toggleDrawer = () => {
+        setOpen((prevOpen) => {
+            return !prevOpen;
+        });
+    };
+
+    //store data about the currently selected project
+    const [selectedProjectForCreate, setSelectedProjectForCreate] =
+        useState<IProjects>({
+            id: '',
+            name: '',
+        });
+
+    const { data: projects, fetchProjects } = useFetchProject();
     const {
         data: audioRecords,
+        fetchAudioRecord,
         loading,
-        fetchData,
-    } = useFetchData<IAudioRecord[]>(`/audio/${selectedProjectId}`);
+    } = useFetchAudioRecords();
 
     useEffect(() => {
-        if (selectedProjectId) {
-            fetchData();
+        fetchProjects();
+    }, []);
+
+    useEffect(() => {
+        if (selectedProjectForCreate.id) {
+            fetchAudioRecord(selectedProjectForCreate.id);
         }
-    }, [selectedProjectId, fetchData]);
+    }, [selectedProjectForCreate]);
 
     return (
-        <Grid container>
-            <GridSidebar item xs={2}>
-                <Sidebar setSelectedProjectId={setSelectedProjectId} />
-            </GridSidebar>
-            <GridAudioList item xs={10}>
+        <Box>
+            <Sidebar
+                projects={projects}
+                setSelectedProjectForCreate={setSelectedProjectForCreate}
+                open={open}
+                toggleDrawer={toggleDrawer}
+                fetchProjects={fetchProjects}
+            />
+            <Box>
+                <ProjectPageHeaderStyled>
+                    <MenuAudioFormHeaderStyled>
+                        <Button aria-label="show sidebar" onClick={() => toggleDrawer()}>
+                            <MenuIcon fontSize="large" />
+                        </Button>
+                        {isAdmin && (
+                            <AddAudioRecordForm
+                                author={user.email}
+                                project={selectedProjectForCreate.name}
+                                projectId={selectedProjectForCreate.id}
+                                fetchData={fetchAudioRecord}
+                            />
+                        )}
+                    </MenuAudioFormHeaderStyled>
+                    <IconButton onClick={logout}>
+                        <Avatar>L</Avatar>
+                    </IconButton>
+                </ProjectPageHeaderStyled>
                 <AudioRecordsTable
                     audioRecords={audioRecords}
                     loading={loading}
+                    fetchData={fetchAudioRecord}
+                    projectId={selectedProjectForCreate}
                 />
-            </GridAudioList>
-        </Grid>
+            </Box>
+        </Box>
     );
 };
 
