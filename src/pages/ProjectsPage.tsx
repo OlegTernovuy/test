@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 
 import {
     MenuAudioFormHeaderStyled,
+    ProfileBlockStyled,
     ProjectPageHeaderStyled,
 } from '../styled/ProjectsPage.styled';
 import { AudioRecordsTable, Sidebar, AddAudioRecordForm } from '../components';
-import { Avatar, Box, Button, IconButton } from '@mui/material';
+import { Avatar, Box, Button, IconButton, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
 import { useAuth } from '../Providers/AuthProvider';
@@ -60,7 +61,10 @@ const ProjectsPage = () => {
             <Box>
                 <ProjectPageHeaderStyled>
                     <MenuAudioFormHeaderStyled>
-                        <Button aria-label="show sidebar" onClick={() => toggleDrawer()}>
+                        <Button
+                            aria-label="show sidebar"
+                            onClick={() => toggleDrawer()}
+                        >
                             <MenuIcon fontSize="large" />
                         </Button>
                         {isAdmin && (
@@ -72,9 +76,12 @@ const ProjectsPage = () => {
                             />
                         )}
                     </MenuAudioFormHeaderStyled>
-                    <IconButton onClick={logout}>
-                        <Avatar>L</Avatar>
-                    </IconButton>
+                    <ProfileBlockStyled>
+                        <Typography variant="body2">{user.email}</Typography>
+                        <IconButton onClick={logout}>
+                            <Avatar>L</Avatar>
+                        </IconButton>
+                    </ProfileBlockStyled>
                 </ProjectPageHeaderStyled>
                 <AudioRecordsTable
                     audioRecords={audioRecords}

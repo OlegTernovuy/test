@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
+import { AddNewProjectForm } from '../index';
 import {
-    AddProjectFormStyled,
     EditProjectFormStyled,
     IconContainer,
     SidebarHeaderStyled,
@@ -31,6 +31,7 @@ import {
     useDeleteProject,
     useEditProject,
 } from '../../services/Projects.service';
+import { useLocation, useNavigate } from 'react-router';
 
 interface ISidebarProps {
     projects: IProjects[];
@@ -49,22 +50,39 @@ const Sidebar: React.FC<ISidebarProps> = ({
     toggleDrawer,
     fetchProjects,
 }) => {
-    const [selectProject, setSelectProject] = useState(0);
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { isAdmin } = useAuth();
+
+    const searchParams = new URLSearchParams(location.search);
+    const projectIdFromUrl = searchParams.get('projectId') || '';
+
+    const [selectProject, setSelectProject] = useState<number>(() => {
+        const initialIndex = projects.findIndex(
+            (project) => project.id === projectIdFromUrl
+        );
+        return initialIndex !== -1 ? initialIndex : 0;
+    });
     const [newProjectName, setNewProjectName] = useState('');
     const [selectedProjectUpdate, setSelectedProjectUpdate] = useState<
         string | null
     >(null);
     const [isAddingProject, setIsAddingProject] = useState(false);
-    const { isAdmin } = useAuth();
 
     const { addProject, loading: addLoading } = useAddProject();
     const { editProject, loading: editLoading } = useEditProject();
     const { deleteProject, loading: deleteLoading } = useDeleteProject();
 
-    const handleSelectProject = (id: string, name: string) => {
-        setSelectProject(projects.findIndex((project) => project.id === id));
-        setSelectedProjectForCreate({ id, name });
-    };
+    const handleSelectProject = useCallback(
+        (id: string, name: string) => {
+            setSelectProject(
+                projects.findIndex((project) => project.id === id)
+            );
+            setSelectedProjectForCreate({ id, name });
+            navigate(`?projectId=${id}`);
+        },
+        [navigate, projects, setSelectedProjectForCreate]
+    );
 
     const handleEditProject = (id: string, name: string) => {
         setSelectedProjectUpdate(id);
@@ -72,13 +90,26 @@ const Sidebar: React.FC<ISidebarProps> = ({
     };
 
     useEffect(() => {
-        if (projects && projects[selectProject]?.id) {
-            setSelectedProjectForCreate({
-                id: projects[selectProject].id,
-                name: projects[selectProject].name,
-            });
+        if (projectIdFromUrl && projects.length > 0) {
+            const projectIndex = projects.findIndex(
+                (project) => project.id === projectIdFromUrl
+            );
+            if (projectIndex !== -1) {
+                setSelectProject(projectIndex);
+                setSelectedProjectForCreate({
+                    id: projects[projectIndex].id,
+                    name: projects[projectIndex].name,
+                });
+            }
+        } else if (projects.length > 0) {
+            handleSelectProject(projects[0].id, projects[0].name);
         }
-    }, [projects, selectProject, setSelectedProjectForCreate]);
+    }, [
+        projectIdFromUrl,
+        projects,
+        setSelectedProjectForCreate,
+        handleSelectProject,
+    ]);
 
     const handleSaveEdit = async (id: string) => {
         if (newProjectName.trim() && selectedProjectUpdate !== null) {
@@ -113,30 +144,18 @@ const Sidebar: React.FC<ISidebarProps> = ({
                     <Typography variant="h6">Projects</Typography>
                     {isAdmin && (
                         <IconButton onClick={() => setIsAddingProject(true)}>
-                            <AddCircleIcon color='primary'/>
+                            <AddCircleIcon color="primary" />
                         </IconButton>
                     )}
                 </SidebarHeaderStyled>
                 {isAddingProject && (
-                    <AddProjectFormStyled>
-                        <TextField
-                            value={newProjectName}
-                            onChange={(e) => setNewProjectName(e.target.value)}
-                            placeholder="Project name"
-                            variant="outlined"
-                            size="small"
-                            fullWidth
-                        />
-                        <IconButton
-                            onClick={handleAddProject}
-                            disabled={addLoading}
-                        >
-                            <CheckIcon />
-                        </IconButton>
-                        <IconButton onClick={handleCancel}>
-                            <CloseIcon />
-                        </IconButton>
-                    </AddProjectFormStyled>
+                    <AddNewProjectForm
+                        newProjectName={newProjectName}
+                        setNewProjectName={setNewProjectName}
+                        handleAddProject={handleAddProject}
+                        addLoading={addLoading}
+                        handleCancel={handleCancel}
+                    />
                 )}
                 <List>
                     {projects.map((project, index) => (

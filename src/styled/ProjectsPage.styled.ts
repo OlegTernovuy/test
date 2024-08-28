@@ -53,6 +53,10 @@ const ProjectPageHeaderStyled = styled(Box)`
     padding: 16px 8px;
 `;
 
+const ProfileBlockStyled = styled(FlexCenterStyled)`
+    gap: 12px;
+`;
+
 const MenuAudioFormHeaderStyled = styled(Box)`
     display: flex;
     align-items: start;
@@ -69,4 +73,5 @@ export {
     AddProjectFormStyled,
     EditProjectFormStyled,
     MenuAudioFormHeaderStyled,
+    ProfileBlockStyled
 };
