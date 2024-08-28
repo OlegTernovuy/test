@@ -1,10 +1,6 @@
-import React from 'react';
-
+import { ProjectTitleSearchStyled } from '../../styled/AudioRecordsTable.styled';
 import { TextField, Typography, InputAdornment } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
-
-import { ProjectTitleSearchStyled } from '../../styled/ProjectsPage.styled';
-
 interface ProjectTitleSearchComponentProps {
     projectName: string;
 }

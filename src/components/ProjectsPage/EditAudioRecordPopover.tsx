@@ -47,11 +47,6 @@ const EditAudioPopover = ({
                     vertical: 'bottom',
                     horizontal: 'left',
                 }}
-                sx={{
-                    '& .MuiPaper-root': {
-                        backgroundColor: 'transparent',
-                    },
-                }}
             >
                 <Box>
                     <IconButton onClick={() => startEditing(record)}>

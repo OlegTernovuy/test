@@ -1,8 +1,9 @@
 import React from 'react';
 
-import { FormControl, MenuItem } from '@mui/material';
+import { MenuItem } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { ICustomSelectProps } from '../../types';
+import { CustomFormSelectStyled } from '../../styled/AddAudioRecordForm.styled';
 
 const CustomSelect: React.FC<ICustomSelectProps> = ({
     selected,
@@ -15,7 +16,7 @@ const CustomSelect: React.FC<ICustomSelectProps> = ({
     };
 
     return (
-        <FormControl size="small" sx={{ maxWidth: '200px' }}>
+        <CustomFormSelectStyled size="small">
             <Select value={selected} onChange={handleChange}>
                 {options.map((option, index) => (
                     <MenuItem key={index} value={option.value}>
@@ -23,7 +24,7 @@ const CustomSelect: React.FC<ICustomSelectProps> = ({
                     </MenuItem>
                 ))}
             </Select>
-        </FormControl>
+        </CustomFormSelectStyled>
     );
 };
 

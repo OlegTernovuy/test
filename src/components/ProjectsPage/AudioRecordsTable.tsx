@@ -1,25 +1,21 @@
 import { useState } from 'react';
 import { useFormik } from 'formik';
 
+import { ProjectTitleSearchComponent, AudioRecordRow } from '../index';
+import { CircularProgressWrapper } from '../../styled/ProjectsPage.styled';
 import {
     AudioRecordsTableWrapper,
-    CircularProgressWrapper,
     StyledCommentCell,
     StyledTableBody,
     StyledTableCell,
     StyledTableHead,
-    StyledTextarea,
-} from '../../styled/ProjectsPage.styled';
-import { CustomMediaRecorder, EditAudioPopover } from '../index';
+} from '../../styled/AudioRecordsTable.styled';
 import {
     CircularProgress,
-    IconButton,
     Table,
     TableContainer,
     TableRow,
-    TextField,
 } from '@mui/material';
-import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
 
 import {
     IUpdateAudioRecord,
@@ -30,7 +26,6 @@ import { IAudioRecord, IProjects } from '../../types';
 import { useAuth } from '../../Providers/AuthProvider';
 import useWaveSurfer from '../../hook/useWaveSurfer';
 import { UpdateAudioRecordSchema } from '../../utils/valiadtionSchema';
-import ProjectTitleSearchComponent from './ProjectTitleSearchComponent';
 
 interface IAudioRecordProps {
     audioRecords: IAudioRecord[];
@@ -54,12 +49,6 @@ const AudioRecordsTable = ({
         stopRecording,
         handleUpdate,
     } = useWaveSurfer();
-
-    const getDate = (timestamp: number) => {
-        const date = new Date(timestamp * 1000);
-        const formattedDate = date.toLocaleDateString('en-US');
-        return formattedDate;
-    };
 
     const handleDeleteAudioRecord = async (
         audioRecordId: string,
@@ -155,101 +144,24 @@ const AudioRecordsTable = ({
                                 </TableRow>
                             ) : (
                                 audioRecords.map((record) => (
-                                    <TableRow key={record.id}>
-                                        <StyledTableCell>
-                                            {editingRecordId === record.id ? (
-                                                <TextField
-                                                    size="small"
-                                                    name="name"
-                                                    value={formik.values.name}
-                                                    onChange={
-                                                        formik.handleChange
-                                                    }
-                                                />
-                                            ) : (
-                                                record.name
-                                            )}
-                                        </StyledTableCell>
-                                        <StyledTableCell>
-                                            {editingRecordId === record.id ? (
-                                                <StyledTextarea
-                                                    multiline
-                                                    rows={4}
-                                                    name="comment"
-                                                    value={
-                                                        formik.values.comment
-                                                    }
-                                                    onChange={
-                                                        formik.handleChange
-                                                    }
-                                                />
-                                            ) : (
-                                                record.comment
-                                            )}
-                                        </StyledTableCell>
-                                        <StyledTableCell>
-                                            {editingRecordId === record.id ? (
-                                                <CustomMediaRecorder
-                                                    status={status}
-                                                    mediaBlobUrl={mediaBlobUrl}
-                                                    actionButtons={
-                                                        actionButtons
-                                                    }
-                                                    startRecording={
-                                                        startRecording
-                                                    }
-                                                    stopRecording={
-                                                        stopRecording
-                                                    }
-                                                />
-                                            ) : (
-                                                <audio
-                                                    src={record.audioFileUrl}
-                                                    controls
-                                                />
-                                            )}
-                                        </StyledTableCell>
-                                        <StyledTableCell>
-                                            {getDate(
-                                                record.date._seconds
-                                            ).toString()}
-                                        </StyledTableCell>
-                                        {isAdmin && (
-                                            <>
-                                                <StyledTableCell>
-                                                    {editingRecordId ===
-                                                    record.id ? (
-                                                        <>
-                                                            <IconButton
-                                                                onClick={() =>
-                                                                    formik.handleSubmit()
-                                                                }
-                                                            >
-                                                                <CheckIcon />
-                                                            </IconButton>
-                                                            <IconButton
-                                                                onClick={
-                                                                    cancelEditing
-                                                                }
-                                                            >
-                                                                <CloseIcon />
-                                                            </IconButton>
-                                                        </>
-                                                    ) : (
-                                                        <EditAudioPopover
-                                                            record={record}
-                                                            startEditing={
-                                                                startEditing
-                                                            }
-                                                            handleDeleteAudioRecord={
-                                                                handleDeleteAudioRecord
-                                                            }
-                                                        />
-                                                    )}
-                                                </StyledTableCell>
-                                            </>
-                                        )}
-                                    </TableRow>
+                                    <AudioRecordRow
+                                        record={record}
+                                        isEditing={
+                                            editingRecordId === record.id
+                                        }
+                                        formik={formik}
+                                        startEditing={startEditing}
+                                        cancelEditing={cancelEditing}
+                                        status={status}
+                                        mediaBlobUrl={mediaBlobUrl}
+                                        actionButtons={actionButtons}
+                                        startRecording={startRecording}
+                                        stopRecording={stopRecording}
+                                        handleDeleteAudioRecord={
+                                            handleDeleteAudioRecord
+                                        }
+                                        isAdmin={isAdmin}
+                                    />
                                 ))
                             ))}
                     </StyledTableBody>

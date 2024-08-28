@@ -1,3 +1,4 @@
+import { FormControl } from '@mui/material';
 import styled from 'styled-components';
 
 const AudioRecordWrapper = styled.div`
@@ -15,4 +16,13 @@ const SaveButtonStyled = styled.div`
     align-items: start;
 `;
 
-export { SaveButtonStyled, AudioRecordFormStyled, AudioRecordWrapper };
+const CustomFormSelectStyled = styled(FormControl)`
+    max-width: 200px;
+`;
+
+export {
+    SaveButtonStyled,
+    AudioRecordFormStyled,
+    AudioRecordWrapper,
+    CustomFormSelectStyled,
+};

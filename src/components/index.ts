@@ -9,6 +9,10 @@ import CustomSelect from './CustomMediaRecorder/CustomSelect';
 import HeaderMedia from './CustomMediaRecorder/HeaderMedia';
 import AddAudioRecordForm from './ProjectsPage/AddAudioRecordForm';
 import EditAudioPopover from './ProjectsPage/EditAudioRecordPopover';
+import ProjectTitleSearchComponent from './ProjectsPage/ProjectTitleSearchComponent';
+import EditableTableCell from './ProjectsPage/EditableTableCell';
+import EditableCommentCell from './ProjectsPage/EditableCommentCell';
+import AudioRecordRow from './ProjectsPage/AudioRecordRow';
 
 export {
     AuthForm,
@@ -21,5 +25,9 @@ export {
     CustomSelect,
     HeaderMedia,
     AddAudioRecordForm,
-    EditAudioPopover
+    EditAudioPopover,
+    EditableTableCell,
+    EditableCommentCell,
+    ProjectTitleSearchComponent,
+    AudioRecordRow
 };

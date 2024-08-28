@@ -5,7 +5,7 @@ import {
     ProjectPageHeaderStyled,
 } from '../styled/ProjectsPage.styled';
 import { AudioRecordsTable, Sidebar, AddAudioRecordForm } from '../components';
-import { Avatar, Box, Button } from '@mui/material';
+import { Avatar, Box, Button, IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
 import { useAuth } from '../Providers/AuthProvider';
@@ -14,7 +14,7 @@ import { useFetchAudioRecords } from '../services/Media.service';
 import { IProjects } from '../types';
 
 const ProjectsPage = () => {
-    const { isAdmin, user } = useAuth();
+    const { isAdmin, user, logout } = useAuth();
 
     const [open, setOpen] = useState(false);
 
@@ -60,7 +60,7 @@ const ProjectsPage = () => {
             <Box>
                 <ProjectPageHeaderStyled>
                     <MenuAudioFormHeaderStyled>
-                        <Button onClick={() => toggleDrawer()}>
+                        <Button aria-label="show sidebar" onClick={() => toggleDrawer()}>
                             <MenuIcon fontSize="large" />
                         </Button>
                         {isAdmin && (
@@ -72,7 +72,9 @@ const ProjectsPage = () => {
                             />
                         )}
                     </MenuAudioFormHeaderStyled>
-                    <Avatar>L</Avatar>
+                    <IconButton onClick={logout}>
+                        <Avatar>L</Avatar>
+                    </IconButton>
                 </ProjectPageHeaderStyled>
                 <AudioRecordsTable
                     audioRecords={audioRecords}
