@@ -13,6 +13,7 @@ import ProjectTitleSearchComponent from './ProjectsPage/ProjectTitleSearchCompon
 import EditableTableCell from './ProjectsPage/EditableTableCell';
 import EditableCommentCell from './ProjectsPage/EditableCommentCell';
 import AudioRecordRow from './ProjectsPage/AudioRecordRow';
+import AudioPlayerComponent from './ProjectsPage/AudioPlayerComponent';
 
 export {
     AuthForm,
@@ -29,5 +30,6 @@ export {
     EditableTableCell,
     EditableCommentCell,
     ProjectTitleSearchComponent,
-    AudioRecordRow
+    AudioRecordRow,
+    AudioPlayerComponent
 };

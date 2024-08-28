@@ -45,8 +45,10 @@ const AudioRecordsTable = ({
         status,
         mediaBlobUrl,
         actionButtons,
+        selectedOutput,
         startRecording,
         stopRecording,
+        clearBlobUrl,
         handleUpdate,
     } = useWaveSurfer();
 
@@ -100,6 +102,7 @@ const AudioRecordsTable = ({
     });
 
     const startEditing = (record: IAudioRecord) => {
+        clearBlobUrl();
         setEditingRecordId(record.id);
         formik.setValues({
             name: record.name,
@@ -145,6 +148,7 @@ const AudioRecordsTable = ({
                             ) : (
                                 audioRecords.map((record) => (
                                     <AudioRecordRow
+                                        key={record.id}
                                         record={record}
                                         isEditing={
                                             editingRecordId === record.id
@@ -155,6 +159,7 @@ const AudioRecordsTable = ({
                                         status={status}
                                         mediaBlobUrl={mediaBlobUrl}
                                         actionButtons={actionButtons}
+                                        selectedOutput={selectedOutput}
                                         startRecording={startRecording}
                                         stopRecording={stopRecording}
                                         handleDeleteAudioRecord={

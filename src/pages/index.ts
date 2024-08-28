@@ -3,7 +3,6 @@ import ResetPassword from './auth/ResetPassword';
 import RegisterPage from './auth/RegisterPage';
 import LoginPage from './auth/LoginPage';
 import ProjectsPage from './ProjectsPage';
-import AudioRecorderPage from './AudioRecorderPage';
 
 export {
     LoginPage,
@@ -11,5 +10,4 @@ export {
     ProjectsPage,
     ForgotPassword,
     ResetPassword,
-    AudioRecorderPage,
 };

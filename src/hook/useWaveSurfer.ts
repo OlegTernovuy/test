@@ -3,8 +3,8 @@ import { useReactMediaRecorder, StatusMessages } from 'react-media-recorder-2';
 import WaveSurfer from 'wavesurfer.js';
 
 import { CustomIconButtonProps, ICustomSelectProps } from '../types';
-import useAudioDevices from './useAudioDevices';
 import { putMedia, updateAudioFile } from '../services/Media.service';
+import { useAudioSettings } from '../Providers/AudioSettingsProvider';
 
 const WAVESURFER_SETTINGS = {
     container: '#wavesurfer-id',
@@ -21,43 +21,68 @@ interface UseWaveSurferReturn {
     mediaBlobUrl?: string;
     actionButtons: CustomIconButtonProps[];
     selectors: ICustomSelectProps[];
+    selectedOutput: string;
     startRecording: () => void;
     stopRecording: () => void;
+    clearBlobUrl: () => void;
     handleDone: () => Promise<void | ReturnType<typeof putMedia>>;
-    handleUpdate: (oldFileUrl: string) => Promise<void | ReturnType<typeof putMedia>>;
+    handleUpdate: (
+        oldFileUrl: string
+    ) => Promise<void | ReturnType<typeof putMedia>>;
 }
 
-// Custom hook that handles audio recording, WaveSurfer player setup, and UI interactions
 const useWaveSurfer = (): UseWaveSurferReturn => {
-    const { selectedInput, selectedOutput, selectors } = useAudioDevices(); // Manage audio input/output devices
+    const { selectedInput, selectedOutput, selectors } = useAudioSettings();
 
     const [isPlaying, setIsPlaying] = useState(false);
-    const [playerReady, setPlayerReady] = useState(false);
+    const [audioConstraints, setAudioConstraints] =
+        useState<MediaStreamConstraints>({
+            audio: selectedInput
+                ? { deviceId: { exact: selectedInput } }
+                : true,
+            video: false,
+        });
 
     const wavesurfer = useRef<WaveSurfer | null>(null);
 
     const {
         status,
-        startRecording,
+        startRecording: start,
         stopRecording,
         mediaBlobUrl,
         clearBlobUrl,
-    } = useReactMediaRecorder({
-        audio: selectedInput ? { deviceId: { exact: selectedInput } } : true,
-        video: false,
-        askPermissionOnMount: true,
-    }); // React hook to handle media recording
+    } = useReactMediaRecorder(audioConstraints);
 
-    // Effect to initialize WaveSurfer when mediaBlobUrl is available
+    // Update audio constraints when selectedInput changes
+    useEffect(() => {
+        setAudioConstraints({
+            audio: selectedInput
+                ? { deviceId: { exact: selectedInput } }
+                : true,
+            video: false,
+        });
+    }, [selectedInput]);
+
+    const startRecording = () => {
+        // Clear the previous recording if any
+        clearBlobUrl();
+        start();
+    };
+
+    // Initialize WaveSurfer when mediaBlobUrl is available
     useEffect(() => {
         if (!mediaBlobUrl) return;
 
         wavesurfer.current = WaveSurfer.create(WAVESURFER_SETTINGS);
 
         if (wavesurfer.current) {
-            wavesurfer.current.on('ready', () => setPlayerReady(true));
             wavesurfer.current.on('play', () => setIsPlaying(true));
             wavesurfer.current.on('pause', () => setIsPlaying(false));
+        }
+
+        if (selectedOutput && wavesurfer.current) {
+            // Apply the selected output device whenever wavesurfer is initialized
+            wavesurfer.current.setSinkId(selectedOutput);
         }
 
         return () => {
@@ -66,9 +91,9 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
                 wavesurfer.current.destroy();
             }
         };
-    }, [status, mediaBlobUrl]);
+    }, [mediaBlobUrl]);
 
-    // Effect to load the recorded audio into WaveSurfer when mediaBlobUrl changes
+    // Load the audio file into WaveSurfer when mediaBlobUrl changes
     useEffect(() => {
         if (mediaBlobUrl && wavesurfer.current) {
             wavesurfer.current?.load(mediaBlobUrl);
@@ -79,17 +104,19 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
 
         return () => {
             if (wavesurfer.current) {
-                wavesurfer.current.destroy(); // Cleanup WaveSurfer instance
+                wavesurfer.current.destroy();
             }
         };
     }, [mediaBlobUrl]);
 
-    // Effect to update the output device for WaveSurfer
+    // Update output device for WaveSurfer without reinitializing
     useEffect(() => {
-        if (wavesurfer.current instanceof WaveSurfer && selectedOutput) {
-            wavesurfer.current?.setSinkId(selectedOutput);
+        if (wavesurfer.current && selectedOutput) {
+            wavesurfer.current.setSinkId(selectedOutput).catch((err) => {
+                console.error('Error setting sink ID:', err);
+            });
         }
-    }, [selectedOutput, wavesurfer]);
+    }, [selectedOutput]);
 
     const togglePlayback = () => {
         if (!isPlaying) {
@@ -102,7 +129,6 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
     const handleDone = async () => {
         if (mediaBlobUrl) {
             try {
-                // Get Blob with Blob URL
                 const response = await fetch(mediaBlobUrl);
                 const blob = await response.blob();
 
@@ -124,7 +150,6 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
     const handleUpdate = async (oldFileUrl: string) => {
         if (mediaBlobUrl) {
             try {
-                // Get Blob with Blob URL
                 const response = await fetch(mediaBlobUrl);
                 const blob = await response.blob();
 
@@ -132,7 +157,7 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
                     type: 'audio/mp3',
                 });
 
-                const result = await updateAudioFile(file, oldFileUrl);                
+                const result = await updateAudioFile(file, oldFileUrl);
 
                 clearBlobUrl();
 
@@ -143,7 +168,6 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
         }
     };
 
-    // Array of button configurations for UI actions
     const actionButtons: CustomIconButtonProps[] = [
         {
             condition: !isPlaying && mediaBlobUrl,
@@ -168,8 +192,10 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
         mediaBlobUrl,
         actionButtons,
         selectors,
+        selectedOutput,
         startRecording,
         stopRecording,
+        clearBlobUrl,
         handleDone,
         handleUpdate
     };
