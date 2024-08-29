@@ -3,6 +3,7 @@ import {
     EditableTableCell,
     EditableCommentCell,
     CustomMediaRecorder,
+    AudioPlayerComponent,
 } from '../index';
 import { StyledTableCell } from '../../styled/AudioRecordsTable.styled';
 import { TableRow, IconButton } from '@mui/material';
@@ -18,6 +19,7 @@ interface AudioRecordRowProps {
     cancelEditing: () => void;
     status: any;
     mediaBlobUrl?: string;
+    selectedOutput: string;
     actionButtons: CustomIconButtonProps[];
     startRecording: () => void;
     stopRecording: () => void;
@@ -33,6 +35,7 @@ const AudioRecordRow = ({
     cancelEditing,
     status,
     mediaBlobUrl,
+    selectedOutput,
     actionButtons,
     startRecording,
     stopRecording,
@@ -45,7 +48,7 @@ const AudioRecordRow = ({
         return formattedDate;
     };
     return (
-        <TableRow key={record.id}>
+        <TableRow>
             <StyledTableCell>
                 <EditableTableCell
                     isEditing={isEditing}
@@ -74,7 +77,10 @@ const AudioRecordRow = ({
                         stopRecording={stopRecording}
                     />
                 ) : (
-                    <audio src={record.audioFileUrl} controls />
+                    <AudioPlayerComponent
+                        audioUrl={record.audioFileUrl}
+                        selectedOutput={selectedOutput}
+                    />
                 )}
             </StyledTableCell>
             <StyledTableCell>{getDate(record.date._seconds)}</StyledTableCell>

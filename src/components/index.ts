@@ -14,6 +14,7 @@ import EditableTableCell from './ProjectsPage/EditableTableCell';
 import EditableCommentCell from './ProjectsPage/EditableCommentCell';
 import AudioRecordRow from './ProjectsPage/AudioRecordRow';
 import AddNewProjectForm from './ProjectsPage/sidebar/AddNewProjectForm';
+import AudioPlayerComponent from './ProjectsPage/AudioPlayerComponent';
 
 export {
     AuthForm,
@@ -31,5 +32,6 @@ export {
     EditableCommentCell,
     ProjectTitleSearchComponent,
     AudioRecordRow,
-    AddNewProjectForm
+    AddNewProjectForm,
+    AudioPlayerComponent
 };

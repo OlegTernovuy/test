@@ -6,7 +6,7 @@ import { SnackbarProvider } from 'notistack';
 
 import App from './App';
 
-import { AuthProvider } from './Providers/AuthProvider';
+import { AudioSettingsProvider, AuthProvider } from './Providers';
 import { theme } from './styled/theme';
 
 const root = ReactDOM.createRoot(
@@ -16,11 +16,13 @@ root.render(
     <React.StrictMode>
         <BrowserRouter>
             <AuthProvider>
-                <SnackbarProvider>
-                    <ThemeProvider theme={theme}>
-                        <App />
-                    </ThemeProvider>
-                </SnackbarProvider>
+                <AudioSettingsProvider>
+                    <SnackbarProvider>
+                        <ThemeProvider theme={theme}>
+                            <App />
+                        </ThemeProvider>
+                    </SnackbarProvider>
+                </AudioSettingsProvider>
             </AuthProvider>
         </BrowserRouter>
     </React.StrictMode>
