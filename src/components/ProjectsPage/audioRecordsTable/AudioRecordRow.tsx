@@ -4,12 +4,12 @@ import {
     EditableCommentCell,
     CustomMediaRecorder,
     AudioPlayerComponent,
-} from '../index';
-import { StyledTableCell } from '../../styled/AudioRecordsTable.styled';
+} from '../../index';
+import { StyledTableCell } from '../../../styled/AudioRecordsTable.styled';
 import { TableRow, IconButton } from '@mui/material';
 import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
 
-import { CustomIconButtonProps, IAudioRecord } from '../../types';
+import { CustomIconButtonProps, IAudioRecord } from '../../../types';
 
 interface AudioRecordRowProps {
     record: IAudioRecord;

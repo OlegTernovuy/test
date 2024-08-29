@@ -1,37 +1,26 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 
-import { AddNewProjectForm } from '../index';
 import {
-    EditProjectFormStyled,
-    IconContainer,
+    AddNewProjectForm,
+    SidebarListItem,
+    EditButtonsBlock,
+} from '../../index';
+import {
     SidebarHeaderStyled,
     SliderStyled,
     StyledListItem,
-} from '../../styled/ProjectsPage.styled';
-import {
-    Drawer,
-    IconButton,
-    List,
-    ListItemText,
-    TextField,
-    Typography,
-} from '@mui/material';
-import {
-    AddCircle as AddCircleIcon,
-    Edit as EditIcon,
-    Delete as DeleteIcon,
-    Check as CheckIcon,
-    Close as CloseIcon,
-} from '@mui/icons-material';
+} from '../../../styled/ProjectsPage.styled';
+import { Drawer, IconButton, List, Typography } from '@mui/material';
+import { AddCircle as AddCircleIcon } from '@mui/icons-material';
 
-import { useAuth } from '../../Providers/AuthProvider';
-import { IProjects } from '../../types';
+import { useAuth } from '../../../Providers/AuthProvider';
+import { IProjects } from '../../../types';
 import {
     useAddProject,
     useDeleteProject,
     useEditProject,
-} from '../../services/Projects.service';
-import { useLocation, useNavigate } from 'react-router';
+} from '../../../services/Projects.service';
 
 interface ISidebarProps {
     projects: IProjects[];
@@ -167,78 +156,33 @@ const Sidebar: React.FC<ISidebarProps> = ({
                             }}
                             isSelected={selectProject === index}
                         >
-                            <ListItemText
-                                primary={
-                                    selectedProjectUpdate === project.id ? (
-                                        <EditProjectFormStyled>
-                                            <TextField
-                                                value={newProjectName}
-                                                onChange={(e) =>
-                                                    setNewProjectName(
-                                                        e.target.value
-                                                    )
-                                                }
-                                                variant="outlined"
-                                                size="small"
-                                                fullWidth
-                                                onClick={(e) =>
-                                                    e.stopPropagation()
-                                                }
-                                            />
-                                            <IconButton
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleSaveEdit(project.id);
-                                                }}
-                                                disabled={editLoading}
-                                            >
-                                                <CheckIcon />
-                                            </IconButton>
-                                            <IconButton
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleCancel();
-                                                }}
-                                            >
-                                                <CloseIcon />
-                                            </IconButton>
-                                        </EditProjectFormStyled>
-                                    ) : (
-                                        <Typography>{project.name}</Typography>
-                                    )
+                            <SidebarListItem
+                                selectedProject={
+                                    selectedProjectUpdate === project.id
                                 }
+                                projectName={project.name}
+                                editLoading={editLoading}
+                                newProjectName={newProjectName}
+                                setNewProjectName={setNewProjectName}
+                                handleSaveEdit={() =>
+                                    handleSaveEdit(project.id)
+                                }
+                                handleCancel={handleCancel}
                             />
                             {isAdmin &&
                                 selectedProjectUpdate !== project.id && (
-                                    <IconContainer>
-                                        <IconButton
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleEditProject(
-                                                    project.id,
-                                                    project.name
-                                                );
-                                            }}
-                                            disabled={editLoading}
-                                        >
-                                            <EditIcon
-                                                fontSize="small"
-                                                color="primary"
-                                            />
-                                        </IconButton>
-                                        <IconButton
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleDeleteProject(project.id);
-                                            }}
-                                            disabled={deleteLoading}
-                                        >
-                                            <DeleteIcon
-                                                fontSize="small"
-                                                color="primary"
-                                            />
-                                        </IconButton>
-                                    </IconContainer>
+                                    <EditButtonsBlock
+                                        handleEditProject={() =>
+                                            handleEditProject(
+                                                project.id,
+                                                project.name
+                                            )
+                                        }
+                                        handleDeleteProject={() =>
+                                            handleDeleteProject(project.id)
+                                        }
+                                        deleteLoading={deleteLoading}
+                                    />
                                 )}
                         </StyledListItem>
                     ))}

@@ -1,4 +1,4 @@
-import { StyledTextarea } from "../../styled/AudioRecordsTable.styled";
+import { StyledTextarea } from "../../../styled/AudioRecordsTable.styled";
 
 interface EditableCommentCellProps {
     isEditing: boolean;

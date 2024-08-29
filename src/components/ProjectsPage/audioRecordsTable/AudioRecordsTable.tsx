@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { useFormik } from 'formik';
 
-import { ProjectTitleSearchComponent, AudioRecordRow } from '../index';
-import { CircularProgressWrapper } from '../../styled/ProjectsPage.styled';
+import { ProjectTitleSearchComponent, AudioRecordRow } from '../../index';
+import { CircularProgressWrapper } from '../../../styled/ProjectsPage.styled';
 import {
     AudioRecordsTableWrapper,
     StyledCommentCell,
     StyledTableBody,
     StyledTableCell,
     StyledTableHead,
-} from '../../styled/AudioRecordsTable.styled';
+} from '../../../styled/AudioRecordsTable.styled';
 import {
     CircularProgress,
     Table,
@@ -21,11 +21,11 @@ import {
     IUpdateAudioRecord,
     updateAudioRecord,
     useDeleteAudioRecord,
-} from '../../services/Media.service';
-import { IAudioRecord, IProjects } from '../../types';
-import { useAuth } from '../../Providers/AuthProvider';
-import useWaveSurfer from '../../hook/useWaveSurfer';
-import { UpdateAudioRecordSchema } from '../../utils/valiadtionSchema';
+} from '../../../services/Media.service';
+import { IAudioRecord, IProjects } from '../../../types';
+import { useAuth } from '../../../Providers/AuthProvider';
+import useWaveSurfer from '../../../hook/useWaveSurfer';
+import { UpdateAudioRecordSchema } from '../../../utils/valiadtionSchema';
 
 interface IAudioRecordProps {
     audioRecords: IAudioRecord[];
