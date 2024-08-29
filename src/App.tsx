@@ -6,7 +6,6 @@ import {
     LoginPage,
     ResetPassword,
     RegisterPage,
-    AudioRecorderPage,
 } from './pages';
 import { GlobalStyle } from './styled/GlobalStyle.styled';
 import { AppWrapper } from './styled/AppWrapper.styled';
@@ -18,14 +17,6 @@ function App() {
             <GlobalStyle />
             <Routes>
                 <Route path="/" element={<Navigate to="/projects" />} />
-                <Route
-                    path="/microphone"
-                    element={
-                        <ProtectedRoute>
-                            <AudioRecorderPage />
-                        </ProtectedRoute>
-                    }
-                />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
