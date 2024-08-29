@@ -97,10 +97,11 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
     useEffect(() => {
         if (mediaBlobUrl && wavesurfer.current) {
             wavesurfer.current?.load(mediaBlobUrl);
-        } else {
-            wavesurfer.current = null;
-            clearBlobUrl();
-        }
+        } 
+        // else {
+        //     wavesurfer.current = null;
+        //     clearBlobUrl();   
+        // }
 
         return () => {
             if (wavesurfer.current) {

@@ -1,22 +1,14 @@
 import { useState } from 'react';
 import { useFormik } from 'formik';
-
-import { ProjectTitleSearchComponent, AudioRecordRow } from '../../index';
 import { CircularProgressWrapper } from '../../../styled/ProjectsPage.styled';
+import { CircularProgress, TextField } from '@mui/material';
+import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
 import {
-    AudioRecordsTableWrapper,
-    StyledCommentCell,
-    StyledTableBody,
-    StyledTableCell,
-    StyledTableHead,
-} from '../../../styled/AudioRecordsTable.styled';
-import {
-    CircularProgress,
-    Table,
-    TableContainer,
-    TableRow,
-} from '@mui/material';
-
+    DataGrid,
+    GridActionsCellItem,
+    GridColDef,
+    GridRenderCellParams,
+} from '@mui/x-data-grid';
 import {
     IUpdateAudioRecord,
     updateAudioRecord,
@@ -26,6 +18,10 @@ import { IAudioRecord, IProjects } from '../../../types';
 import { useAuth } from '../../../Providers/AuthProvider';
 import useWaveSurfer from '../../../hook/useWaveSurfer';
 import { UpdateAudioRecordSchema } from '../../../utils/valiadtionSchema';
+import { AudioRecordsTableWrapper } from '../../../styled/AudioRecordsTable.styled';
+import CustomMediaRecorder from '../../CustomMediaRecorder/CustomMediaRecorder';
+import ProjectTitleSearchComponent from '../ProjectTitleSearchComponent';
+import EditAudioPopover from './EditAudioRecordPopover';
 
 interface IAudioRecordProps {
     audioRecords: IAudioRecord[];
@@ -45,28 +41,14 @@ const AudioRecordsTable = ({
         status,
         mediaBlobUrl,
         actionButtons,
-        selectedOutput,
         startRecording,
         stopRecording,
-        clearBlobUrl,
         handleUpdate,
+        clearBlobUrl,
     } = useWaveSurfer();
-
-    const handleDeleteAudioRecord = async (
-        audioRecordId: string,
-        audioFileUrl: string
-    ) => {
-        try {
-            await deleteAudioRecord(audioRecordId, audioFileUrl);
-            fetchData(projectId.id);
-        } catch (error) {
-            console.error(error);
-        }
-    };
 
     const { deleteAudioRecord, loading: deleteLoading } =
         useDeleteAudioRecord();
-
     const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
 
     const formik = useFormik({
@@ -89,10 +71,11 @@ const AudioRecordsTable = ({
                     const result = await handleUpdate(values.audioFileUrl);
                     updatedData.audioFileUrl = result;
                 }
-                if (editingRecordId)
+                if (editingRecordId) {
                     await updateAudioRecord(editingRecordId, updatedData);
-                setEditingRecordId(null);
-                fetchData(projectId.id);
+                    setEditingRecordId(null);
+                    fetchData(projectId.id);
+                }
             } catch (error) {
                 console.error('Error submitting the form: ', error);
             } finally {
@@ -100,6 +83,18 @@ const AudioRecordsTable = ({
             }
         },
     });
+
+    const handleDeleteAudioRecord = async (
+        audioRecordId: string,
+        audioFileUrl: string
+    ) => {
+        try {
+            await deleteAudioRecord(audioRecordId, audioFileUrl);
+            fetchData(projectId.id);
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const startEditing = (record: IAudioRecord) => {
         clearBlobUrl();
@@ -116,6 +111,108 @@ const AudioRecordsTable = ({
         setEditingRecordId(null);
     };
 
+    const getDate = (timestamp: number) => {
+        const date = new Date(timestamp * 1000);
+        return date.toLocaleDateString('en-US');
+    };
+
+    const columns: GridColDef[] = [
+        {
+            field: 'name',
+            headerName: 'Audio name',
+            flex: 1,
+            // editable: true,
+            renderCell: (params: GridRenderCellParams) =>
+                editingRecordId === params.row.id ? (
+                    <TextField
+                        size="small"
+                        value={formik.values.name}
+                        onChange={(e) =>
+                            formik.setFieldValue('name', e.target.value)
+                        }
+                    />
+                ) : (
+                    params.row.name
+                ),
+        },
+        {
+            field: 'comment',
+            headerName: 'Comment',
+            flex: 1,
+            renderCell: (params: GridRenderCellParams) =>
+                editingRecordId === params.row.id ? (
+                    <TextField
+                        size="small"
+                        multiline
+                        value={formik.values.comment}
+                        onChange={(e) =>
+                            formik.setFieldValue('comment', e.target.value)
+                        }
+                    />
+                ) : (
+                    params.row.comment
+                ),
+        },
+        {
+            field: 'audio',
+            headerName: 'Audio',
+            flex: 1,
+            renderCell: (params: GridRenderCellParams) => (
+                <CustomMediaRecorder
+                    status={status}
+                    mediaBlobUrl={mediaBlobUrl}
+                    actionButtons={actionButtons}
+                    startRecording={startRecording}
+                    stopRecording={stopRecording}
+                />
+            ),
+        },
+        {
+            field: 'date',
+            headerName: 'Date',
+            flex: 1,
+            renderCell: (params: GridRenderCellParams) => {
+                const date = (params.value as { _seconds: number })?._seconds;
+                return date ? getDate(date) : ''; // Fallback if date is undefined
+            },
+        },
+        ...(isAdmin
+            ? [
+                  {
+                      field: 'actions',
+                      headerName: 'Actions',
+                      flex: 1,
+                      renderCell: (params: GridRenderCellParams) =>
+                          editingRecordId === params.row.id ? (
+                              <>
+                                  <GridActionsCellItem
+                                      icon={<CheckIcon />}
+                                      label="Save"
+                                      onClick={() => formik.handleSubmit()}
+                                  />
+                                  <GridActionsCellItem
+                                      icon={<CloseIcon />}
+                                      label="Cancel"
+                                      onClick={cancelEditing}
+                                  />
+                              </>
+                          ) : (
+                              <EditAudioPopover
+                                  record={params.row}
+                                  startEditing={() => startEditing(params.row)}
+                                  handleDeleteAudioRecord={() =>
+                                      handleDeleteAudioRecord(
+                                          params.row.id,
+                                          params.row.audioFileUrl
+                                      )
+                                  }
+                              />
+                          ),
+                  },
+              ]
+            : []),
+    ];
+
     return (
         <AudioRecordsTableWrapper>
             {(loading || formik.isSubmitting || deleteLoading) && (
@@ -124,54 +221,16 @@ const AudioRecordsTable = ({
                 </CircularProgressWrapper>
             )}
             <ProjectTitleSearchComponent projectName={projectId.name} />
-            <TableContainer>
-                <Table>
-                    <StyledTableHead>
-                        <TableRow>
-                            <StyledTableCell>Audio name</StyledTableCell>
-                            <StyledCommentCell width="400px">
-                                Comment
-                            </StyledCommentCell>
-                            <StyledTableCell>Audio</StyledTableCell>
-                            <StyledTableCell>Date</StyledTableCell>
-                            {isAdmin && <StyledTableCell>Edit</StyledTableCell>}
-                        </TableRow>
-                    </StyledTableHead>
-                    <StyledTableBody>
-                        {audioRecords &&
-                            (audioRecords.length === 0 ? (
-                                <TableRow>
-                                    <StyledTableCell colSpan={7}>
-                                        No Records
-                                    </StyledTableCell>
-                                </TableRow>
-                            ) : (
-                                audioRecords.map((record) => (
-                                    <AudioRecordRow
-                                        key={record.id}
-                                        record={record}
-                                        isEditing={
-                                            editingRecordId === record.id
-                                        }
-                                        formik={formik}
-                                        startEditing={startEditing}
-                                        cancelEditing={cancelEditing}
-                                        status={status}
-                                        mediaBlobUrl={mediaBlobUrl}
-                                        actionButtons={actionButtons}
-                                        selectedOutput={selectedOutput}
-                                        startRecording={startRecording}
-                                        stopRecording={stopRecording}
-                                        handleDeleteAudioRecord={
-                                            handleDeleteAudioRecord
-                                        }
-                                        isAdmin={isAdmin}
-                                    />
-                                ))
-                            ))}
-                    </StyledTableBody>
-                </Table>
-            </TableContainer>
+            <DataGrid
+                rows={audioRecords}
+                columns={columns}
+                autoHeight
+                getRowId={(row) => row.id}
+                loading={loading}
+                editMode="row"
+                rowHeight={200}
+                disableRowSelectionOnClick
+            />
         </AudioRecordsTableWrapper>
     );
 };
