@@ -1,27 +1,19 @@
+import { Typography } from '@mui/material';
+import { GridToolbarProps, GridToolbarQuickFilter } from '@mui/x-data-grid';
 import { ProjectTitleSearchStyled } from '../../styled/AudioRecordsTable.styled';
-import { TextField, Typography, InputAdornment } from '@mui/material';
-import { Search as SearchIcon } from '@mui/icons-material';
-interface ProjectTitleSearchComponentProps {
-    projectName: string;
+
+interface ProjectTitleSearchComponentProps extends GridToolbarProps {
+    projectName?: string;
 }
 
 const ProjectTitleSearchComponent = ({
     projectName,
+    ...toolbarProps
 }: ProjectTitleSearchComponentProps) => {
     return (
         <ProjectTitleSearchStyled>
             <Typography variant="h6">{projectName}</Typography>
-            <TextField
-                type="text"
-                size="small"
-                InputProps={{
-                    startAdornment: (
-                        <InputAdornment position="start">
-                            <SearchIcon />
-                        </InputAdornment>
-                    ),
-                }}
-            />
+            <GridToolbarQuickFilter />
         </ProjectTitleSearchStyled>
     );
 };

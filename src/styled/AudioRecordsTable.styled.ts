@@ -12,7 +12,7 @@ const AudioRecordsTableWrapper = styled(Box)`
 
 const ProjectTitleSearchStyled = styled(FlexCenterStyled)`
     justify-content: space-between;
-    padding-bottom: 16px;
+    padding: 16px;
 `;
 
 const StyledTableHead = styled(TableHead)`
@@ -23,7 +23,7 @@ const StyledTableCell = styled(TableCell)`
     text-align: center !important;
 `;
 
-const StyledCommentCell = styled(StyledTableCell)<{ width?: string }>`
+const StyledCommentCell = styled(StyledTableCell)<{ mediaBlobUrl?: string }>`
     max-width: ${({ width }) => width || 'auto'};
 `;
 

@@ -23,7 +23,8 @@ const AudioRecorderStyled = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: start;
-    gap: 20px;
+    // gap: 20px;
+    // height: 100%;
 `;
 
 const ActionsStyled = styled.div`
@@ -50,8 +51,8 @@ const IconButtonStyled = styled(IconButton)`
     height: 20px;
 `;
 
-const ListenAudioStyled = styled.div`
-    display: flex;
+const ListenAudioStyled = styled.div<{ mediaBlobUrl?: boolean }>`
+    display: ${({ mediaBlobUrl }) => (mediaBlobUrl ? 'flex' : 'none')};
     align-items: center;
     gap: 20px;
 `;

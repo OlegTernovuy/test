@@ -68,7 +68,7 @@ const AudioRecordRow = ({
                 />
             </StyledTableCell>
             <StyledTableCell>
-                {isEditing ? (
+                {/* {isEditing ? (
                     <CustomMediaRecorder
                         status={status}
                         mediaBlobUrl={mediaBlobUrl}
@@ -81,7 +81,7 @@ const AudioRecordRow = ({
                         audioUrl={record.audioFileUrl}
                         selectedOutput={selectedOutput}
                     />
-                )}
+                )} */}
             </StyledTableCell>
             <StyledTableCell>{getDate(record.date._seconds)}</StyledTableCell>
             {isAdmin && (

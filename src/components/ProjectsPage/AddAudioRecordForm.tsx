@@ -38,7 +38,7 @@ const AddAudioRecordForm = ({
         selectors,
         startRecording,
         stopRecording,
-    } = useWaveSurfer();
+    } = useWaveSurfer('#wavesurfer-add');
 
     const formik = useFormik({
         initialValues: {
@@ -143,6 +143,7 @@ const AddAudioRecordForm = ({
                     stopRecording={stopRecording}
                     disabled={formik.isSubmitting}
                     isAddingFroms
+                    wavesurferId='wavesurfer-add'
                 />
             </AudioRecordFormStyled>
         </AudioRecordWrapper>

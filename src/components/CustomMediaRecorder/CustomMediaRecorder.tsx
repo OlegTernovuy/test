@@ -20,7 +20,8 @@ const CustomMediaRecorder: React.FC<ICustomMediaRecorder> = ({
     stopRecording,
     disabled,
     isAddingFroms,
-}) => {    
+    wavesurferId,
+}) => {
     return (
         <AudioRecorderStyled>
             <ActionsStyled>
@@ -45,8 +46,10 @@ const CustomMediaRecorder: React.FC<ICustomMediaRecorder> = ({
                     </ActionsButtonStyled>
                 )}
             </ActionsStyled>
-            <ListenAudioStyled>
-                <AvesurferStyled id="wavesurfer-id" />
+            <ListenAudioStyled mediaBlobUrl={!!mediaBlobUrl}>
+                <AvesurferStyled 
+                    id={wavesurferId} 
+                />
                 <ActionsContentStyled>
                     {actionButtons.map((buttonInfo, index) => (
                         <CustomIconButton key={index} {...buttonInfo} />
