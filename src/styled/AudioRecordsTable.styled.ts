@@ -2,11 +2,12 @@ import styled from 'styled-components';
 
 import { Box, TextField } from '@mui/material';
 import { FlexCenterStyled } from './GlobalStyle.styled';
+import { theme } from './theme';
 
 const AudioRecordsTableWrapper = styled(Box)`
     position: relative;
     padding: 16px;
-    background-color: ${({ theme }) => theme.color.background};
+    background-color: ${theme.palette.background.paper};
     flex-grow: 1;
 `;
 

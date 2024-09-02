@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { useFormik } from 'formik';
-import { ThemeProvider } from '@mui/material';
 
 import { DataGrid, GridPaginationModel } from '@mui/x-data-grid';
 import { createColumns, ProjectTitleSearchComponent } from '../../index';
 import { AudioRecordsTableWrapper } from '../../../styled/AudioRecordsTable.styled';
-import muiTheme from '../../../styled/muiStyles';
 
 import {
     IUpdateAudioRecord,
@@ -117,36 +115,34 @@ const AudioRecordsTable = ({
     );
 
     return (
-        <ThemeProvider theme={muiTheme}>
-            <AudioRecordsTableWrapper>
-                <DataGrid
-                    apiRef={apiRef}
-                    rows={audioRecords}
-                    columns={columns}
-                    autoHeight
-                    getRowId={(row) => row.id}
-                    loading={loading || formik.isSubmitting || deleteLoading}
-                    editMode="row"
-                    getRowHeight={() => 'auto'}
-                    getEstimatedRowHeight={() => 200}
-                    paginationModel={paginationModel}
-                    onPaginationModelChange={setPaginationModel}
-                    pageSizeOptions={[5, 10, 20]}
-                    disableRowSelectionOnClick
-                    onCellDoubleClick={(params, event) => {
-                        event.stopPropagation();
-                        event.preventDefault();
-                    }}
-                    slots={{
-                        toolbar: () => (
-                            <ProjectTitleSearchComponent
-                                projectName={projectId.name}
-                            />
-                        ),
-                    }}
-                />
-            </AudioRecordsTableWrapper>
-        </ThemeProvider>
+        <AudioRecordsTableWrapper>
+            <DataGrid
+                apiRef={apiRef}
+                rows={audioRecords}
+                columns={columns}
+                autoHeight
+                getRowId={(row) => row.id}
+                loading={loading || formik.isSubmitting || deleteLoading}
+                editMode="row"
+                getRowHeight={() => 'auto'}
+                getEstimatedRowHeight={() => 200}
+                paginationModel={paginationModel}
+                onPaginationModelChange={setPaginationModel}
+                pageSizeOptions={[5, 10, 20]}
+                disableRowSelectionOnClick
+                onCellDoubleClick={(params, event) => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                }}
+                slots={{
+                    toolbar: () => (
+                        <ProjectTitleSearchComponent
+                            projectName={projectId.name}
+                        />
+                    ),
+                }}
+            />
+        </AudioRecordsTableWrapper>
     );
 };
 
