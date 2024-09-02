@@ -10,13 +10,12 @@ import HeaderMedia from './CustomMediaRecorder/HeaderMedia';
 import AddAudioRecordForm from './ProjectsPage/AddAudioRecordForm';
 import EditAudioPopover from './ProjectsPage/audioRecordsTable/EditAudioRecordPopover';
 import ProjectTitleSearchComponent from './ProjectsPage/ProjectTitleSearchComponent';
-import EditableTableCell from './ProjectsPage/audioRecordsTable/EditableTableCell';
-import EditableCommentCell from './ProjectsPage/audioRecordsTable/EditableCommentCell';
-import AudioRecordRow from './ProjectsPage/audioRecordsTable/AudioRecordRow';
 import AddNewProjectForm from './ProjectsPage/sidebar/AddNewProjectForm';
 import EditButtonsBlock from './ProjectsPage/sidebar/EditButtonsBlock';
 import SidebarListItem from './ProjectsPage/sidebar/SidebarListItem';
 import AudioPlayerComponent from './ProjectsPage/audioRecordsTable/AudioPlayerComponent';
+import CustomEditTextarea from './ProjectsPage/audioRecordsTable/CustomEditTextarea';
+import createColumns from './ProjectsPage/audioRecordsTable/AudioRecordsTableColumns';
 
 export {
     AuthForm,
@@ -30,12 +29,11 @@ export {
     HeaderMedia,
     AddAudioRecordForm,
     EditAudioPopover,
-    EditableTableCell,
-    EditableCommentCell,
     ProjectTitleSearchComponent,
-    AudioRecordRow,
     AddNewProjectForm,
     EditButtonsBlock,
     SidebarListItem,
-    AudioPlayerComponent
+    AudioPlayerComponent,
+    CustomEditTextarea,
+    createColumns
 };
