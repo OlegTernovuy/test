@@ -1,13 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { ThemeProvider } from 'styled-components';
 import { SnackbarProvider } from 'notistack';
+import { CssBaseline } from '@mui/material';
 
 import App from './App';
 
-import { AudioSettingsProvider, AuthProvider } from './Providers';
 import { theme } from './styled/theme';
+import { GlobalStyle } from './styled/GlobalStyle.styled';
+import {
+    AudioSettingsProvider,
+    AuthProvider,
+    MixedThemeProvider,
+} from './Providers';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -18,9 +23,11 @@ root.render(
             <AuthProvider>
                 <AudioSettingsProvider>
                     <SnackbarProvider>
-                        <ThemeProvider theme={theme}>
+                        <MixedThemeProvider theme={theme}>
+                            <CssBaseline />
+                            <GlobalStyle />
                             <App />
-                        </ThemeProvider>
+                        </MixedThemeProvider>
                     </SnackbarProvider>
                 </AudioSettingsProvider>
             </AuthProvider>

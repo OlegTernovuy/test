@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { Box, Grid, ListItem } from '@mui/material';
+import { Box, ListItem } from '@mui/material';
 import { FlexCenterStyled } from './GlobalStyle.styled';
 
 const SliderStyled = styled(Box)`
@@ -29,28 +29,15 @@ const AddProjectFormStyled = styled(FlexCenterStyled)`
 
 const EditProjectFormStyled = styled(FlexCenterStyled)``;
 
-const GridAudioList = styled(Grid)`
-    padding: 12px;
-`;
-
-const CircularProgressWrapper = styled(Box)`
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: ${({ theme }) => theme.color.backgroundOpacity};
-    z-index: 1;
-`;
-
 const ProjectPageHeaderStyled = styled(Box)`
     display: flex;
     align-items: start;
     justify-content: space-between;
     padding: 16px 8px;
+`;
+
+const ProfileBlockStyled = styled(FlexCenterStyled)`
+    gap: 12px;
 `;
 
 const MenuAudioFormHeaderStyled = styled(Box)`
@@ -60,8 +47,6 @@ const MenuAudioFormHeaderStyled = styled(Box)`
 
 export {
     SidebarHeaderStyled,
-    GridAudioList,
-    CircularProgressWrapper,
     ProjectPageHeaderStyled,
     SliderStyled,
     StyledListItem,
@@ -69,4 +54,5 @@ export {
     AddProjectFormStyled,
     EditProjectFormStyled,
     MenuAudioFormHeaderStyled,
+    ProfileBlockStyled,
 };

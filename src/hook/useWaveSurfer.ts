@@ -7,7 +7,6 @@ import { putMedia, updateAudioFile } from '../services/Media.service';
 import { useAudioSettings } from '../Providers/AudioSettingsProvider';
 
 const WAVESURFER_SETTINGS = {
-    container: '#wavesurfer-id',
     height: 75,
     cursorWidth: 1,
     barWidth: 2,
@@ -31,9 +30,8 @@ interface UseWaveSurferReturn {
     ) => Promise<void | ReturnType<typeof putMedia>>;
 }
 
-const useWaveSurfer = (): UseWaveSurferReturn => {
+const useWaveSurfer = (containerId: string): UseWaveSurferReturn => {
     const { selectedInput, selectedOutput, selectors } = useAudioSettings();
-
     const [isPlaying, setIsPlaying] = useState(false);
     const [audioConstraints, setAudioConstraints] =
         useState<MediaStreamConstraints>({
@@ -73,7 +71,10 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
     useEffect(() => {
         if (!mediaBlobUrl) return;
 
-        wavesurfer.current = WaveSurfer.create(WAVESURFER_SETTINGS);
+        wavesurfer.current = WaveSurfer.create({
+            ...WAVESURFER_SETTINGS,
+            container: containerId,
+        });
 
         if (wavesurfer.current) {
             wavesurfer.current.on('play', () => setIsPlaying(true));
@@ -197,7 +198,7 @@ const useWaveSurfer = (): UseWaveSurferReturn => {
         stopRecording,
         clearBlobUrl,
         handleDone,
-        handleUpdate
+        handleUpdate,
     };
 };
 

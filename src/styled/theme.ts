@@ -1,17 +1,50 @@
-const theme = {
-    color: {
-        primary: '#1976D2',
-        secondary: '#526e75',
-        black: '#1c1c1c',
-        background: '#f5f9ff',
-        backgroundOpacity: '#FFFFFFB2',
-    },
-    media: {
-        sm: '480px',
-        md: '768px',
-        lg: '1024px',
-        xl: '1200px',
-    },
-};
+import { createTheme } from '@mui/material/styles';
+import type {} from '@mui/x-data-grid/themeAugmentation';
 
-export { theme };
+export const theme = createTheme({
+    palette: {
+        background: {
+            default: '#FFFFFFB2',
+            paper: '#f5f9ff',
+        },
+        text: {
+            primary: '#1c1c1c',
+        },
+        primary: {
+            main: '#1976D2',
+        },
+        secondary: {
+            main: '#526e75',
+        },
+    },
+    breakpoints: {
+        values: {
+            xs: 0,
+            sm: 480,
+            md: 768,
+            lg: 1024,
+            xl: 1200,
+        },
+    },
+    components: {
+        MuiDataGrid: {
+            styleOverrides: {
+                root: {
+                    '&.MuiDataGrid-root': {
+                        border: 'none',
+                    },
+                    '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': {
+                        paddingTop: '15px',
+                        paddingBottom: '15px',
+                        backgroundColor: '#fff',
+                    },
+                },
+            },
+        },
+    },
+    mixins: {
+        MuiDataGrid: {
+            containerBackground: '#526e75',
+        },
+    },
+});

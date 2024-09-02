@@ -73,6 +73,7 @@ interface ICustomMediaRecorder {
     stopRecording?: () => void;
     disabled?: boolean;
     isAddingFroms?: boolean;
+    wavesurferId: string;
 }
 
 interface ICustomMediaRecorderForm extends ICustomMediaRecorder {

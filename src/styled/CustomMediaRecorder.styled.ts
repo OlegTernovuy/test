@@ -50,8 +50,8 @@ const IconButtonStyled = styled(IconButton)`
     height: 20px;
 `;
 
-const ListenAudioStyled = styled.div`
-    display: flex;
+const ListenAudioStyled = styled.div<{ showmedia: boolean }>`
+    display: ${({ showmedia }) => (showmedia ? 'flex' : 'none')};
     align-items: center;
     gap: 20px;
 `;

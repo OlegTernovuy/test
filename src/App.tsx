@@ -7,14 +7,12 @@ import {
     ResetPassword,
     RegisterPage,
 } from './pages';
-import { GlobalStyle } from './styled/GlobalStyle.styled';
 import { AppWrapper } from './styled/AppWrapper.styled';
 import { ProtectedRoute } from './components';
 
 function App() {
     return (
         <AppWrapper>
-            <GlobalStyle />
             <Routes>
                 <Route path="/" element={<Navigate to="/projects" />} />
                 <Route path="/login" element={<LoginPage />} />

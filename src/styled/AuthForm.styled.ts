@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { Box, Paper, Typography } from '@mui/material';
+import { theme } from './theme';
 
 const AuthStyled = styled(Box)`
     display: flex;
@@ -31,7 +32,7 @@ const FormAuthStyled = styled.form`
 const LinkStyled = styled(Link)`
     text-decoration: none;
     margin-left: 8px;
-    color: ${({ theme }) => theme.color.primary};
+    color: ${theme.palette.primary.main};
 `;
 
 const ForgotPasswordStyled = styled(Typography)`

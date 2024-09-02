@@ -7,7 +7,7 @@ import {
     Delete as DeleteIcon,
 } from '@mui/icons-material';
 
-import { IAudioRecord } from '../../types';
+import { IAudioRecord } from '../../../types';
 
 interface BasicPopoverProps {
     record: IAudioRecord;
