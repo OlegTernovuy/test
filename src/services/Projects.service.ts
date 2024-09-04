@@ -26,7 +26,7 @@ const useFetchProject = () => {
 };
 
 const useAddProject = () => {
-    const { loading, error, makeRequest } = useFetch();
+    const { loading, error, makeRequest, clearError } = useFetch();
 
     const addProject = async (projectName: string, onSuccess: () => void) => {
         await makeRequest(
@@ -40,11 +40,11 @@ const useAddProject = () => {
         );
     };
 
-    return { addProject, loading, error };
+    return { addProject, loading, error, clearError };
 };
 
 const useEditProject = () => {
-    const { loading, error, makeRequest } = useFetch();
+    const { loading, error, makeRequest, clearError } = useFetch();
 
     const editProject = async (
         projectId: string,
@@ -62,7 +62,7 @@ const useEditProject = () => {
         );
     };
 
-    return { editProject, loading, error };
+    return { editProject, loading, error, clearError };
 };
 
 const useDeleteProject = () => {

@@ -15,7 +15,6 @@ interface IAddAudioRecord {
 
 export interface IUpdateAudioRecord {
     name?: string;
-    author?: string;
     comment?: string;
     audioFileUrl?: string;
 }
