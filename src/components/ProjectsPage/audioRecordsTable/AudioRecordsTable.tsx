@@ -72,6 +72,7 @@ const AudioRecordsTable = ({
                 }
                 if (values.editingRecordId) {
                     await updateAudioRecord(
+                        projectId.id,
                         values.editingRecordId,
                         updatedData
                     );
@@ -90,7 +91,7 @@ const AudioRecordsTable = ({
         audioFileUrl: string
     ) => {
         try {
-            await deleteAudioRecord(audioRecordId, audioFileUrl);
+            await deleteAudioRecord(projectId.id, audioRecordId, audioFileUrl);
             fetchData(projectId.id);
         } catch (error) {
             console.error(error);

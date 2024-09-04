@@ -8,8 +8,6 @@ interface IAddAudioRecord {
     name: string;
     comment?: string;
     author: string;
-    project: string;
-    projectId: string;
     audioFileUrl: string;
 }
 
@@ -51,16 +49,14 @@ const putMedia = async (file: File) => {
     return res.data;
 };
 
-const addAudioRecord = async (data: IAddAudioRecord) => {
+const addAudioRecord = async (projectId: string, data: IAddAudioRecord) => {
     try {
         await axios.post(
-            '/audio',
+            `/audio?projectId=${projectId}`,
             {
                 name: data.name,
                 comment: data.comment,
                 author: data.author,
-                project: data.project,
-                projectId: data.projectId,
                 audioFileUrl: data.audioFileUrl,
             },
             { withCredentials: true }
@@ -71,13 +67,14 @@ const addAudioRecord = async (data: IAddAudioRecord) => {
 };
 
 const updateAudioRecord = async (
+    projectId: string,
     audioRecordId: string,
     data: IUpdateAudioRecord
 ) => {
     try {
         const filteredData = { ...data };
 
-        await axios.patch(`/audio/${audioRecordId}`, filteredData, {
+        await axios.patch(`/audio/${audioRecordId}?projectId=${projectId}`, filteredData, {
             withCredentials: true,
         });
     } catch (error) {
@@ -104,6 +101,7 @@ const useDeleteAudioRecord = () => {
     const { loading, error, makeRequest } = useFetch();
 
     const deleteAudioRecord = async (
+        projectId: string,
         audioRecordId: string,
         audioFileUrl: string
     ) => {
@@ -115,7 +113,7 @@ const useDeleteAudioRecord = () => {
                 withCredentials: true,
             });
             await makeRequest({
-                url: `/audio/${audioRecordId}`,
+                url: `/audio/${audioRecordId}?projectId=${projectId}`,
                 method: 'DELETE',
                 withCredentials: true,
             });
