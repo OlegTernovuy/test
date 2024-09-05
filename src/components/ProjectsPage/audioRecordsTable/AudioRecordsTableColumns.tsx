@@ -1,3 +1,5 @@
+import { StatusMessages } from 'react-media-recorder-2';
+
 import {
     CustomEditTextarea,
     EditAudioPopover,
@@ -11,9 +13,9 @@ import {
     GridRenderEditCellParams,
 } from '@mui/x-data-grid';
 import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
+import { FormattedCommentStyled } from '../../../styled/AudioRecordsTable.styled';
 
 import { CustomIconButtonProps } from '../../../types';
-import { StatusMessages } from 'react-media-recorder-2';
 
 const getDate = (timestamp: number) => {
     const date = new Date(timestamp * 1000);
@@ -50,9 +52,12 @@ const createColumns = (
         headerName: 'Comment',
         flex: 2,
         headerAlign: 'center',
-        align: 'center',
         editable: true,
-        renderCell: (params: GridRenderCellParams) => params.row.comment,
+        renderCell: (params: GridRenderCellParams) => (
+            <FormattedCommentStyled>
+                {params.row.comment}
+            </FormattedCommentStyled>
+        ),
         renderEditCell: (params: GridRenderEditCellParams) => (
             <CustomEditTextarea {...params} />
         ),

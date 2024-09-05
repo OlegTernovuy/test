@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 
-import { Box, TextField } from '@mui/material';
+import { Box } from '@mui/material';
 import { FlexCenterStyled } from './GlobalStyle.styled';
+
 import { theme } from './theme';
 
 const AudioRecordsTableWrapper = styled(Box)`
@@ -16,9 +17,13 @@ const ProjectTitleSearchStyled = styled(FlexCenterStyled)`
     padding: 16px;
 `;
 
-const StyledTextarea = styled(TextField)`
-    width: 100%;
-    max-width: 400px;
+const FormattedCommentStyled = styled.div`
+    white-space: pre-wrap;
+    word-wrap: break-word;
 `;
 
-export { AudioRecordsTableWrapper, ProjectTitleSearchStyled, StyledTextarea };
+export {
+    AudioRecordsTableWrapper,
+    ProjectTitleSearchStyled,
+    FormattedCommentStyled,
+};
