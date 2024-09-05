@@ -34,7 +34,7 @@ const resetPasswordSchema = yup.object({
 });
 
 const UpdateAudioRecordSchema = yup.object({
-    name: yup.string(),
+    name: yup.string().required(),
     author: yup
         .string()
         .email()
