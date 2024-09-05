@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { GridRenderEditCellParams } from '@mui/x-data-grid';
-import { StyledTextarea } from '../../../styled/AudioRecordsTable.styled';
+import { StyledTextarea } from '../../../styled/AddAudioRecordForm.styled';
 
 const CustomEditTextarea = (props: GridRenderEditCellParams) => {
     const { id, field, value, api } = props;
@@ -20,7 +20,6 @@ const CustomEditTextarea = (props: GridRenderEditCellParams) => {
             value={inputValue}
             onChange={handleChange}
             onBlur={handleBlur}
-            multiline
             rows={4}
         />
     );

@@ -10,6 +10,7 @@ import {
 import {
     AudioRecordFormStyled,
     AudioRecordWrapper,
+    StyledTextarea,
 } from '../../styled/AddAudioRecordForm.styled';
 import { CircularProgress, TextField } from '@mui/material';
 
@@ -112,21 +113,12 @@ const AddAudioRecordForm = ({
                         }
                         helperText={formik.touched.name && formik.errors.name}
                     />
-                    <TextField
-                        type="text"
-                        label="Comment"
-                        multiline
-                        rows={4}
+                    <StyledTextarea
                         name="comment"
+                        placeholder="Comment"
+                        rows={4}
                         value={formik.values.comment}
                         onChange={formik.handleChange}
-                        error={
-                            formik.touched.comment &&
-                            Boolean(formik.errors.comment)
-                        }
-                        helperText={
-                            formik.touched.comment && formik.errors.comment
-                        }
                     />
                 </MediaStyled>
                 <CustomMediaRecorder

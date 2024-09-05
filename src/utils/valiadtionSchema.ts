@@ -1,7 +1,6 @@
 import * as yup from 'yup';
 
 const passwordRules = /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
-const audioFileUrl = /https:\/\/storage.googleapis.com\/axels-loki.appspot.com/;
 
 const loginSchema = yup.object({
     email: yup
@@ -35,17 +34,14 @@ const resetPasswordSchema = yup.object({
 });
 
 const UpdateAudioRecordSchema = yup.object({
-    name: yup
-        .string()
-        .required('Audio record name is required')
-        .min(3, 'Audio record must contain at least 3 characters'),
+    name: yup.string().required(),
     author: yup
         .string()
         .email()
         .required('Author is required')
         .min(3, 'Author must contain at least 3 characters'),
     comment: yup.string(),
-    audioFileUrl: yup.string().matches(audioFileUrl, 'Must contain base url'),
+    audioFileUrl: yup.string(),
 });
 
 const AddAudioRecordSchema = UpdateAudioRecordSchema.shape({});

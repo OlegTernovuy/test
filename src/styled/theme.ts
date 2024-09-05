@@ -42,9 +42,4 @@ export const theme = createTheme({
             },
         },
     },
-    mixins: {
-        MuiDataGrid: {
-            containerBackground: '#526e75',
-        },
-    },
 });
