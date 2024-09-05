@@ -1,5 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import {
+    DropResult,
+    DragDropContext,
+    Droppable,
+    Draggable,
+    OnDragEndResponder,
+} from 'react-beautiful-dnd';
 
 import {
     AddNewProjectForm,
@@ -150,6 +157,15 @@ const Sidebar: React.FC<ISidebarProps> = ({
         clearEditProjectError();
     };
 
+    const onDragEnd = ({ destination, source }: DropResult) => {
+        // dropped outside the list
+        if (!destination) return;
+
+        // const newItems = reorder(items, source.index, destination.index);
+
+        // setItems(newItems);
+    };
+
     return (
         <Drawer open={open} onClose={toggleDrawer}>
             <SliderStyled>
@@ -171,48 +187,85 @@ const Sidebar: React.FC<ISidebarProps> = ({
                         handleCancel={handleCancel}
                     />
                 )}
-                <List>
-                    {projects.map((project, index) => (
-                        <StyledListItem
-                            key={project.id}
-                            onClick={() => {
-                                handleSelectProject(project.id, project.name);
-                                toggleDrawer();
-                            }}
-                            isSelected={selectProject === index}
-                        >
-                            <SidebarListItem
-                                selectedProject={
-                                    selectedProjectUpdate === project.id
-                                }
-                                projectName={project.name}
-                                editLoading={editLoading}
-                                newProjectName={newProjectName}
-                                setNewProjectName={setNewProjectName}
-                                error={editProjectError}
-                                handleSaveEdit={() =>
-                                    handleSaveEdit(project.id)
-                                }
-                                handleCancel={handleCancel}
-                            />
-                            {isAdmin &&
-                                selectedProjectUpdate !== project.id && (
-                                    <EditButtonsBlock
-                                        handleEditProject={() =>
-                                            handleEditProject(
-                                                project.id,
-                                                project.name
-                                            )
-                                        }
-                                        handleDeleteProject={() =>
-                                            handleDeleteProject(project.id)
-                                        }
-                                        deleteLoading={deleteLoading}
-                                    />
-                                )}
-                        </StyledListItem>
-                    ))}
-                </List>
+                <DragDropContext onDragEnd={onDragEnd}>
+                    <Droppable droppableId="droppable-list">
+                        {(provided) => (
+                            <List
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                            >
+                                {projects.map((project, index) => (
+                                    <Draggable
+                                        key={project.id}
+                                        draggableId={project.id}
+                                        index={index}
+                                    >
+                                        {(provided, snapshot) => (
+                                            <StyledListItem
+                                                // key={project.id}
+                                                ref={provided.innerRef}
+                                                {...provided.draggableProps}
+                                                {...provided.dragHandleProps}
+                                                onClick={() => {
+                                                    handleSelectProject(
+                                                        project.id,
+                                                        project.name
+                                                    );
+                                                    toggleDrawer();
+                                                }}
+                                                isSelected={
+                                                    selectProject === index
+                                                }
+                                            >
+                                                <SidebarListItem
+                                                    selectedProject={
+                                                        selectedProjectUpdate ===
+                                                        project.id
+                                                    }
+                                                    projectName={project.name}
+                                                    editLoading={editLoading}
+                                                    newProjectName={
+                                                        newProjectName
+                                                    }
+                                                    setNewProjectName={
+                                                        setNewProjectName
+                                                    }
+                                                    error={editProjectError}
+                                                    handleSaveEdit={() =>
+                                                        handleSaveEdit(
+                                                            project.id
+                                                        )
+                                                    }
+                                                    handleCancel={handleCancel}
+                                                />
+                                                {isAdmin &&
+                                                    selectedProjectUpdate !==
+                                                        project.id && (
+                                                        <EditButtonsBlock
+                                                            handleEditProject={() =>
+                                                                handleEditProject(
+                                                                    project.id,
+                                                                    project.name
+                                                                )
+                                                            }
+                                                            handleDeleteProject={() =>
+                                                                handleDeleteProject(
+                                                                    project.id
+                                                                )
+                                                            }
+                                                            deleteLoading={
+                                                                deleteLoading
+                                                            }
+                                                        />
+                                                    )}
+                                            </StyledListItem>
+                                        )}
+                                    </Draggable>
+                                ))}
+                            </List>
+                        )}
+                    </Droppable>
+                </DragDropContext>
             </SliderStyled>
         </Drawer>
     );
