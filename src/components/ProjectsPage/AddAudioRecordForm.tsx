@@ -92,8 +92,8 @@ const AddAudioRecordForm = ({
     }
 
     return (
-        <AudioRecordWrapper>
-            <AudioRecordFormStyled onSubmit={formik.handleSubmit}>
+        <AudioRecordFormStyled onSubmit={formik.handleSubmit}>
+            <AudioRecordWrapper>
                 <MediaStyled>
                     <InputsSelectStyled>
                         {selectors.map((selector, index) => (
@@ -113,13 +113,6 @@ const AddAudioRecordForm = ({
                         }
                         helperText={formik.touched.name && formik.errors.name}
                     />
-                    <StyledTextarea
-                        name="comment"
-                        placeholder="Comment"
-                        rows={4}
-                        value={formik.values.comment}
-                        onChange={formik.handleChange}
-                    />
                 </MediaStyled>
                 <CustomMediaRecorder
                     status={status}
@@ -131,8 +124,15 @@ const AddAudioRecordForm = ({
                     isAddingFroms
                     wavesurferId="wavesurfer-add"
                 />
-            </AudioRecordFormStyled>
-        </AudioRecordWrapper>
+            </AudioRecordWrapper>
+            <StyledTextarea
+                name="comment"
+                placeholder="Comment"
+                rows={4}
+                value={formik.values.comment}
+                onChange={formik.handleChange}
+            />
+        </AudioRecordFormStyled>
     );
 };
 

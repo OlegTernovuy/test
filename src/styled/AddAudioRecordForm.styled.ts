@@ -10,6 +10,7 @@ const AudioRecordWrapper = styled.div`
 
 const AudioRecordFormStyled = styled.form`
     display: flex;
+    flex-direction: column;
     gap: 20px;
 `;
 
@@ -23,8 +24,8 @@ const CustomFormSelectStyled = styled(FormControl)`
 `;
 
 const StyledTextarea = styled.textarea`
-    width: 100%;
-    resize: vertical;
+    min-width: 432px;
+    width: 432px;
     padding: 8px 14px;
     border-radius: 4px;
     border-color: #0000003b;
