@@ -67,7 +67,7 @@ const createColumns = (
         headerName: 'Audio',
         headerAlign: 'center',
         align: 'center',
-        flex: 2,
+        flex: 1.5,
         editable: true,
         renderCell: (params: GridRenderCellParams) => (
             <AudioPlayerComponent
@@ -91,7 +91,7 @@ const createColumns = (
         headerName: 'Date',
         headerAlign: 'center',
         align: 'center',
-        flex: 1,
+        flex: 0.5,
         renderCell: (params: GridRenderCellParams) => {
             const date = (params.value as { _seconds: number })?._seconds;
             return date ? getDate(date) : '';
