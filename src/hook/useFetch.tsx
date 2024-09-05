@@ -26,16 +26,21 @@ const useFetch = () => {
             }
             return response.data;
         } catch (err: any) {
-            setError(err.message);
+            setError(err.response.data.error);
             if (onError) {
                 onError(err);
             }
+            throw err;
         } finally {
             setLoading(false);
         }
     };
 
-    return { loading, error, makeRequest };
+    const clearError = () => {
+        setError(null);
+    };
+
+    return { loading, error, makeRequest, clearError };
 };
 
 export default useFetch;

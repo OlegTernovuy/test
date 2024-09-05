@@ -45,8 +45,6 @@ const AddAudioRecordForm = ({
             name: '',
             comment: '',
             author: author || '',
-            project: project || '',
-            projectId: projectId || '',
             audioFileUrl: '',
         },
         validationSchema: AddAudioRecordSchema,
@@ -59,12 +57,10 @@ const AddAudioRecordForm = ({
                     throw new Error('Audio file URL is required.');
                 }
 
-                await addAudioRecord({
+                await addAudioRecord(projectId, {
                     name: values.name,
                     comment: values.comment,
                     author: values.author,
-                    project: values.project,
-                    projectId: values.projectId,
                     audioFileUrl: result,
                 });
                 fetchData(projectId);
@@ -82,8 +78,6 @@ const AddAudioRecordForm = ({
             formik.setValues((prevValues) => ({
                 ...prevValues,
                 author: author || prevValues.author,
-                project: project || prevValues.project,
-                projectId: projectId || prevValues.projectId,
             }));
         }
     }, [author, project, projectId]);
@@ -143,7 +137,7 @@ const AddAudioRecordForm = ({
                     stopRecording={stopRecording}
                     disabled={formik.isSubmitting}
                     isAddingFroms
-                    wavesurferId='wavesurfer-add'
+                    wavesurferId="wavesurfer-add"
                 />
             </AudioRecordFormStyled>
         </AudioRecordWrapper>

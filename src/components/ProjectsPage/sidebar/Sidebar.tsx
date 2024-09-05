@@ -58,8 +58,18 @@ const Sidebar: React.FC<ISidebarProps> = ({
     >(null);
     const [isAddingProject, setIsAddingProject] = useState(false);
 
-    const { addProject, loading: addLoading } = useAddProject();
-    const { editProject, loading: editLoading } = useEditProject();
+    const {
+        addProject,
+        loading: addLoading,
+        error: addProjectError,
+        clearError: clearAddProjectError,
+    } = useAddProject();
+    const {
+        editProject,
+        loading: editLoading,
+        error: editProjectError,
+        clearError: clearEditProjectError,
+    } = useEditProject();
     const { deleteProject, loading: deleteLoading } = useDeleteProject();
 
     const handleSelectProject = useCallback(
@@ -102,21 +112,33 @@ const Sidebar: React.FC<ISidebarProps> = ({
 
     const handleSaveEdit = async (id: string) => {
         if (newProjectName.trim() && selectedProjectUpdate !== null) {
-            await editProject(id, newProjectName, fetchProjects);
-            setNewProjectName('');
-            setSelectedProjectUpdate(null);
+            try {
+                await editProject(id, newProjectName, fetchProjects);
+                setNewProjectName('');
+                setSelectedProjectUpdate(null);
+            } catch (error) {
+                console.log(error);
+            }
         }
     };
 
     const handleDeleteProject = async (id: string) => {
-        await deleteProject(id, fetchProjects);
+        try {
+            await deleteProject(id, fetchProjects);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     const handleAddProject = async () => {
         if (newProjectName.trim()) {
-            await addProject(newProjectName, fetchProjects);
-            setNewProjectName('');
-            setIsAddingProject(false);
+            try {
+                await addProject(newProjectName, fetchProjects);
+                setNewProjectName('');
+                setIsAddingProject(false);
+            } catch (error) {
+                console.log(error);
+            }
         }
     };
 
@@ -124,6 +146,8 @@ const Sidebar: React.FC<ISidebarProps> = ({
         setNewProjectName('');
         setSelectedProjectUpdate(null);
         setIsAddingProject(false);
+        clearAddProjectError();
+        clearEditProjectError();
     };
 
     return (
@@ -142,6 +166,7 @@ const Sidebar: React.FC<ISidebarProps> = ({
                         newProjectName={newProjectName}
                         setNewProjectName={setNewProjectName}
                         handleAddProject={handleAddProject}
+                        error={addProjectError}
                         addLoading={addLoading}
                         handleCancel={handleCancel}
                     />
@@ -164,6 +189,7 @@ const Sidebar: React.FC<ISidebarProps> = ({
                                 editLoading={editLoading}
                                 newProjectName={newProjectName}
                                 setNewProjectName={setNewProjectName}
+                                error={editProjectError}
                                 handleSaveEdit={() =>
                                     handleSaveEdit(project.id)
                                 }
