@@ -1,36 +1,30 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import {
-    DropResult,
-    DragDropContext,
-    Droppable,
-    Draggable,
-    OnDragEndResponder,
-} from 'react-beautiful-dnd';
 
+import { AddNewProjectForm, SidebarList } from '../../index';
 import {
-    AddNewProjectForm,
-    SidebarListItem,
-    EditButtonsBlock,
-} from '../../index';
-import {
+    CircularProgressWrapper,
     SidebarHeaderStyled,
     SliderStyled,
-    StyledListItem,
 } from '../../../styled/ProjectsPage.styled';
-import { Drawer, IconButton, List, Typography } from '@mui/material';
+import {
+    CircularProgress,
+    Drawer,
+    IconButton,
+    Typography,
+} from '@mui/material';
 import { AddCircle as AddCircleIcon } from '@mui/icons-material';
 
-import { useAuth } from '../../../Providers/AuthProvider';
-import { IProjects } from '../../../types';
 import {
     useAddProject,
-    useDeleteProject,
-    useEditProject,
+    useUpdateProjectsOrder,
 } from '../../../services/Projects.service';
+import { useAuth } from '../../../Providers/AuthProvider';
+import { IProjects } from '../../../types';
 
 interface ISidebarProps {
     projects: IProjects[];
+    onReorder: (reorderedProjects: IProjects[]) => void;
     setSelectedProjectForCreate: React.Dispatch<
         React.SetStateAction<IProjects>
     >;
@@ -39,236 +33,148 @@ interface ISidebarProps {
     fetchProjects: () => void;
 }
 
-const Sidebar: React.FC<ISidebarProps> = ({
-    projects,
-    setSelectedProjectForCreate,
-    open,
-    toggleDrawer,
-    fetchProjects,
-}) => {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const { isAdmin } = useAuth();
-
-    const searchParams = new URLSearchParams(location.search);
-    const projectIdFromUrl = searchParams.get('projectId') || '';
-
-    const [selectProject, setSelectProject] = useState<number>(() => {
-        const initialIndex = projects.findIndex(
-            (project) => project.id === projectIdFromUrl
-        );
-        return initialIndex !== -1 ? initialIndex : 0;
-    });
-    const [newProjectName, setNewProjectName] = useState('');
-    const [selectedProjectUpdate, setSelectedProjectUpdate] = useState<
-        string | null
-    >(null);
-    const [isAddingProject, setIsAddingProject] = useState(false);
-
-    const {
-        addProject,
-        loading: addLoading,
-        error: addProjectError,
-        clearError: clearAddProjectError,
-    } = useAddProject();
-    const {
-        editProject,
-        loading: editLoading,
-        error: editProjectError,
-        clearError: clearEditProjectError,
-    } = useEditProject();
-    const { deleteProject, loading: deleteLoading } = useDeleteProject();
-
-    const handleSelectProject = useCallback(
-        (id: string, name: string) => {
-            setSelectProject(
-                projects.findIndex((project) => project.id === id)
-            );
-            setSelectedProjectForCreate({ id, name });
-            navigate(`?projectId=${id}`);
-        },
-        [navigate, projects, setSelectedProjectForCreate]
-    );
-
-    const handleEditProject = (id: string, name: string) => {
-        setSelectedProjectUpdate(id);
-        setNewProjectName(name);
-    };
-
-    useEffect(() => {
-        if (projectIdFromUrl && projects.length > 0) {
-            const projectIndex = projects.findIndex(
-                (project) => project.id === projectIdFromUrl
-            );
-            if (projectIndex !== -1) {
-                setSelectProject(projectIndex);
-                setSelectedProjectForCreate({
-                    id: projects[projectIndex].id,
-                    name: projects[projectIndex].name,
-                });
-            }
-        } else if (projects.length > 0) {
-            handleSelectProject(projects[0].id, projects[0].name);
-        }
-    }, [
-        projectIdFromUrl,
+const Sidebar: React.FC<ISidebarProps> = React.memo(
+    ({
         projects,
+        onReorder,
         setSelectedProjectForCreate,
-        handleSelectProject,
-    ]);
+        open,
+        toggleDrawer,
+        fetchProjects,
+    }) => {
+        const navigate = useNavigate();
+        const location = useLocation();
+        const { isAdmin } = useAuth();
 
-    const handleSaveEdit = async (id: string) => {
-        if (newProjectName.trim() && selectedProjectUpdate !== null) {
-            try {
-                await editProject(id, newProjectName, fetchProjects);
-                setNewProjectName('');
-                setSelectedProjectUpdate(null);
-            } catch (error) {
-                console.log(error);
+        const searchParams = new URLSearchParams(location.search);
+        const projectIdFromUrl = searchParams.get('projectId') || '';
+
+        const [selectProject, setSelectProject] = useState<string | null>(
+            () => {
+                if (projects.length > 0) {
+                    const initialProject = projects.find(
+                        (project) => project.id === projectIdFromUrl
+                    );
+                    return initialProject !== undefined
+                        ? initialProject.id
+                        : projects[0].id;
+                }
+                return null;
             }
-        }
-    };
+        );
 
-    const handleDeleteProject = async (id: string) => {
-        try {
-            await deleteProject(id, fetchProjects);
-        } catch (error) {
-            console.log(error);
-        }
-    };
+        const [newProjectName, setNewProjectName] = useState('');
+        const [selectedProjectUpdate, setSelectedProjectUpdate] = useState<
+            string | null
+        >(null);
+        const [isAddingProject, setIsAddingProject] = useState(false);
 
-    const handleAddProject = async () => {
-        if (newProjectName.trim()) {
-            try {
-                await addProject(newProjectName, fetchProjects);
-                setNewProjectName('');
-                setIsAddingProject(false);
-            } catch (error) {
-                console.log(error);
+        const {
+            addProject,
+            loading: addLoading,
+            error: addProjectError,
+            clearError: clearAddProjectError,
+        } = useAddProject();
+
+        const handleSelectProject = useCallback(
+            (id: string, name: string) => {
+                setSelectProject(id);
+                setSelectedProjectForCreate({ id, name });
+                navigate(`?projectId=${id}`);
+            },
+            [navigate, setSelectedProjectForCreate]
+        );
+
+        useEffect(() => {
+            if (projectIdFromUrl && projects.length > 0) {
+                const selectedProject = projects.find(
+                    (project) => project.id === projectIdFromUrl
+                );
+                if (selectedProject) {
+                    setSelectProject(selectedProject.id);
+                    setSelectedProjectForCreate({
+                        id: selectedProject.id,
+                        name: selectedProject.name,
+                    });
+                }
+            } else if (projects.length > 0) {
+                handleSelectProject(projects[0].id, projects[0].name);
             }
-        }
-    };
+        }, [
+            projectIdFromUrl,
+            projects,
+            setSelectedProjectForCreate,
+            handleSelectProject,
+        ]);
 
-    const handleCancel = () => {
-        setNewProjectName('');
-        setSelectedProjectUpdate(null);
-        setIsAddingProject(false);
-        clearAddProjectError();
-        clearEditProjectError();
-    };
+        const handleAddProject = async () => {
+            if (newProjectName.trim()) {
+                try {
+                    await addProject(newProjectName, fetchProjects);
+                    setNewProjectName('');
+                    setIsAddingProject(false);
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        };
 
-    const onDragEnd = ({ destination, source }: DropResult) => {
-        // dropped outside the list
-        if (!destination) return;
+        const handleCancel = () => {
+            setNewProjectName('');
+            setSelectedProjectUpdate(null);
+            setIsAddingProject(false);
+            clearAddProjectError();
+        };
 
-        // const newItems = reorder(items, source.index, destination.index);
+        const { updateProjectsOrder, loading: projectsOrderLoading } =
+            useUpdateProjectsOrder();
 
-        // setItems(newItems);
-    };
-
-    return (
-        <Drawer open={open} onClose={toggleDrawer}>
-            <SliderStyled>
-                <SidebarHeaderStyled>
-                    <Typography variant="h6">Projects</Typography>
-                    {isAdmin && (
-                        <IconButton onClick={() => setIsAddingProject(true)}>
-                            <AddCircleIcon color="primary" />
-                        </IconButton>
+        return (
+            <Drawer open={open} onClose={toggleDrawer}>
+                <SliderStyled>
+                    <SidebarHeaderStyled>
+                        <Typography variant="h6">Projects</Typography>
+                        {isAdmin && (
+                            <IconButton
+                                onClick={() => setIsAddingProject(true)}
+                            >
+                                <AddCircleIcon color="primary" />
+                            </IconButton>
+                        )}
+                    </SidebarHeaderStyled>
+                    {isAddingProject && (
+                        <AddNewProjectForm
+                            newProjectName={newProjectName}
+                            setNewProjectName={setNewProjectName}
+                            handleAddProject={handleAddProject}
+                            error={addProjectError}
+                            addLoading={addLoading}
+                            handleCancel={handleCancel}
+                        />
                     )}
-                </SidebarHeaderStyled>
-                {isAddingProject && (
-                    <AddNewProjectForm
-                        newProjectName={newProjectName}
+                    <SidebarList
+                        projects={projects}
+                        onReorder={onReorder}
+                        updateProjectsOrder={updateProjectsOrder}
+                        setSelectedProjectUpdate={setSelectedProjectUpdate}
                         setNewProjectName={setNewProjectName}
-                        handleAddProject={handleAddProject}
-                        error={addProjectError}
-                        addLoading={addLoading}
+                        newProjectName={newProjectName}
+                        selectedProjectUpdate={selectedProjectUpdate}
+                        fetchProjects={fetchProjects}
+                        selectProject={selectProject}
+                        toggleDrawer={toggleDrawer}
+                        handleSelectProject={handleSelectProject}
                         handleCancel={handleCancel}
                     />
-                )}
-                <DragDropContext onDragEnd={onDragEnd}>
-                    <Droppable droppableId="droppable-list">
-                        {(provided) => (
-                            <List
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
-                            >
-                                {projects.map((project, index) => (
-                                    <Draggable
-                                        key={project.id}
-                                        draggableId={project.id}
-                                        index={index}
-                                    >
-                                        {(provided, snapshot) => (
-                                            <StyledListItem
-                                                // key={project.id}
-                                                ref={provided.innerRef}
-                                                {...provided.draggableProps}
-                                                {...provided.dragHandleProps}
-                                                onClick={() => {
-                                                    handleSelectProject(
-                                                        project.id,
-                                                        project.name
-                                                    );
-                                                    toggleDrawer();
-                                                }}
-                                                isSelected={
-                                                    selectProject === index
-                                                }
-                                            >
-                                                <SidebarListItem
-                                                    selectedProject={
-                                                        selectedProjectUpdate ===
-                                                        project.id
-                                                    }
-                                                    projectName={project.name}
-                                                    editLoading={editLoading}
-                                                    newProjectName={
-                                                        newProjectName
-                                                    }
-                                                    setNewProjectName={
-                                                        setNewProjectName
-                                                    }
-                                                    error={editProjectError}
-                                                    handleSaveEdit={() =>
-                                                        handleSaveEdit(
-                                                            project.id
-                                                        )
-                                                    }
-                                                    handleCancel={handleCancel}
-                                                />
-                                                {isAdmin &&
-                                                    selectedProjectUpdate !==
-                                                        project.id && (
-                                                        <EditButtonsBlock
-                                                            handleEditProject={() =>
-                                                                handleEditProject(
-                                                                    project.id,
-                                                                    project.name
-                                                                )
-                                                            }
-                                                            handleDeleteProject={() =>
-                                                                handleDeleteProject(
-                                                                    project.id
-                                                                )
-                                                            }
-                                                            deleteLoading={
-                                                                deleteLoading
-                                                            }
-                                                        />
-                                                    )}
-                                            </StyledListItem>
-                                        )}
-                                    </Draggable>
-                                ))}
-                            </List>
-                        )}
-                    </Droppable>
-                </DragDropContext>
-            </SliderStyled>
-        </Drawer>
-    );
-};
+                    {projectsOrderLoading && (
+                        <CircularProgressWrapper>
+                            <CircularProgress />
+                        </CircularProgressWrapper>
+                    )}
+                </SliderStyled>
+            </Drawer>
+        );
+    }
+);
 
 export default Sidebar;
