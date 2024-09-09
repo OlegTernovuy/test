@@ -51,15 +51,19 @@ const useVideoDevices = () => {
                     name: 'camera' as PermissionName,
                 });
 
-                if (permissionStatus.state === 'granted') {
-                    // Set media stream for the selected input device
-                    if (selectedInput && shouldPreviewStream) {
-                        const stream =
-                            await navigator.mediaDevices.getUserMedia({
-                                video: { deviceId: selectedInput },
-                            });
-                        setMediaStream(stream);
-                    }
+                if (
+                    permissionStatus.state !== 'granted' &&
+                    shouldPreviewStream
+                ) {
+                    await navigator.mediaDevices.getUserMedia({ video: true });
+                }
+
+                // Set media stream for the selected input device
+                if (selectedInput && shouldPreviewStream) {
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: { deviceId: selectedInput },
+                    });
+                    setMediaStream(stream);
                 }
 
                 // Retrieve video input devices
