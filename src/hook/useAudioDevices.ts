@@ -74,12 +74,17 @@ const useAudioDevices = () => {
         { selected: selectedOutput, onHandleChange: setSelectedOutput, title: 'Audio Output', options: audioOutputArr },
     ];
 
+    const selectorOutput: ICustomSelectProps = {
+        selected: selectedOutput, onHandleChange: setSelectedOutput, title: 'Audio Output', options: audioOutputArr
+    }
+
     return {
         audioInputArr,
         audioOutputArr,
         selectedInput,
         selectedOutput,
         selectors,
+        selectorOutput,
         setSelectedInput,
         setSelectedOutput,
     };

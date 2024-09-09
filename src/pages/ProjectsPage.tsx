@@ -5,7 +5,12 @@ import {
     ProfileBlockStyled,
     ProjectPageHeaderStyled,
 } from '../styled/ProjectsPage.styled';
-import { AudioRecordsTable, Sidebar, AddAudioRecordForm } from '../components';
+import {
+    AudioRecordsTable,
+    Sidebar,
+    AddAudioRecordForm,
+    CustomSelect,
+} from '../components';
 import { Avatar, Box, Button, IconButton, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
@@ -13,9 +18,12 @@ import { useAuth } from '../Providers/AuthProvider';
 import { useFetchProject } from '../services/Projects.service';
 import { useFetchAudioRecords } from '../services/Media.service';
 import { IProjects } from '../types';
+import { useAudioSettings } from '../Providers/AudioSettingsProvider';
 
 const ProjectsPage = () => {
     const { isAdmin, user, logout } = useAuth();
+
+    const { selectorOutput } = useAudioSettings();
 
     const [open, setOpen] = useState(false);
 
@@ -59,21 +67,23 @@ const ProjectsPage = () => {
                 fetchProjects={fetchProjects}
             />
             <Box>
-                <ProjectPageHeaderStyled>
-                    <MenuAudioFormHeaderStyled>
+                <ProjectPageHeaderStyled $startItems={isAdmin}>
+                    <MenuAudioFormHeaderStyled $startItems={isAdmin}>
                         <Button
                             aria-label="show sidebar"
                             onClick={() => toggleDrawer()}
                         >
                             <MenuIcon fontSize="large" />
                         </Button>
-                        {isAdmin && (
+                        {isAdmin ? (
                             <AddAudioRecordForm
                                 author={user.email}
                                 project={selectedProjectForCreate.name}
                                 projectId={selectedProjectForCreate.id}
                                 fetchData={fetchAudioRecord}
                             />
+                        ) : (
+                            <CustomSelect {...selectorOutput} />
                         )}
                     </MenuAudioFormHeaderStyled>
                     <ProfileBlockStyled>
