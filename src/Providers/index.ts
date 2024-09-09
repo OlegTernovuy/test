@@ -1,5 +1,9 @@
 import { AuthProvider } from './AuthProvider';
-import { AudioSettingsProvider } from './AudioSettingsProvider';
+import { MediaSettingsProvider } from './MediaSettingsProvider';
 import { MixedThemeProvider } from './MixedThemeProvider';
 
-export { AuthProvider, AudioSettingsProvider, MixedThemeProvider };
+export {
+    AuthProvider,
+    MediaSettingsProvider as AudioSettingsProvider,
+    MixedThemeProvider,
+};

@@ -5,8 +5,23 @@ import {
     ProfileBlockStyled,
     ProjectPageHeaderStyled,
 } from '../styled/ProjectsPage.styled';
-import { AudioRecordsTable, Sidebar, AddAudioRecordForm } from '../components';
-import { Avatar, Box, Button, IconButton, Typography } from '@mui/material';
+import {
+    AudioRecordsTable,
+    Sidebar,
+    AddAudioRecordForm,
+    AddVideoRecordForm,
+    VideoRecordsTable,
+} from '../components';
+import {
+    Avatar,
+    Box,
+    Button,
+    IconButton,
+    Typography,
+    Tab,
+    Stack,
+} from '@mui/material';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
 import MenuIcon from '@mui/icons-material/Menu';
 
 import { useAuth } from '../Providers/AuthProvider';
@@ -18,6 +33,8 @@ const ProjectsPage = () => {
     const { isAdmin, user, logout } = useAuth();
 
     const [open, setOpen] = useState(false);
+
+    const [selectedTab, setSelectedTab] = useState<'audio' | 'video'>('audio');
 
     const toggleDrawer = () => {
         setOpen((prevOpen) => {
@@ -59,36 +76,65 @@ const ProjectsPage = () => {
                 fetchProjects={fetchProjects}
             />
             <Box>
-                <ProjectPageHeaderStyled>
-                    <MenuAudioFormHeaderStyled>
-                        <Button
-                            aria-label="show sidebar"
-                            onClick={() => toggleDrawer()}
-                        >
-                            <MenuIcon fontSize="large" />
-                        </Button>
-                        {isAdmin && (
-                            <AddAudioRecordForm
-                                author={user.email}
-                                project={selectedProjectForCreate.name}
-                                projectId={selectedProjectForCreate.id}
+                <TabContext value={selectedTab}>
+                    <ProjectPageHeaderStyled>
+                        <MenuAudioFormHeaderStyled>
+                            <Button
+                                aria-label="show sidebar"
+                                onClick={() => toggleDrawer()}
+                            >
+                                <MenuIcon fontSize="large" />
+                            </Button>
+                            <TabList
+                                onChange={(_, newValue) =>
+                                    setSelectedTab(newValue)
+                                }
+                            >
+                                <Tab label="Audio" value="audio" />
+                                <Tab label="Video" value="video" />
+                            </TabList>
+                        </MenuAudioFormHeaderStyled>
+                        <ProfileBlockStyled>
+                            <Typography variant="body2">
+                                {user.email}
+                            </Typography>
+                            <IconButton onClick={logout}>
+                                <Avatar>L</Avatar>
+                            </IconButton>
+                        </ProfileBlockStyled>
+                    </ProjectPageHeaderStyled>
+                    <TabPanel value="audio">
+                        <Stack spacing={2}>
+                            {isAdmin && (
+                                <AddAudioRecordForm
+                                    author={user.email}
+                                    project={selectedProjectForCreate.name}
+                                    projectId={selectedProjectForCreate.id}
+                                    fetchData={fetchAudioRecord}
+                                />
+                            )}
+                            <AudioRecordsTable
+                                audioRecords={audioRecords}
+                                loading={loading}
                                 fetchData={fetchAudioRecord}
+                                projectId={selectedProjectForCreate}
                             />
-                        )}
-                    </MenuAudioFormHeaderStyled>
-                    <ProfileBlockStyled>
-                        <Typography variant="body2">{user.email}</Typography>
-                        <IconButton onClick={logout}>
-                            <Avatar>L</Avatar>
-                        </IconButton>
-                    </ProfileBlockStyled>
-                </ProjectPageHeaderStyled>
-                <AudioRecordsTable
-                    audioRecords={audioRecords}
-                    loading={loading}
-                    fetchData={fetchAudioRecord}
-                    projectId={selectedProjectForCreate}
-                />
+                        </Stack>
+                    </TabPanel>
+                    <TabPanel value="video">
+                        <Stack spacing={2}>
+                            {isAdmin && (
+                                <AddVideoRecordForm
+                                    author={user.email}
+                                    project={selectedProjectForCreate.name}
+                                    projectId={selectedProjectForCreate.id}
+                                    fetchData={fetchAudioRecord}
+                                />
+                            )}
+                            <VideoRecordsTable />
+                        </Stack>
+                    </TabPanel>
+                </TabContext>
             </Box>
         </Box>
     );

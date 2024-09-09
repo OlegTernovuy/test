@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { GridRenderEditCellParams } from '@mui/x-data-grid';
-import { StyledTextarea } from '../../../styled/AddAudioRecordForm.styled';
+import { StyledTextarea } from '../../../styled/AddMediaRecordForm.styled';
 
 const CustomEditTextarea = (props: GridRenderEditCellParams) => {
     const { id, field, value, api } = props;

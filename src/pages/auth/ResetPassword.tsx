@@ -6,7 +6,7 @@ import { useFormik } from 'formik';
 import { AuthForm } from '../../components';
 import { TextField } from '@mui/material';
 
-import { resetPasswordSchema } from '../../utils/valiadtionSchema';
+import { resetPasswordSchema } from '../../utils/validationSchema';
 import { handleResetPassword } from '../../services/Auth.service';
 
 const ResetPassword = () => {

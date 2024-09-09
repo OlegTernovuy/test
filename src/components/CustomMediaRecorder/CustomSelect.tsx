@@ -3,7 +3,7 @@ import React from 'react';
 import { MenuItem } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { ICustomSelectProps } from '../../types';
-import { CustomFormSelectStyled } from '../../styled/AddAudioRecordForm.styled';
+import { CustomFormSelectStyled } from '../../styled/AddMediaRecordForm.styled';
 
 const CustomSelect: React.FC<ICustomSelectProps> = ({
     selected,

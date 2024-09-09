@@ -4,7 +4,7 @@ import WaveSurfer from 'wavesurfer.js';
 
 import { CustomIconButtonProps, ICustomSelectProps } from '../types';
 import { putMedia, updateAudioFile } from '../services/Media.service';
-import { useAudioSettings } from '../Providers/AudioSettingsProvider';
+import { useMediaSettings } from '../Providers/MediaSettingsProvider';
 
 const WAVESURFER_SETTINGS = {
     height: 75,
@@ -31,7 +31,9 @@ interface UseWaveSurferReturn {
 }
 
 const useWaveSurfer = (containerId: string): UseWaveSurferReturn => {
-    const { selectedInput, selectedOutput, selectors } = useAudioSettings();
+    const {
+        audioDevices: { selectedInput, selectedOutput, selectors },
+    } = useMediaSettings();
     const [isPlaying, setIsPlaying] = useState(false);
     const [audioConstraints, setAudioConstraints] =
         useState<MediaStreamConstraints>({

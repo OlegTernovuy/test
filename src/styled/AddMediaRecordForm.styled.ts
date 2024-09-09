@@ -3,12 +3,12 @@ import styled from 'styled-components';
 
 import { theme } from './theme';
 
-const AudioRecordWrapper = styled.div`
+const MediaRecordWrapper = styled.div`
     display: flex;
     gap: 20px;
 `;
 
-const AudioRecordFormStyled = styled.form`
+const MediaRecordFormStyled = styled.form`
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -38,8 +38,8 @@ const StyledTextarea = styled.textarea`
 
 export {
     SaveButtonStyled,
-    AudioRecordFormStyled,
-    AudioRecordWrapper,
+    MediaRecordFormStyled,
+    MediaRecordWrapper,
     CustomFormSelectStyled,
     StyledTextarea,
 };
