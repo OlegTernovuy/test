@@ -4,6 +4,7 @@ import {
     MenuAudioFormHeaderStyled,
     ProfileBlockStyled,
     ProjectPageHeaderStyled,
+    ProjectsPageMainBlock,
 } from '../styled/ProjectsPage.styled';
 import {
     AudioRecordsTable,
@@ -25,7 +26,7 @@ const ProjectsPage = () => {
 
     const { selectorOutput } = useAudioSettings();
 
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
 
     const toggleDrawer = useCallback(() => {
         setOpen((prevOpen) => {
@@ -81,15 +82,17 @@ const ProjectsPage = () => {
                 toggleDrawer={toggleDrawer}
                 fetchProjects={fetchProjects}
             />
-            <Box>
+            <ProjectsPageMainBlock $open={open}>
                 <ProjectPageHeaderStyled $startItems={isAdmin}>
                     <MenuAudioFormHeaderStyled $startItems={isAdmin}>
-                        <Button
-                            aria-label="show sidebar"
-                            onClick={() => toggleDrawer()}
-                        >
-                            <MenuIcon fontSize="large" />
-                        </Button>
+                        {!open && (
+                            <Button
+                                aria-label="show sidebar"
+                                onClick={() => toggleDrawer()}
+                            >
+                                <MenuIcon fontSize="large" />
+                            </Button>
+                        )}
                         {isAdmin ? (
                             <AddAudioRecordForm
                                 author={user.email}
@@ -114,7 +117,7 @@ const ProjectsPage = () => {
                     fetchData={fetchAudioRecord}
                     projectId={selectedProjectForCreate}
                 />
-            </Box>
+            </ProjectsPageMainBlock>
         </Box>
     );
 };

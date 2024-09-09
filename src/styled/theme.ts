@@ -35,6 +35,7 @@ export const theme = createTheme({
                 root: {
                     '&.MuiDataGrid-root': {
                         border: 'none',
+                        minHeight: 'calc(100vh - 300px)',
                     },
                     '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': {
                         paddingTop: '15px',

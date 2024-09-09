@@ -5,7 +5,8 @@ import { AddNewProjectForm, SidebarList } from '../../index';
 import {
     CircularProgressWrapper,
     SidebarHeaderStyled,
-    SliderStyled,
+    SidebarHeaderTitle,
+    SidebarStyled,
 } from '../../../styled/ProjectsPage.styled';
 import {
     CircularProgress,
@@ -13,7 +14,10 @@ import {
     IconButton,
     Typography,
 } from '@mui/material';
-import { AddCircle as AddCircleIcon } from '@mui/icons-material';
+import {
+    AddCircle as AddCircleIcon,
+    Close as CloseIcon,
+} from '@mui/icons-material';
 
 import {
     useAddProject,
@@ -26,7 +30,7 @@ interface ISidebarProps {
     projects: IProjects[];
     onReorder: (reorderedProjects: IProjects[]) => void;
     setSelectedProjectForCreate: React.Dispatch<
-        React.SetStateAction<{id: string, name: string}>
+        React.SetStateAction<{ id: string; name: string }>
     >;
     open: boolean;
     toggleDrawer: () => void;
@@ -130,17 +134,22 @@ const Sidebar: React.FC<ISidebarProps> = React.memo(
             useUpdateProjectsOrder();
 
         return (
-            <Drawer open={open} onClose={toggleDrawer}>
-                <SliderStyled>
+            <Drawer open={open} onClose={toggleDrawer} variant="persistent">
+                <SidebarStyled>
                     <SidebarHeaderStyled>
-                        <Typography variant="h6">Projects</Typography>
-                        {isAdmin && (
-                            <IconButton
-                                onClick={() => setIsAddingProject(true)}
-                            >
-                                <AddCircleIcon color="primary" />
-                            </IconButton>
-                        )}
+                        <SidebarHeaderTitle>
+                            <Typography variant="h6">Projects</Typography>
+                            {isAdmin && (
+                                <IconButton
+                                    onClick={() => setIsAddingProject(true)}
+                                >
+                                    <AddCircleIcon color="primary" />
+                                </IconButton>
+                            )}
+                        </SidebarHeaderTitle>
+                        <IconButton onClick={toggleDrawer} color="primary">
+                            <CloseIcon />
+                        </IconButton>
                     </SidebarHeaderStyled>
                     {isAddingProject && (
                         <AddNewProjectForm
@@ -162,7 +171,6 @@ const Sidebar: React.FC<ISidebarProps> = React.memo(
                         selectedProjectUpdate={selectedProjectUpdate}
                         fetchProjects={fetchProjects}
                         selectProject={selectProject}
-                        toggleDrawer={toggleDrawer}
                         handleSelectProject={handleSelectProject}
                         handleCancel={handleCancel}
                     />
@@ -171,7 +179,7 @@ const Sidebar: React.FC<ISidebarProps> = React.memo(
                             <CircularProgress />
                         </CircularProgressWrapper>
                     )}
-                </SliderStyled>
+                </SidebarStyled>
             </Drawer>
         );
     }

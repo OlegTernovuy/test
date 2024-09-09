@@ -28,7 +28,6 @@ interface ISidebarListProps {
     selectedProjectUpdate: string | null;
     selectProject: string | null;
     fetchProjects: () => void;
-    toggleDrawer: () => void;
     handleSelectProject: (id: string, name: string) => void;
     handleCancel: () => void;
 }
@@ -51,7 +50,6 @@ const SidebarList = ({
     selectedProjectUpdate,
     fetchProjects,
     selectProject,
-    toggleDrawer,
     handleSelectProject,
     handleCancel,
 }: ISidebarListProps) => {
@@ -145,7 +143,6 @@ const SidebarList = ({
                                                         project.id,
                                                         project.name
                                                     );
-                                                    toggleDrawer();
                                                 }}
                                                 $isselected={
                                                     selectProject === project.id
@@ -208,7 +205,6 @@ const SidebarList = ({
                         <StyledListItem
                             onClick={() => {
                                 handleSelectProject(project.id, project.name);
-                                toggleDrawer();
                             }}
                             $isselected={selectProject === project.id}
                         >
