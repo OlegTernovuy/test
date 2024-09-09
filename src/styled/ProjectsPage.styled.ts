@@ -29,9 +29,9 @@ const AddProjectFormStyled = styled(FlexCenterStyled)`
 
 const EditProjectFormStyled = styled(FlexCenterStyled)``;
 
-const ProjectPageHeaderStyled = styled(Box)`
+const ProjectPageHeaderStyled = styled(Box)<{ $startItems: boolean }>`
     display: flex;
-    align-items: start;
+    align-items: ${({ $startItems }) => ($startItems ? 'start' : 'center')};
     justify-content: space-between;
     padding: 16px 8px;
 `;
@@ -40,9 +40,9 @@ const ProfileBlockStyled = styled(FlexCenterStyled)`
     gap: 12px;
 `;
 
-const MenuAudioFormHeaderStyled = styled(Box)`
+const MenuAudioFormHeaderStyled = styled(Box)<{ $startItems: boolean }>`
     display: flex;
-    align-items: start;
+    align-items: ${({ $startItems }) => ($startItems ? 'start' : 'center')};
 `;
 
 export {
