@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import {
     MenuAudioFormHeaderStyled,
@@ -27,20 +27,34 @@ const ProjectsPage = () => {
 
     const [open, setOpen] = useState(false);
 
-    const toggleDrawer = () => {
+    const toggleDrawer = useCallback(() => {
         setOpen((prevOpen) => {
             return !prevOpen;
         });
-    };
+    }, []);
 
     //store data about the currently selected project
-    const [selectedProjectForCreate, setSelectedProjectForCreate] =
-        useState<IProjects>({
-            id: '',
-            name: '',
-        });
+    const [selectedProjectForCreate, setSelectedProjectForCreate] = useState<{
+        id: string;
+        name: string;
+    }>({
+        id: '',
+        name: '',
+    });
 
-    const { data: projects, fetchProjects } = useFetchProject();
+    const {
+        data: projects,
+        fetchProjects,
+        updatedProjects,
+    } = useFetchProject();
+
+    const handleReorder = useCallback(
+        (reorderedProjects: IProjects[]) => {
+            updatedProjects(reorderedProjects);
+        },
+        [updatedProjects]
+    );
+
     const {
         data: audioRecords,
         fetchAudioRecord,
@@ -61,6 +75,7 @@ const ProjectsPage = () => {
         <Box>
             <Sidebar
                 projects={projects}
+                onReorder={handleReorder}
                 setSelectedProjectForCreate={setSelectedProjectForCreate}
                 open={open}
                 toggleDrawer={toggleDrawer}

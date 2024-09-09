@@ -7,7 +7,7 @@ import { putMedia, updateAudioFile } from '../services/Media.service';
 import { useAudioSettings } from '../Providers/AudioSettingsProvider';
 
 const WAVESURFER_SETTINGS = {
-    height: 75,
+    height: 40,
     cursorWidth: 1,
     barWidth: 2,
     normalize: true,

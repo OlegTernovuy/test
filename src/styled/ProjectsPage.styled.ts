@@ -2,9 +2,11 @@ import styled from 'styled-components';
 
 import { Box, ListItem } from '@mui/material';
 import { FlexCenterStyled } from './GlobalStyle.styled';
+import { theme } from './theme';
 
 const SliderStyled = styled(Box)`
     width: 240px;
+    height: 100%;
 `;
 
 const SidebarHeaderStyled = styled(FlexCenterStyled)`
@@ -12,12 +14,12 @@ const SidebarHeaderStyled = styled(FlexCenterStyled)`
     padding: 8px 12px 0;
 `;
 
-const StyledListItem = styled(ListItem)<{ isSelected: boolean }>`
+const StyledListItem = styled(ListItem)<{ $isselected: boolean }>`
     cursor: pointer;
-    background-color: ${({ isSelected }) =>
-        isSelected ? 'rgba(0, 0, 0, 0.08)' : 'transparent'};
+    background-color: ${({ $isselected }) =>
+        $isselected ? '#00000014' : 'transparent'};
     &:hover {
-        background-color: rgba(0, 0, 0, 0.04);
+        background-color: ${theme.palette.grey[100]};
     }
 `;
 
@@ -45,6 +47,19 @@ const MenuAudioFormHeaderStyled = styled(Box)<{ $startItems: boolean }>`
     align-items: ${({ $startItems }) => ($startItems ? 'start' : 'center')};
 `;
 
+const CircularProgressWrapper = styled(Box)`
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: ${theme.palette.grey[100]};
+    z-index: 1;
+`;
+
 export {
     SidebarHeaderStyled,
     ProjectPageHeaderStyled,
@@ -55,4 +70,5 @@ export {
     EditProjectFormStyled,
     MenuAudioFormHeaderStyled,
     ProfileBlockStyled,
+    CircularProgressWrapper,
 };

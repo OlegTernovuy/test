@@ -16,6 +16,7 @@ import SidebarListItem from './ProjectsPage/sidebar/SidebarListItem';
 import AudioPlayerComponent from './ProjectsPage/audioRecordsTable/AudioPlayerComponent';
 import CustomEditTextarea from './ProjectsPage/audioRecordsTable/CustomEditTextarea';
 import createColumns from './ProjectsPage/audioRecordsTable/AudioRecordsTableColumns';
+import SidebarList from './ProjectsPage/sidebar/SidebarList';
 
 export {
     AuthForm,
@@ -35,5 +36,6 @@ export {
     SidebarListItem,
     AudioPlayerComponent,
     CustomEditTextarea,
-    createColumns
+    createColumns,
+    SidebarList
 };
