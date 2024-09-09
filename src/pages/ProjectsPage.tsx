@@ -26,21 +26,26 @@ const ProjectsPage = () => {
     }, []);
 
     //store data about the currently selected project
-    const [selectedProjectForCreate, setSelectedProjectForCreate] =
-        useState<IProjects>({
-            id: '',
-            name: '',
-        });
+    const [selectedProjectForCreate, setSelectedProjectForCreate] = useState<{
+        id: string;
+        name: string;
+    }>({
+        id: '',
+        name: '',
+    });
 
     const {
         data: projects,
         fetchProjects,
         updatedProjects,
     } = useFetchProject();
-    
-    const handleReorder = useCallback((reorderedProjects: IProjects[]) => {
-        updatedProjects(reorderedProjects);
-    }, [updatedProjects]);
+
+    const handleReorder = useCallback(
+        (reorderedProjects: IProjects[]) => {
+            updatedProjects(reorderedProjects);
+        },
+        [updatedProjects]
+    );
 
     const {
         data: audioRecords,

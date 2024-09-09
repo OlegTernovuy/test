@@ -26,7 +26,7 @@ interface ISidebarProps {
     projects: IProjects[];
     onReorder: (reorderedProjects: IProjects[]) => void;
     setSelectedProjectForCreate: React.Dispatch<
-        React.SetStateAction<IProjects>
+        React.SetStateAction<{id: string, name: string}>
     >;
     open: boolean;
     toggleDrawer: () => void;

@@ -19,7 +19,7 @@ import { IProjects } from '../../../types';
 interface ISidebarListProps {
     projects: IProjects[];
     onReorder: (reorderedProjects: IProjects[]) => void;
-    updateProjectsOrder: (updatedProjects: IProjects[]) => Promise<void>;
+    updateProjectsOrder: (updatedProjects: IProjects[], onSuccess: () => void) => Promise<void>;
     setSelectedProjectUpdate: React.Dispatch<
         React.SetStateAction<string | null>
     >;
@@ -70,9 +70,13 @@ const SidebarList = ({
             ...project,
             index: index + 1,
         }));
-        onReorder(reorderedProjects);
 
-        await updateProjectsOrder(reorderedProjects);
+        onReorder(reorderedProjects);
+        try {
+            await updateProjectsOrder(reorderedProjects, fetchProjects);
+        } catch (error) {
+            console.log('error ', error);
+        }
     };
 
     const {

@@ -63,6 +63,7 @@ interface IAudioRecord {
 interface IProjects {
     id: string;
     name: string;
+    index: number;
 }
 
 interface ICustomMediaRecorder {

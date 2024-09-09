@@ -89,13 +89,19 @@ const useDeleteProject = () => {
 const useUpdateProjectsOrder = () => {
     const { loading, error, makeRequest, clearError } = useFetch();
 
-    const updateProjectsOrder = async (updatedProjects: IProjects[]) => {
-        await makeRequest({
-            url: `/projectsOrder`,
-            method: 'POST',
-            data: { updatedProjects },
-            withCredentials: true,
-        });
+    const updateProjectsOrder = async (
+        updatedProjects: IProjects[],
+        onSuccess: () => void
+    ) => {
+        await makeRequest(
+            {
+                url: `/projectsOrder`,
+                method: 'POST',
+                data: { updatedProjects },
+                withCredentials: true,
+            },
+            { onSuccess }
+        );
     };
 
     return { updateProjectsOrder, loading, error, clearError };
