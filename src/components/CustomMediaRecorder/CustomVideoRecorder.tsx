@@ -1,15 +1,21 @@
-import { ReactNode } from 'react';
+import { ReactNode, RefObject } from 'react';
 import { StatusMessages } from 'react-media-recorder-2';
 
 import {
     ActionsButtonStyled,
+    ActionsContentStyled,
     ActionsStyled,
     AudioRecorderStyled,
+    ListenAudioStyled,
 } from '../../styled/CustomMediaRecorder.styled';
+import { CustomIconButtonProps } from '../../types';
+import CustomIconButton from './CustomIconButton';
+import { Stack } from '@mui/material';
 
 interface ICustomVideoRecorder {
-    children: ReactNode;
+    previewVideoRef: RefObject<HTMLVideoElement>;
     status: StatusMessages;
+    actionButtons: CustomIconButtonProps[];
     mediaBlobUrl?: string;
     startRecording: () => void;
     stopRecording?: () => void;
@@ -18,9 +24,10 @@ interface ICustomVideoRecorder {
 }
 
 const CustomVideoRecorder = ({
-    children,
+    previewVideoRef,
     status,
     mediaBlobUrl,
+    actionButtons,
     startRecording,
     stopRecording,
     disabled,
@@ -50,7 +57,31 @@ const CustomVideoRecorder = ({
                     </ActionsButtonStyled>
                 )}
             </ActionsStyled>
-            {children}
+            <Stack direction="row" alignItems="center" spacing={2}>
+                <Stack direction="row">
+                    <video
+                        ref={previewVideoRef}
+                        width={320}
+                        height={160}
+                        autoPlay
+                    />
+                    {mediaBlobUrl && (
+                        <video
+                            src={mediaBlobUrl}
+                            width={320}
+                            height={160}
+                            controls
+                        />
+                    )}
+                </Stack>
+                <ListenAudioStyled showmedia={!!mediaBlobUrl}>
+                    <ActionsContentStyled>
+                        {actionButtons.map((buttonInfo, index) => (
+                            <CustomIconButton key={index} {...buttonInfo} />
+                        ))}
+                    </ActionsContentStyled>
+                </ListenAudioStyled>
+            </Stack>
         </AudioRecorderStyled>
     );
 };

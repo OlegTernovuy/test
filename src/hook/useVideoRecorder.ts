@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { useReactMediaRecorder, StatusMessages } from 'react-media-recorder-2';
 import { putMedia } from '../services/Media.service';
 import { useMediaSettings } from '../Providers/MediaSettingsProvider';
-import { ICustomSelectProps } from '../types';
+import { CustomIconButtonProps, ICustomSelectProps } from '../types';
 
 interface UseMediaRecorderReturn {
     status: StatusMessages;
     mediaBlobUrl?: string;
     previewStream: MediaStream | null;
+    actionButtons: CustomIconButtonProps[];
     selectors: ICustomSelectProps[];
     startRecording: () => void;
     stopRecording: () => void;
@@ -93,10 +94,19 @@ const useMediaRecorder = (): UseMediaRecorderReturn => {
         }
     };
 
+    const actionButtons: CustomIconButtonProps[] = [
+        {
+            condition: status === 'stopped' && mediaBlobUrl,
+            iconName: 'replay',
+            onClick: clearBlobUrl,
+        },
+    ];
+
     return {
         status,
         mediaBlobUrl,
         previewStream: mediaStream,
+        actionButtons,
         selectors,
         startRecording,
         stopRecording,

@@ -38,6 +38,7 @@ const AddVideoRecordForm = ({
         mediaBlobUrl,
         previewStream,
         selectors,
+        actionButtons,
         startRecording,
         stopRecording,
         setShouldPreview,
@@ -124,30 +125,15 @@ const AddVideoRecordForm = ({
                 </MediaStyled>
                 <Stack spacing={2}>
                     <CustomVideoRecorder
+                        previewVideoRef={previewVideoRef}
                         status={status}
                         mediaBlobUrl={mediaBlobUrl}
                         startRecording={startRecording}
                         stopRecording={stopRecording}
+                        actionButtons={actionButtons}
                         disabled={formik.isSubmitting}
                         isAddingFroms
-                    >
-                        <Stack direction="row">
-                            <video
-                                ref={previewVideoRef}
-                                width={320}
-                                height={160}
-                                autoPlay
-                            />
-                            {mediaBlobUrl && (
-                                <video
-                                    src={mediaBlobUrl}
-                                    width={320}
-                                    height={160}
-                                    controls
-                                />
-                            )}
-                        </Stack>
-                    </CustomVideoRecorder>
+                    />
                 </Stack>
             </MediaRecordWrapper>
         </MediaRecordFormStyled>
