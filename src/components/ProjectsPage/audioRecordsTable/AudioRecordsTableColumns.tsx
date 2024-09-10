@@ -99,6 +99,15 @@ const createColumns = (
                 ''
             );
         },
+        sortComparator: (v1, v2) => {
+            const date1 = (v1 as { _seconds: number })?._seconds;
+            const date2 = (v2 as { _seconds: number })?._seconds;
+
+            if (date1 && date2) {
+                return date1 - date2;
+            }
+            return date1 ? -1 : 1;
+        },
     },
     ...(isAdmin
         ? [
