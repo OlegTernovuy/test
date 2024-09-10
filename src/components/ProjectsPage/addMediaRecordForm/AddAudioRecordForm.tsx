@@ -1,22 +1,21 @@
 import { useEffect } from 'react';
 import { useFormik } from 'formik';
+import { CircularProgress, TextField } from '@mui/material';
 
-import { CustomMediaRecorder, CustomSelect } from '../index';
+import { CustomMediaRecorder, CustomSelect } from '../../';
 import {
     CircularProgressStyled,
     InputsSelectStyled,
     MediaStyled,
-} from '../../styled/CustomMediaRecorder.styled';
+} from '../../../styled/CustomMediaRecorder.styled';
 import {
-    AudioRecordFormStyled,
-    AudioRecordWrapper,
+    MediaRecordFormStyled,
+    MediaRecordWrapper,
     StyledTextarea,
-} from '../../styled/AddAudioRecordForm.styled';
-import { CircularProgress, TextField } from '@mui/material';
-
-import useWaveSurfer from '../../hook/useWaveSurfer';
-import { AddAudioRecordSchema } from '../../utils/valiadtionSchema';
-import { addAudioRecord } from '../../services/Media.service';
+} from '../../../styled/AddMediaRecordForm.styled';
+import useWaveSurfer from '../../../hook/useWaveSurfer';
+import { AddAudioRecordSchema } from '../../../utils/validationSchema';
+import { addAudioRecord } from '../../../services/Media.service';
 
 interface IAudioDataProps {
     author: string;
@@ -92,8 +91,8 @@ const AddAudioRecordForm = ({
     }
 
     return (
-        <AudioRecordFormStyled onSubmit={formik.handleSubmit}>
-            <AudioRecordWrapper>
+        <MediaRecordFormStyled onSubmit={formik.handleSubmit}>
+            <MediaRecordWrapper>
                 <MediaStyled>
                     <InputsSelectStyled>
                         {selectors.map((selector, index) => (
@@ -124,7 +123,7 @@ const AddAudioRecordForm = ({
                     isAddingFroms
                     wavesurferId="wavesurfer-add"
                 />
-            </AudioRecordWrapper>
+            </MediaRecordWrapper>
             <StyledTextarea
                 name="comment"
                 placeholder="Comment"
@@ -132,7 +131,7 @@ const AddAudioRecordForm = ({
                 value={formik.values.comment}
                 onChange={formik.handleChange}
             />
-        </AudioRecordFormStyled>
+        </MediaRecordFormStyled>
     );
 };
 

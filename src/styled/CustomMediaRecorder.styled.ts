@@ -21,7 +21,7 @@ const AvesurferStyled = styled.div`
 const AudioRecorderStyled = styled.div`
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     justify-content: start;
     gap: 20px;
 `;

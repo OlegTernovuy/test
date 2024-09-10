@@ -10,23 +10,38 @@ import {
     AudioRecordsTable,
     Sidebar,
     AddAudioRecordForm,
+    AddVideoRecordForm,
+    VideoRecordsTable,
     CustomSelect,
 } from '../components';
-import { Avatar, Box, Button, IconButton, Typography } from '@mui/material';
+import {
+    Avatar,
+    Box,
+    Button,
+    IconButton,
+    Typography,
+    Tab,
+    Stack,
+} from '@mui/material';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
 import MenuIcon from '@mui/icons-material/Menu';
 
 import { useAuth } from '../Providers/AuthProvider';
 import { useFetchProject } from '../services/Projects.service';
 import { useFetchAudioRecords } from '../services/Media.service';
 import { IProjects } from '../types';
-import { useAudioSettings } from '../Providers/AudioSettingsProvider';
+import { useMediaSettings } from '../Providers/MediaSettingsProvider';
 
 const ProjectsPage = () => {
     const { isAdmin, user, logout } = useAuth();
 
-    const { selectorOutput } = useAudioSettings();
+    const {
+        audioDevices: { selectorOutput },
+    } = useMediaSettings();
 
     const [open, setOpen] = useState(true);
+
+    const [selectedTab, setSelectedTab] = useState<'audio' | 'video'>('audio');
 
     const toggleDrawer = useCallback(() => {
         setOpen((prevOpen) => {
@@ -83,40 +98,68 @@ const ProjectsPage = () => {
                 fetchProjects={fetchProjects}
             />
             <ProjectsPageMainBlock $open={open}>
-                <ProjectPageHeaderStyled $startItems={isAdmin}>
-                    <MenuAudioFormHeaderStyled $startItems={isAdmin}>
-                        {!open && (
-                            <Button
-                                aria-label="show sidebar"
-                                onClick={() => toggleDrawer()}
+                <TabContext value={selectedTab}>
+                    <ProjectPageHeaderStyled $startItems={isAdmin}>
+                        <MenuAudioFormHeaderStyled $startItems={isAdmin}>
+                            {!open && (
+                                <Button
+                                    aria-label="show sidebar"
+                                    onClick={() => toggleDrawer()}
+                                >
+                                    <MenuIcon fontSize="large" />
+                                </Button>
+                            )}
+                            <TabList
+                                onChange={(_, newValue) =>
+                                    setSelectedTab(newValue)
+                                }
                             >
-                                <MenuIcon fontSize="large" />
-                            </Button>
-                        )}
-                        {isAdmin ? (
-                            <AddAudioRecordForm
-                                author={user.email}
-                                project={selectedProjectForCreate.name}
-                                projectId={selectedProjectForCreate.id}
+                                <Tab label="Audio" value="audio" />
+                                <Tab label="Video" value="video" />
+                            </TabList>
+                            {!isAdmin && <CustomSelect {...selectorOutput} />}
+                        </MenuAudioFormHeaderStyled>
+                        <ProfileBlockStyled>
+                            <Typography variant="body2">
+                                {user.email}
+                            </Typography>
+                            <IconButton onClick={logout}>
+                                <Avatar>L</Avatar>
+                            </IconButton>
+                        </ProfileBlockStyled>
+                    </ProjectPageHeaderStyled>
+                    <TabPanel value="audio">
+                        <Stack spacing={2}>
+                            {isAdmin && (
+                                <AddAudioRecordForm
+                                    author={user.email}
+                                    project={selectedProjectForCreate.name}
+                                    projectId={selectedProjectForCreate.id}
+                                    fetchData={fetchAudioRecord}
+                                />
+                            )}
+                            <AudioRecordsTable
+                                audioRecords={audioRecords}
+                                loading={loading}
                                 fetchData={fetchAudioRecord}
+                                projectId={selectedProjectForCreate}
                             />
-                        ) : (
-                            <CustomSelect {...selectorOutput} />
-                        )}
-                    </MenuAudioFormHeaderStyled>
-                    <ProfileBlockStyled>
-                        <Typography variant="body2">{user.email}</Typography>
-                        <IconButton onClick={logout}>
-                            <Avatar>L</Avatar>
-                        </IconButton>
-                    </ProfileBlockStyled>
-                </ProjectPageHeaderStyled>
-                <AudioRecordsTable
-                    audioRecords={audioRecords}
-                    loading={loading}
-                    fetchData={fetchAudioRecord}
-                    projectId={selectedProjectForCreate}
-                />
+                        </Stack>
+                    </TabPanel>
+                    <TabPanel value="video">
+                        <Stack spacing={2}>
+                            {isAdmin && (
+                                <AddVideoRecordForm
+                                    author={user.email}
+                                    project={selectedProjectForCreate.name}
+                                    projectId={selectedProjectForCreate.id}
+                                    fetchData={fetchAudioRecord}
+                                />
+                            )}
+                            <VideoRecordsTable />
+                        </Stack>
+                    </TabPanel>
+                </TabContext>
             </ProjectsPageMainBlock>
         </Box>
     );

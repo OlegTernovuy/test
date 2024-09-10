@@ -5,7 +5,7 @@ import { useFormik } from 'formik';
 import { AuthForm } from '../../components';
 import { TextField } from '@mui/material';
 
-import { registerSchema } from '../../utils/valiadtionSchema';
+import { registerSchema } from '../../utils/validationSchema';
 import { handleRegister } from '../../services/Auth.service';
 
 const RegisterPage = () => {

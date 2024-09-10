@@ -6,7 +6,7 @@ import { ForgotPasswordStyled, LinkStyled } from '../../styled/AuthForm.styled';
 import { AuthForm } from '../../components';
 import { TextField } from '@mui/material';
 
-import { loginSchema } from '../../utils/valiadtionSchema';
+import { loginSchema } from '../../utils/validationSchema';
 import { useAuth } from '../../Providers/AuthProvider';
 
 const LoginPage = () => {

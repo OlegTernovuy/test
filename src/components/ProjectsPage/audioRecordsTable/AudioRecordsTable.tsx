@@ -14,7 +14,7 @@ import { IAudioRecord } from '../../../types';
 import useEditingHandlers from '../../../hook/useEditingHandlers';
 import useWaveSurfer from '../../../hook/useWaveSurfer';
 import { useAuth } from '../../../Providers/AuthProvider';
-import { UpdateAudioRecordSchema } from '../../../utils/valiadtionSchema';
+import { UpdateAudioRecordSchema } from '../../../utils/validationSchema';
 
 interface IAudioRecordProps {
     audioRecords: IAudioRecord[];

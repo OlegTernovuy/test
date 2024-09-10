@@ -46,10 +46,13 @@ const UpdateAudioRecordSchema = yup.object({
 
 const AddAudioRecordSchema = UpdateAudioRecordSchema.shape({});
 
+const AddVideoRecordSchema = UpdateAudioRecordSchema.shape({});
+
 export {
     loginSchema,
     registerSchema,
     resetPasswordSchema,
     UpdateAudioRecordSchema,
     AddAudioRecordSchema,
+    AddVideoRecordSchema,
 };
