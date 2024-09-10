@@ -3,7 +3,7 @@ import { useReactMediaRecorder, StatusMessages } from 'react-media-recorder-2';
 import WaveSurfer from 'wavesurfer.js';
 
 import { CustomIconButtonProps, ICustomSelectProps } from '../types';
-import { putMedia, updateAudioFile } from '../services/Media.service';
+import { putMedia, updateAudioFile } from '../services/Audio.service';
 import { useMediaSettings } from '../Providers/MediaSettingsProvider';
 
 const WAVESURFER_SETTINGS = {

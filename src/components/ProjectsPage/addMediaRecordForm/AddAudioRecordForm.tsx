@@ -15,7 +15,7 @@ import {
 } from '../../../styled/AddMediaRecordForm.styled';
 import useWaveSurfer from '../../../hook/useWaveSurfer';
 import { AddAudioRecordSchema } from '../../../utils/validationSchema';
-import { addAudioRecord } from '../../../services/Media.service';
+import { addAudioRecord } from '../../../services/Audio.service';
 
 interface IAudioDataProps {
     author: string;

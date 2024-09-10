@@ -44,15 +44,27 @@ const UpdateAudioRecordSchema = yup.object({
     audioFileUrl: yup.string(),
 });
 
+const UpdateVideoRecordSchema = yup.object({
+    name: yup.string().required(),
+    author: yup
+        .string()
+        .email()
+        .required('Author is required')
+        .min(3, 'Author must contain at least 3 characters'),
+    comment: yup.string(),
+    videoFileUrl: yup.string(),
+});
+
 const AddAudioRecordSchema = UpdateAudioRecordSchema.shape({});
 
-const AddVideoRecordSchema = UpdateAudioRecordSchema.shape({});
+const AddVideoRecordSchema = UpdateVideoRecordSchema.shape({});
 
 export {
     loginSchema,
     registerSchema,
     resetPasswordSchema,
     UpdateAudioRecordSchema,
+    UpdateVideoRecordSchema,
     AddAudioRecordSchema,
     AddVideoRecordSchema,
 };

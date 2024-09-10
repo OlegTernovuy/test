@@ -1,15 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import {
-    Avatar,
-    Box,
-    Button,
-    IconButton,
-    Typography,
-    Stack,
-    Tab,
-} from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import { TabContext, TabList, TabPanel } from '@mui/lab';
 
 import {
     MenuAudioFormHeaderStyled,
@@ -21,10 +10,22 @@ import {
     AudioRecordsTable,
     Sidebar,
     AddAudioRecordForm,
-    CustomSelect,
     AddVideoRecordForm,
     VideoRecordsTable,
+    CustomSelect,
 } from '../components';
+import {
+    Avatar,
+    Box,
+    Button,
+    IconButton,
+    Typography,
+    Tab,
+    Stack,
+} from '@mui/material';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
+import MenuIcon from '@mui/icons-material/Menu';
+
 import { useAuth } from '../Providers/AuthProvider';
 import { useFetchProject } from '../services/Projects.service';
 import { useFetchAudioRecords } from '../services/Audio.service';
@@ -44,10 +45,12 @@ const ProjectsPage = () => {
     const [selectedTab, setSelectedTab] = useState<'audio' | 'video'>('audio');
 
     const toggleDrawer = useCallback(() => {
-        setOpen((prevOpen) => !prevOpen);
+        setOpen((prevOpen) => {
+            return !prevOpen;
+        });
     }, []);
 
-    // Store data about the currently selected project
+    //store data about the currently selected project
     const [selectedProjectForCreate, setSelectedProjectForCreate] = useState<{
         id: string;
         name: string;
@@ -91,7 +94,7 @@ const ProjectsPage = () => {
         }
     }, [selectedProjectForCreate]);
 
-    const showVideoTab = isAdmin || videoRecords.length > 0;
+    const showVideoTab = isAdmin ? true : videoRecords.length > 0;
 
     return (
         <Box>
@@ -110,21 +113,21 @@ const ProjectsPage = () => {
                             {!open && (
                                 <Button
                                     aria-label="show sidebar"
-                                    onClick={toggleDrawer}
+                                    onClick={() => toggleDrawer()}
                                 >
                                     <MenuIcon fontSize="large" />
                                 </Button>
                             )}
-                            {showVideoTab && (
-                                <TabList
-                                    onChange={(_, newValue) =>
-                                        setSelectedTab(newValue)
-                                    }
-                                >
-                                    <Tab label="Audio" value="audio" />
+                            <TabList
+                                onChange={(_, newValue) =>
+                                    setSelectedTab(newValue)
+                                }
+                            >
+                                <Tab label="Audio" value="audio" />
+                                {showVideoTab && (
                                     <Tab label="Video" value="video" />
-                                </TabList>
-                            )}
+                                )}
+                            </TabList>
                         </MenuAudioFormHeaderStyled>
                         <ProfileBlockStyled>
                             <Typography variant="body2">
@@ -135,56 +138,7 @@ const ProjectsPage = () => {
                             </IconButton>
                         </ProfileBlockStyled>
                     </ProjectPageHeaderStyled>
-                    {showVideoTab ? (
-                        <>
-                            <TabPanel value="audio">
-                                <Stack spacing={2}>
-                                    {isAdmin ? (
-                                        <AddAudioRecordForm
-                                            author={user.email}
-                                            project={
-                                                selectedProjectForCreate.name
-                                            }
-                                            projectId={
-                                                selectedProjectForCreate.id
-                                            }
-                                            fetchData={fetchAudioRecord}
-                                        />
-                                    ) : (
-                                        <CustomSelect {...selectorOutput} />
-                                    )}
-                                    <AudioRecordsTable
-                                        audioRecords={audioRecords}
-                                        loading={audioLoading}
-                                        fetchData={fetchAudioRecord}
-                                        projectId={selectedProjectForCreate}
-                                    />
-                                </Stack>
-                            </TabPanel>
-                            <TabPanel value="video">
-                                <Stack spacing={2}>
-                                    {isAdmin && (
-                                        <AddVideoRecordForm
-                                            author={user.email}
-                                            project={
-                                                selectedProjectForCreate.name
-                                            }
-                                            projectId={
-                                                selectedProjectForCreate.id
-                                            }
-                                            fetchData={fetchVideoRecord}
-                                        />
-                                    )}
-                                    <VideoRecordsTable
-                                        videoRecords={videoRecords}
-                                        loading={videoLoading}
-                                        fetchData={fetchVideoRecord}
-                                        projectId={selectedProjectForCreate}
-                                    />
-                                </Stack>
-                            </TabPanel>
-                        </>
-                    ) : (
+                    <TabPanel value="audio">
                         <Stack spacing={2}>
                             {isAdmin ? (
                                 <AddAudioRecordForm
@@ -203,7 +157,25 @@ const ProjectsPage = () => {
                                 projectId={selectedProjectForCreate}
                             />
                         </Stack>
-                    )}
+                    </TabPanel>
+                    <TabPanel value="video">
+                        <Stack spacing={2}>
+                            {isAdmin && (
+                                <AddVideoRecordForm
+                                    author={user.email}
+                                    project={selectedProjectForCreate.name}
+                                    projectId={selectedProjectForCreate.id}
+                                    fetchData={fetchVideoRecord}
+                                />
+                            )}
+                            <VideoRecordsTable
+                                videoRecords={videoRecords}
+                                loading={videoLoading}
+                                fetchData={fetchVideoRecord}
+                                projectId={selectedProjectForCreate}
+                            />
+                        </Stack>
+                    </TabPanel>
                 </TabContext>
             </ProjectsPageMainBlock>
         </Box>

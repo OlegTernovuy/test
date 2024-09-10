@@ -17,6 +17,7 @@ import {
 import { AddVideoRecordSchema } from '../../../utils/validationSchema';
 import useVideoRecorder from '../../../hook/useVideoRecorder';
 import { CustomVideoRecorder } from '../../';
+import { addVideoRecord } from '../../../services/Video.service';
 
 interface IVideoDataProps {
     author: string;
@@ -57,7 +58,20 @@ const AddVideoRecordForm = ({
         enableReinitialize: true,
         onSubmit: async (values, { setSubmitting, resetForm }) => {
             try {
-                // save video file
+                const result = await handleDone();
+
+                if (!result) {
+                    throw new Error('Audio file URL is required.');
+                }
+
+                await addVideoRecord(projectId, {
+                    name: values.name,
+                    comment: values.comment,
+                    author: values.author,
+                    videoFileUrl: result,
+                });
+                fetchData(projectId);
+                resetForm();
             } catch (error) {
                 console.error('Error submitting the form: ', error);
             } finally {
@@ -125,7 +139,6 @@ const AddVideoRecordForm = ({
                 </MediaStyled>
                 <Stack spacing={2}>
                     <CustomVideoRecorder
-                        previewVideoRef={previewVideoRef}
                         status={status}
                         mediaBlobUrl={mediaBlobUrl}
                         startRecording={startRecording}
@@ -133,7 +146,26 @@ const AddVideoRecordForm = ({
                         actionButtons={actionButtons}
                         disabled={formik.isSubmitting}
                         isAddingFroms
-                    />
+                    >
+                        {
+                            <>
+                                <video
+                                    ref={previewVideoRef}
+                                    width={320}
+                                    height={160}
+                                    autoPlay
+                                />
+                                {mediaBlobUrl && (
+                                    <video
+                                        src={mediaBlobUrl}
+                                        width={320}
+                                        height={160}
+                                        controls
+                                    />
+                                )}
+                            </>
+                        }
+                    </CustomVideoRecorder>
                 </Stack>
             </MediaRecordWrapper>
         </MediaRecordFormStyled>

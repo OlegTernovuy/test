@@ -11,14 +11,15 @@ import CustomSelect from './CustomMediaRecorder/CustomSelect';
 import HeaderMedia from './CustomMediaRecorder/HeaderMedia';
 import AddAudioRecordForm from './ProjectsPage/addMediaRecordForm/AddAudioRecordForm';
 import AddVideoRecordForm from './ProjectsPage/addMediaRecordForm/AddVideoRecordForm';
-import EditAudioPopover from './ProjectsPage/audioRecordsTable/EditAudioRecordPopover';
+import EditMediaPopover from './EditMediaRecordPopover';
 import ProjectTitleSearchComponent from './ProjectsPage/ProjectTitleSearchComponent';
 import AddNewProjectForm from './ProjectsPage/sidebar/AddNewProjectForm';
 import EditButtonsBlock from './ProjectsPage/sidebar/EditButtonsBlock';
 import SidebarListItem from './ProjectsPage/sidebar/SidebarListItem';
 import AudioPlayerComponent from './ProjectsPage/audioRecordsTable/AudioPlayerComponent';
 import CustomEditTextarea from './ProjectsPage/audioRecordsTable/CustomEditTextarea';
-import createColumns from './ProjectsPage/audioRecordsTable/AudioRecordsTableColumns';
+import createAudioColumns from './ProjectsPage/audioRecordsTable/AudioRecordsTableColumns';
+import createVideoColumns from './ProjectsPage/videoRecordsTable/VideoRecordsTableColumns';
 import SidebarList from './ProjectsPage/sidebar/SidebarList';
 
 export {
@@ -35,13 +36,14 @@ export {
     HeaderMedia,
     AddAudioRecordForm,
     AddVideoRecordForm,
-    EditAudioPopover,
+    EditMediaPopover as EditAudioPopover,
     ProjectTitleSearchComponent,
     AddNewProjectForm,
     EditButtonsBlock,
     SidebarListItem,
     AudioPlayerComponent,
     CustomEditTextarea,
-    createColumns,
-    SidebarList
+    createAudioColumns,
+    createVideoColumns,
+    SidebarList,
 };

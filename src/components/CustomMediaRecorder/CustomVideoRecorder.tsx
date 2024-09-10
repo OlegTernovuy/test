@@ -13,7 +13,7 @@ import CustomIconButton from './CustomIconButton';
 import { Stack } from '@mui/material';
 
 interface ICustomVideoRecorder {
-    previewVideoRef: RefObject<HTMLVideoElement>;
+    children: ReactNode;
     status: StatusMessages;
     actionButtons: CustomIconButtonProps[];
     mediaBlobUrl?: string;
@@ -24,7 +24,7 @@ interface ICustomVideoRecorder {
 }
 
 const CustomVideoRecorder = ({
-    previewVideoRef,
+    children,
     status,
     mediaBlobUrl,
     actionButtons,
@@ -58,22 +58,7 @@ const CustomVideoRecorder = ({
                 )}
             </ActionsStyled>
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Stack direction="row">
-                    <video
-                        ref={previewVideoRef}
-                        width={320}
-                        height={160}
-                        autoPlay
-                    />
-                    {mediaBlobUrl && (
-                        <video
-                            src={mediaBlobUrl}
-                            width={320}
-                            height={160}
-                            controls
-                        />
-                    )}
-                </Stack>
+                <Stack direction="row">{children}</Stack>
                 <ListenAudioStyled $showmedia={!!mediaBlobUrl}>
                     <ActionsContentStyled>
                         {actionButtons.map((buttonInfo, index) => (
