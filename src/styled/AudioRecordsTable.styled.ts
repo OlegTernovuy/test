@@ -21,8 +21,13 @@ const FormattedCommentStyled = styled.div`
     word-wrap: break-word;
 `;
 
+const FormattedDateStyled = styled.div`
+    white-space: pre-line;
+`;
+
 export {
     AudioRecordsTableWrapper,
     ProjectTitleSearchStyled,
     FormattedCommentStyled,
+    FormattedDateStyled,
 };
