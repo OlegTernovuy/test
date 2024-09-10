@@ -4,14 +4,19 @@ import { Box, ListItem } from '@mui/material';
 import { FlexCenterStyled } from './GlobalStyle.styled';
 import { theme } from './theme';
 
-const SliderStyled = styled(Box)`
+const SidebarStyled = styled(Box)`
     width: 240px;
     height: 100%;
 `;
 
 const SidebarHeaderStyled = styled(FlexCenterStyled)`
-    gap: 8px;
+    display: flex;
+    justify-content: space-between;
     padding: 8px 12px 0;
+`;
+
+const SidebarHeaderTitle = styled(FlexCenterStyled)`
+    gap: 8px;
 `;
 
 const StyledListItem = styled(ListItem)<{ $isselected: boolean }>`
@@ -25,6 +30,10 @@ const StyledListItem = styled(ListItem)<{ $isselected: boolean }>`
 
 const IconContainer = styled(FlexCenterStyled)``;
 
+const ProjectsPageMainBlock = styled(Box)<{ $open: boolean }>`
+    margin-left: ${({ $open }) => ($open ? '240px' : 0)};
+`;
+
 const AddProjectFormStyled = styled(FlexCenterStyled)`
     margin: 4px 4px 8px;
 `;
@@ -35,7 +44,7 @@ const ProjectPageHeaderStyled = styled(Box)<{ $startItems: boolean }>`
     display: flex;
     align-items: ${({ $startItems }) => ($startItems ? 'start' : 'center')};
     justify-content: space-between;
-    padding: 16px 8px;
+    padding: 16px;
 `;
 
 const ProfileBlockStyled = styled(FlexCenterStyled)`
@@ -63,9 +72,11 @@ const CircularProgressWrapper = styled(Box)`
 export {
     SidebarHeaderStyled,
     ProjectPageHeaderStyled,
-    SliderStyled,
+    SidebarStyled,
+    SidebarHeaderTitle,
     StyledListItem,
     IconContainer,
+    ProjectsPageMainBlock,
     AddProjectFormStyled,
     EditProjectFormStyled,
     MenuAudioFormHeaderStyled,

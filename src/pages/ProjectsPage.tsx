@@ -4,6 +4,7 @@ import {
     MenuAudioFormHeaderStyled,
     ProfileBlockStyled,
     ProjectPageHeaderStyled,
+    ProjectsPageMainBlock,
 } from '../styled/ProjectsPage.styled';
 import {
     AudioRecordsTable,
@@ -36,7 +37,7 @@ const ProjectsPage = () => {
 
     const { selectorOutput } = useAudioSettings();
 
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
 
     const [selectedTab, setSelectedTab] = useState<'audio' | 'video'>('audio');
 
@@ -94,16 +95,18 @@ const ProjectsPage = () => {
                 toggleDrawer={toggleDrawer}
                 fetchProjects={fetchProjects}
             />
-            <Box>
+            <ProjectsPageMainBlock $open={open}>
                 <TabContext value={selectedTab}>
-                    <ProjectPageHeaderStyled>
-                        <MenuAudioFormHeaderStyled>
-                            <Button
-                                aria-label="show sidebar"
-                                onClick={() => toggleDrawer()}
-                            >
-                                <MenuIcon fontSize="large" />
-                            </Button>
+                    <ProjectPageHeaderStyled $startItems={isAdmin}>
+                        <MenuAudioFormHeaderStyled $startItems={isAdmin}>
+                            {!open && (
+                                <Button
+                                    aria-label="show sidebar"
+                                    onClick={() => toggleDrawer()}
+                                >
+                                    <MenuIcon fontSize="large" />
+                                </Button>
+                            )}
                             <TabList
                                 onChange={(_, newValue) =>
                                     setSelectedTab(newValue)
@@ -115,9 +118,7 @@ const ProjectsPage = () => {
                             {!isAdmin && <CustomSelect {...selectorOutput} />}
                         </MenuAudioFormHeaderStyled>
                         <ProfileBlockStyled>
-                            <Typography variant="body2">
-                                {user.email}
-                            </Typography>
+                            <Typography variant="body2">{user.email}</Typography>
                             <IconButton onClick={logout}>
                                 <Avatar>L</Avatar>
                             </IconButton>
@@ -155,7 +156,7 @@ const ProjectsPage = () => {
                         </Stack>
                     </TabPanel>
                 </TabContext>
-            </Box>
+            </ProjectsPageMainBlock>
         </Box>
     );
 };
