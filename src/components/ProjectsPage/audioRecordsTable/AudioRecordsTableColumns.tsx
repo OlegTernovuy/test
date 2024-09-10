@@ -13,14 +13,13 @@ import {
     GridRenderEditCellParams,
 } from '@mui/x-data-grid';
 import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
-import { FormattedCommentStyled } from '../../../styled/AudioRecordsTable.styled';
+import {
+    FormattedCommentStyled,
+    FormattedDateStyled,
+} from '../../../styled/AudioRecordsTable.styled';
 
 import { CustomIconButtonProps } from '../../../types';
-
-const getDate = (timestamp: number) => {
-    const date = new Date(timestamp * 1000);
-    return date.toLocaleDateString('en-US');
-};
+import { getDate } from '../../../utils/getDate';
 
 const createColumns = (
     isAdmin: boolean,
@@ -94,7 +93,11 @@ const createColumns = (
         flex: 0.5,
         renderCell: (params: GridRenderCellParams) => {
             const date = (params.value as { _seconds: number })?._seconds;
-            return date ? getDate(date) : '';
+            return date ? (
+                <FormattedDateStyled>{getDate(date)}</FormattedDateStyled>
+            ) : (
+                ''
+            );
         },
     },
     ...(isAdmin

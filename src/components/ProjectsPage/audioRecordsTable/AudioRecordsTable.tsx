@@ -45,7 +45,7 @@ const AudioRecordsTable = ({
         useDeleteAudioRecord();
     const [paginationModel, setPaginationModel] = useState<GridPaginationModel>(
         {
-            pageSize: 5,
+            pageSize: 30,
             page: 0,
         }
     );
@@ -129,7 +129,7 @@ const AudioRecordsTable = ({
                 getEstimatedRowHeight={() => 200}
                 paginationModel={paginationModel}
                 onPaginationModelChange={setPaginationModel}
-                pageSizeOptions={[5, 10, 20]}
+                pageSizeOptions={[30, 75, 100]}
                 disableRowSelectionOnClick
                 onCellDoubleClick={(params, event) => {
                     event.stopPropagation();
