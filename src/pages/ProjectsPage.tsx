@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import {
     MenuAudioFormHeaderStyled,
@@ -11,6 +11,7 @@ import {
     AddAudioRecordForm,
     AddVideoRecordForm,
     VideoRecordsTable,
+    CustomSelect,
 } from '../components';
 import {
     Avatar,
@@ -28,28 +29,45 @@ import { useAuth } from '../Providers/AuthProvider';
 import { useFetchProject } from '../services/Projects.service';
 import { useFetchAudioRecords } from '../services/Media.service';
 import { IProjects } from '../types';
+import { useAudioSettings } from '../Providers/AudioSettingsProvider';
 
 const ProjectsPage = () => {
     const { isAdmin, user, logout } = useAuth();
+
+    const { selectorOutput } = useAudioSettings();
 
     const [open, setOpen] = useState(false);
 
     const [selectedTab, setSelectedTab] = useState<'audio' | 'video'>('audio');
 
-    const toggleDrawer = () => {
+    const toggleDrawer = useCallback(() => {
         setOpen((prevOpen) => {
             return !prevOpen;
         });
-    };
+    }, []);
 
     //store data about the currently selected project
-    const [selectedProjectForCreate, setSelectedProjectForCreate] =
-        useState<IProjects>({
-            id: '',
-            name: '',
-        });
+    const [selectedProjectForCreate, setSelectedProjectForCreate] = useState<{
+        id: string;
+        name: string;
+    }>({
+        id: '',
+        name: '',
+    });
 
-    const { data: projects, fetchProjects } = useFetchProject();
+    const {
+        data: projects,
+        fetchProjects,
+        updatedProjects,
+    } = useFetchProject();
+
+    const handleReorder = useCallback(
+        (reorderedProjects: IProjects[]) => {
+            updatedProjects(reorderedProjects);
+        },
+        [updatedProjects]
+    );
+
     const {
         data: audioRecords,
         fetchAudioRecord,
@@ -70,6 +88,7 @@ const ProjectsPage = () => {
         <Box>
             <Sidebar
                 projects={projects}
+                onReorder={handleReorder}
                 setSelectedProjectForCreate={setSelectedProjectForCreate}
                 open={open}
                 toggleDrawer={toggleDrawer}
@@ -93,6 +112,7 @@ const ProjectsPage = () => {
                                 <Tab label="Audio" value="audio" />
                                 <Tab label="Video" value="video" />
                             </TabList>
+                            {!isAdmin && <CustomSelect {...selectorOutput} />}
                         </MenuAudioFormHeaderStyled>
                         <ProfileBlockStyled>
                             <Typography variant="body2">

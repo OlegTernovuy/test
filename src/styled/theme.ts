@@ -16,6 +16,9 @@ export const theme = createTheme({
         secondary: {
             main: '#526e75',
         },
+        grey: {
+            100: '#0000000a',
+        },
     },
     breakpoints: {
         values: {

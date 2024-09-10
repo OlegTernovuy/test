@@ -10,7 +10,7 @@ import {
     updateAudioRecord,
     useDeleteAudioRecord,
 } from '../../../services/Media.service';
-import { IAudioRecord, IProjects } from '../../../types';
+import { IAudioRecord } from '../../../types';
 import useEditingHandlers from '../../../hook/useEditingHandlers';
 import useWaveSurfer from '../../../hook/useWaveSurfer';
 import { useAuth } from '../../../Providers/AuthProvider';
@@ -20,7 +20,7 @@ interface IAudioRecordProps {
     audioRecords: IAudioRecord[];
     loading: boolean;
     fetchData: (projectId: string) => void;
-    projectId: IProjects;
+    projectId: { id: string; name: string };
 }
 
 const AudioRecordsTable = ({

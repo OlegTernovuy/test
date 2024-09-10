@@ -15,7 +15,7 @@ const InputsSelectStyled = styled.div`
 
 const AvesurferStyled = styled.div`
     width: 200px;
-    height: 75px;
+    height: 40px;
 `;
 
 const AudioRecorderStyled = styled.div`
@@ -34,7 +34,6 @@ const ActionsStyled = styled.div`
 `;
 
 const ActionsContentStyled = styled.div`
-    margin-top: 10px;
     display: flex;
     justify-content: center;
     gap: 30px;
@@ -50,8 +49,8 @@ const IconButtonStyled = styled(IconButton)`
     height: 20px;
 `;
 
-const ListenAudioStyled = styled.div<{ showmedia: boolean }>`
-    display: ${({ showmedia }) => (showmedia ? 'flex' : 'none')};
+const ListenAudioStyled = styled.div<{ $showmedia: boolean }>`
+    display: ${({ $showmedia }) => ($showmedia ? 'flex' : 'none')};
     align-items: center;
     gap: 20px;
 `;

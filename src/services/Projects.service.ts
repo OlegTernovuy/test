@@ -22,7 +22,11 @@ const useFetchProject = () => {
         }
     };
 
-    return { data, fetchProjects, loading, error };
+    const updatedProjects = (orderedProjects: any) => {
+        setData(orderedProjects);
+    };
+
+    return { data, fetchProjects, loading, error, updatedProjects };
 };
 
 const useAddProject = () => {
@@ -82,4 +86,31 @@ const useDeleteProject = () => {
     return { deleteProject, loading, error };
 };
 
-export { useFetchProject, useAddProject, useEditProject, useDeleteProject };
+const useUpdateProjectsOrder = () => {
+    const { loading, error, makeRequest, clearError } = useFetch();
+
+    const updateProjectsOrder = async (
+        updatedProjects: IProjects[],
+        onSuccess: () => void
+    ) => {
+        await makeRequest(
+            {
+                url: `/projectsOrder`,
+                method: 'POST',
+                data: { updatedProjects },
+                withCredentials: true,
+            },
+            { onSuccess }
+        );
+    };
+
+    return { updateProjectsOrder, loading, error, clearError };
+};
+
+export {
+    useFetchProject,
+    useAddProject,
+    useEditProject,
+    useDeleteProject,
+    useUpdateProjectsOrder,
+};

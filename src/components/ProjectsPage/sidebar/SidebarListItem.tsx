@@ -1,5 +1,6 @@
 import { IconButton, ListItemText, TextField, Typography } from '@mui/material';
 import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
+
 import { EditProjectFormStyled } from '../../../styled/ProjectsPage.styled';
 
 interface ISidebarListItemProps {
