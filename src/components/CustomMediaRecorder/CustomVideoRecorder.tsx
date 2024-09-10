@@ -74,7 +74,7 @@ const CustomVideoRecorder = ({
                         />
                     )}
                 </Stack>
-                <ListenAudioStyled showmedia={!!mediaBlobUrl}>
+                <ListenAudioStyled $showmedia={!!mediaBlobUrl}>
                     <ActionsContentStyled>
                         {actionButtons.map((buttonInfo, index) => (
                             <CustomIconButton key={index} {...buttonInfo} />

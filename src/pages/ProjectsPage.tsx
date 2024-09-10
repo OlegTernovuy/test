@@ -30,12 +30,14 @@ import { useAuth } from '../Providers/AuthProvider';
 import { useFetchProject } from '../services/Projects.service';
 import { useFetchAudioRecords } from '../services/Media.service';
 import { IProjects } from '../types';
-import { useAudioSettings } from '../Providers/AudioSettingsProvider';
+import { useMediaSettings } from '../Providers/MediaSettingsProvider';
 
 const ProjectsPage = () => {
     const { isAdmin, user, logout } = useAuth();
 
-    const { selectorOutput } = useAudioSettings();
+    const {
+        audioDevices: { selectorOutput },
+    } = useMediaSettings();
 
     const [open, setOpen] = useState(true);
 
@@ -118,7 +120,9 @@ const ProjectsPage = () => {
                             {!isAdmin && <CustomSelect {...selectorOutput} />}
                         </MenuAudioFormHeaderStyled>
                         <ProfileBlockStyled>
-                            <Typography variant="body2">{user.email}</Typography>
+                            <Typography variant="body2">
+                                {user.email}
+                            </Typography>
                             <IconButton onClick={logout}>
                                 <Avatar>L</Avatar>
                             </IconButton>
