@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { useFormik } from 'formik';
+import {
+    DragDropContext,
+    Draggable,
+    Droppable,
+    DropResult,
+} from '@hello-pangea/dnd';
 
-import { DataGrid, GridPaginationModel } from '@mui/x-data-grid';
+import { DataGrid, GridPaginationModel, GridRow } from '@mui/x-data-grid';
 import { createColumns, ProjectTitleSearchComponent } from '../../index';
 import { AudioRecordsTableWrapper } from '../../../styled/AudioRecordsTable.styled';
 
@@ -86,6 +92,26 @@ const AudioRecordsTable = ({
         },
     });
 
+    const reorder = (list: any, startIndex: number, endIndex: number): any => {
+        const result = Array.from(list);
+        const [removed] = result.splice(startIndex, 1);
+        result.splice(endIndex, 0, removed);
+
+        return result;
+    };
+
+    const onDragEnd = async ({ destination, source }: DropResult) => {
+        if (!destination) return;
+
+        const newItems: IAudioRecord[] = reorder(
+            audioRecords,
+            source.index,
+            destination.index
+        );
+
+        console.log('newItems', newItems);
+    };
+
     const handleDeleteAudioRecord = async (
         audioRecordId: string,
         audioFileUrl: string
@@ -116,34 +142,67 @@ const AudioRecordsTable = ({
     );
 
     return (
-        <AudioRecordsTableWrapper>
-            <DataGrid
-                apiRef={apiRef}
-                rows={audioRecords}
-                columns={columns}
-                autoHeight
-                getRowId={(row) => row.id}
-                loading={loading || formik.isSubmitting || deleteLoading}
-                editMode="row"
-                getRowHeight={() => 'auto'}
-                getEstimatedRowHeight={() => 200}
-                paginationModel={paginationModel}
-                onPaginationModelChange={setPaginationModel}
-                pageSizeOptions={[30, 75, 100]}
-                disableRowSelectionOnClick
-                onCellDoubleClick={(params, event) => {
-                    event.stopPropagation();
-                    event.preventDefault();
-                }}
-                slots={{
-                    toolbar: () => (
-                        <ProjectTitleSearchComponent
-                            projectName={projectId.name}
+        <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="droppable-table-list">
+                {(provided) => (
+                    <AudioRecordsTableWrapper
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                    >
+                        <DataGrid
+                            apiRef={apiRef}
+                            columns={columns}
+                            rows={audioRecords}
+                            autoHeight
+                            getRowId={(row) => row.id}
+                            loading={
+                                loading || formik.isSubmitting || deleteLoading
+                            }
+                            editMode="row"
+                            getRowHeight={() => 'auto'}
+                            getEstimatedRowHeight={() => 200}
+                            paginationModel={paginationModel}
+                            onPaginationModelChange={setPaginationModel}
+                            pageSizeOptions={[30, 75, 100]}
+                            disableRowSelectionOnClick
+                            onCellDoubleClick={(params, event) => {
+                                event.stopPropagation();
+                                event.preventDefault();
+                            }}
+                            slots={{
+                                toolbar: () => (
+                                    <ProjectTitleSearchComponent
+                                        projectName={projectId.name}
+                                    />
+                                ),
+                                row: (props) => {
+                                    const { row, index } = props;
+
+                                    return (
+                                        <Draggable
+                                            key={row.id}
+                                            draggableId={row.id}
+                                            index={index}
+                                        >
+                                            {(provided) => (
+                                                <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                >
+                                                    <GridRow {...props} />
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    );
+                                },
+                            }}
                         />
-                    ),
-                }}
-            />
-        </AudioRecordsTableWrapper>
+                        {provided.placeholder}
+                    </AudioRecordsTableWrapper>
+                )}
+            </Droppable>
+        </DragDropContext>
     );
 };
 
