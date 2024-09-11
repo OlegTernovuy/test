@@ -185,7 +185,7 @@ const ProjectsPage = () => {
                             </TabPanel>
                         </>
                     ) : (
-                        <Stack spacing={2}>
+                        <Stack spacing={2} padding={3}>
                             {isAdmin ? (
                                 <AddAudioRecordForm
                                     author={user.email}
