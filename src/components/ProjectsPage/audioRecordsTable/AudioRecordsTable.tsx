@@ -178,8 +178,6 @@ const AudioRecordsTable = ({
                                     event.stopPropagation();
                                     event.preventDefault();
                                 }}
-                                disableColumnSorting={!isAdmin}
-                                disableColumnMenu={!isAdmin}
                                 slots={{
                                     toolbar: () => (
                                         <ProjectTitleSearchComponent

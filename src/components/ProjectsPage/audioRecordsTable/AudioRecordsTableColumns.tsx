@@ -68,6 +68,7 @@ const createAudioColumns = (
         align: 'center',
         flex: 1.5,
         editable: true,
+        sortable: false,
         renderCell: (params: GridRenderCellParams) => (
             <AudioPlayerComponent
                 audioUrl={params.row.audioFileUrl}
@@ -115,6 +116,7 @@ const createAudioColumns = (
                   field: 'actions',
                   headerName: 'Actions',
                   editable: true,
+                  sortable: false,
                   flex: 0.5,
                   renderCell: (params: GridRenderCellParams) => (
                       <EditAudioPopover
