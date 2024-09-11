@@ -29,7 +29,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '../Providers/AuthProvider';
 import { useFetchProject } from '../services/Projects.service';
 import { useFetchAudioRecords } from '../services/Media.service';
-import { IProjects } from '../types';
+import { IAudioRecord, IProjects } from '../types';
 import { useMediaSettings } from '../Providers/MediaSettingsProvider';
 
 const ProjectsPage = () => {
@@ -74,8 +74,16 @@ const ProjectsPage = () => {
     const {
         data: audioRecords,
         fetchAudioRecord,
+        updatedAudioRecords,
         loading,
     } = useFetchAudioRecords();
+
+    const handleReorderAudioRecords = useCallback(
+        (reorderedAudioRecords: IAudioRecord[]) => {
+            updatedAudioRecords(reorderedAudioRecords);
+        },
+        [updatedAudioRecords]
+    );
 
     useEffect(() => {
         fetchProjects();
@@ -142,6 +150,7 @@ const ProjectsPage = () => {
                                 audioRecords={audioRecords}
                                 loading={loading}
                                 fetchData={fetchAudioRecord}
+                                onReorder={handleReorderAudioRecords}
                                 projectId={selectedProjectForCreate}
                             />
                         </Stack>

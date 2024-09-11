@@ -20,6 +20,7 @@ import AudioPlayerComponent from './ProjectsPage/audioRecordsTable/AudioPlayerCo
 import CustomEditTextarea from './ProjectsPage/audioRecordsTable/CustomEditTextarea';
 import createColumns from './ProjectsPage/audioRecordsTable/AudioRecordsTableColumns';
 import SidebarList from './ProjectsPage/sidebar/SidebarList';
+import CustomRowWrapper from './ProjectsPage/audioRecordsTable/CustomRowWrapper';
 
 export {
     AuthForm,
@@ -43,5 +44,6 @@ export {
     AudioPlayerComponent,
     CustomEditTextarea,
     createColumns,
-    SidebarList
+    SidebarList,
+    CustomRowWrapper,
 };
