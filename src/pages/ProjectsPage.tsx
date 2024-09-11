@@ -115,7 +115,7 @@ const ProjectsPage = () => {
                                     <MenuIcon fontSize="large" />
                                 </Button>
                             )}
-                            {showVideoTab && (
+                            {showVideoTab ? (
                                 <TabList
                                     onChange={(_, newValue) =>
                                         setSelectedTab(newValue)
@@ -124,6 +124,8 @@ const ProjectsPage = () => {
                                     <Tab label="Audio" value="audio" />
                                     <Tab label="Video" value="video" />
                                 </TabList>
+                            ) : (
+                                <CustomSelect {...selectorOutput} />
                             )}
                         </MenuAudioFormHeaderStyled>
                         <ProfileBlockStyled>
@@ -139,7 +141,8 @@ const ProjectsPage = () => {
                         <>
                             <TabPanel value="audio">
                                 <Stack spacing={2}>
-                                    {isAdmin ? (
+                                    <CustomSelect {...selectorOutput} />
+                                    {isAdmin && (
                                         <AddAudioRecordForm
                                             author={user.email}
                                             project={
@@ -150,8 +153,6 @@ const ProjectsPage = () => {
                                             }
                                             fetchData={fetchAudioRecord}
                                         />
-                                    ) : (
-                                        <CustomSelect {...selectorOutput} />
                                     )}
                                     <AudioRecordsTable
                                         audioRecords={audioRecords}
@@ -186,15 +187,13 @@ const ProjectsPage = () => {
                         </>
                     ) : (
                         <Stack spacing={2} padding={3}>
-                            {isAdmin ? (
+                            {isAdmin && (
                                 <AddAudioRecordForm
                                     author={user.email}
                                     project={selectedProjectForCreate.name}
                                     projectId={selectedProjectForCreate.id}
                                     fetchData={fetchAudioRecord}
                                 />
-                            ) : (
-                                <CustomSelect {...selectorOutput} />
                             )}
                             <AudioRecordsTable
                                 audioRecords={audioRecords}
