@@ -141,8 +141,7 @@ const ProjectsPage = () => {
                         <>
                             <TabPanel value="audio">
                                 <Stack spacing={2}>
-                                    <CustomSelect {...selectorOutput} />
-                                    {isAdmin && (
+                                    {isAdmin ? (
                                         <AddAudioRecordForm
                                             author={user.email}
                                             project={
@@ -153,6 +152,8 @@ const ProjectsPage = () => {
                                             }
                                             fetchData={fetchAudioRecord}
                                         />
+                                    ) : (
+                                        <CustomSelect {...selectorOutput} />
                                     )}
                                     <AudioRecordsTable
                                         audioRecords={audioRecords}
