@@ -1,3 +1,4 @@
+import { MutableRefObject } from 'react';
 import { StatusMessages } from 'react-media-recorder-2';
 import {
     GridActionsCellItem,
@@ -10,36 +11,35 @@ import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
 import {
     CustomEditTextarea,
     EditAudioPopover,
-    AudioPlayerComponent,
-    CustomMediaRecorder,
-} from '../../index';
-import {
-    FormattedCommentStyled,
-    FormattedDateStyled,
-} from '../../../styled/AudioRecordsTable.styled';
-
+    CustomVideoRecorder,
+} from '../../';
+import { FormattedCommentStyled } from '../../../styled/AudioRecordsTable.styled';
 import { CustomIconButtonProps } from '../../../types';
-import { getDate } from '../../../utils/getDate';
 
-const createAudioColumns = (
+const getDate = (timestamp: number) => {
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleDateString('en-US');
+};
+
+const createVideoColumns = (
     isAdmin: boolean,
     startEditing: (id: string) => void,
     stopEditing: (id: string) => void,
     cancelEditing: (id: string) => void,
-    handleDeleteAudioRecord: (
-        audioRecordId: string,
-        audioFileUrl: string
+    handleDeleteVideoRecord: (
+        videoRecordId: string,
+        videoFileUrl: string
     ) => void,
     status: StatusMessages,
     mediaBlobUrl: string | undefined,
     actionButtons: CustomIconButtonProps[],
     startRecording: () => void,
     stopRecording: () => void,
-    selectedOutput: string
+    setVideoRef: (node: HTMLVideoElement | null) => void
 ): GridColDef[] => [
     {
         field: 'name',
-        headerName: 'Audio name',
+        headerName: 'Video name',
         flex: 1,
         headerAlign: 'center',
         align: 'center',
@@ -62,27 +62,46 @@ const createAudioColumns = (
         ),
     },
     {
-        field: 'audio',
-        headerName: 'Audio',
+        field: 'video',
+        headerName: 'Video',
         headerAlign: 'center',
         align: 'center',
         flex: 1.5,
         editable: true,
         renderCell: (params: GridRenderCellParams) => (
-            <AudioPlayerComponent
-                audioUrl={params.row.audioFileUrl}
-                selectedOutput={selectedOutput}
+            <video
+                src={params.row.videoFileUrl}
+                width={320}
+                height={160}
+                controls
             />
         ),
         renderEditCell: (_: GridRenderEditCellParams) => (
-            <CustomMediaRecorder
+            <CustomVideoRecorder
                 status={status}
                 mediaBlobUrl={mediaBlobUrl}
                 actionButtons={actionButtons}
                 startRecording={startRecording}
                 stopRecording={stopRecording}
-                wavesurferId="wavesurfer-edit"
-            />
+            >
+                {status === 'idle' || status === 'recording' ? (
+                    <video
+                        key="recording"
+                        ref={setVideoRef}
+                        width={320}
+                        height={160}
+                        autoPlay
+                    />
+                ) : (
+                    <video
+                        key="recorded"
+                        src={mediaBlobUrl}
+                        width={320}
+                        height={160}
+                        controls
+                    />
+                )}
+            </CustomVideoRecorder>
         ),
     },
     {
@@ -93,20 +112,7 @@ const createAudioColumns = (
         flex: 0.5,
         renderCell: (params: GridRenderCellParams) => {
             const date = (params.value as { _seconds: number })?._seconds;
-            return date ? (
-                <FormattedDateStyled>{getDate(date)}</FormattedDateStyled>
-            ) : (
-                ''
-            );
-        },
-        sortComparator: (v1, v2) => {
-            const date1 = (v1 as { _seconds: number })?._seconds;
-            const date2 = (v2 as { _seconds: number })?._seconds;
-
-            if (date1 && date2) {
-                return date1 - date2;
-            }
-            return date1 ? -1 : 1;
+            return date ? getDate(date) : '';
         },
     },
     ...(isAdmin
@@ -121,9 +127,9 @@ const createAudioColumns = (
                           record={params.row}
                           startEditing={() => startEditing(params.row.id)}
                           handleDeleteRecord={() =>
-                              handleDeleteAudioRecord(
+                              handleDeleteVideoRecord(
                                   params.row.id,
-                                  params.row.audioFileUrl
+                                  params.row.videoFileUrl
                               )
                           }
                       />
@@ -147,4 +153,4 @@ const createAudioColumns = (
         : []),
 ];
 
-export default createAudioColumns;
+export default createVideoColumns;

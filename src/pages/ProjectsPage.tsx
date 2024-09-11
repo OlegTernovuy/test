@@ -1,4 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
+import {
+    Avatar,
+    Box,
+    Button,
+    IconButton,
+    Typography,
+    Stack,
+    Tab,
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
 
 import {
     MenuAudioFormHeaderStyled,
@@ -10,27 +21,16 @@ import {
     AudioRecordsTable,
     Sidebar,
     AddAudioRecordForm,
+    CustomSelect,
     AddVideoRecordForm,
     VideoRecordsTable,
-    CustomSelect,
 } from '../components';
-import {
-    Avatar,
-    Box,
-    Button,
-    IconButton,
-    Typography,
-    Tab,
-    Stack,
-} from '@mui/material';
-import { TabContext, TabList, TabPanel } from '@mui/lab';
-import MenuIcon from '@mui/icons-material/Menu';
-
 import { useAuth } from '../Providers/AuthProvider';
-import { useFetchProject } from '../services/Projects.service';
-import { useFetchAudioRecords } from '../services/Media.service';
-import { IAudioRecord, IProjects } from '../types';
 import { useMediaSettings } from '../Providers/MediaSettingsProvider';
+import { useFetchProject } from '../services/Projects.service';
+import { useFetchAudioRecords } from '../services/Audio.service';
+import { useFetchVideoRecords } from '../services/Video.service';
+import { IAudioRecord, IProjects } from '../types';
 
 const ProjectsPage = () => {
     const { isAdmin, user, logout } = useAuth();
@@ -44,12 +44,10 @@ const ProjectsPage = () => {
     const [selectedTab, setSelectedTab] = useState<'audio' | 'video'>('audio');
 
     const toggleDrawer = useCallback(() => {
-        setOpen((prevOpen) => {
-            return !prevOpen;
-        });
+        setOpen((prevOpen) => !prevOpen);
     }, []);
 
-    //store data about the currently selected project
+    // Store data about the currently selected project
     const [selectedProjectForCreate, setSelectedProjectForCreate] = useState<{
         id: string;
         name: string;
@@ -75,8 +73,13 @@ const ProjectsPage = () => {
         data: audioRecords,
         fetchAudioRecord,
         updatedAudioRecords,
-        loading,
+        loading: audioLoading,
     } = useFetchAudioRecords();
+    const {
+        data: videoRecords,
+        fetchVideoRecord,
+        loading: videoLoading,
+    } = useFetchVideoRecords();
 
     const handleReorderAudioRecords = useCallback(
         (reorderedAudioRecords: IAudioRecord[]) => {
@@ -92,8 +95,11 @@ const ProjectsPage = () => {
     useEffect(() => {
         if (selectedProjectForCreate.id) {
             fetchAudioRecord(selectedProjectForCreate.id);
+            fetchVideoRecord(selectedProjectForCreate.id);
         }
     }, [selectedProjectForCreate]);
+
+    const showVideoTab = isAdmin || videoRecords.length > 0;
 
     return (
         <Box>
@@ -112,20 +118,23 @@ const ProjectsPage = () => {
                             {!open && (
                                 <Button
                                     aria-label="show sidebar"
-                                    onClick={() => toggleDrawer()}
+                                    onClick={toggleDrawer}
                                 >
                                     <MenuIcon fontSize="large" />
                                 </Button>
                             )}
-                            <TabList
-                                onChange={(_, newValue) =>
-                                    setSelectedTab(newValue)
-                                }
-                            >
-                                <Tab label="Audio" value="audio" />
-                                <Tab label="Video" value="video" />
-                            </TabList>
-                            {!isAdmin && <CustomSelect {...selectorOutput} />}
+                            {showVideoTab ? (
+                                <TabList
+                                    onChange={(_, newValue) =>
+                                        setSelectedTab(newValue)
+                                    }
+                                >
+                                    <Tab label="Audio" value="audio" />
+                                    <Tab label="Video" value="video" />
+                                </TabList>
+                            ) : (
+                                <CustomSelect {...selectorOutput} />
+                            )}
                         </MenuAudioFormHeaderStyled>
                         <ProfileBlockStyled>
                             <Typography variant="body2">
@@ -136,8 +145,58 @@ const ProjectsPage = () => {
                             </IconButton>
                         </ProfileBlockStyled>
                     </ProjectPageHeaderStyled>
-                    <TabPanel value="audio">
-                        <Stack spacing={2}>
+                    {showVideoTab ? (
+                        <>
+                            <TabPanel value="audio">
+                                <Stack spacing={2}>
+                                    {isAdmin ? (
+                                        <AddAudioRecordForm
+                                            author={user.email}
+                                            project={
+                                                selectedProjectForCreate.name
+                                            }
+                                            projectId={
+                                                selectedProjectForCreate.id
+                                            }
+                                            fetchData={fetchAudioRecord}
+                                        />
+                                    ) : (
+                                        <CustomSelect {...selectorOutput} />
+                                    )}
+                                    <AudioRecordsTable
+                                        audioRecords={audioRecords}
+                                        loading={audioLoading}
+                                        fetchData={fetchAudioRecord}
+                                        onReorder={handleReorderAudioRecords}
+                                        projectId={selectedProjectForCreate}
+                                    />
+                                </Stack>
+                            </TabPanel>
+                            <TabPanel value="video">
+                                <Stack spacing={2}>
+                                    {isAdmin && (
+                                        <AddVideoRecordForm
+                                            author={user.email}
+                                            project={
+                                                selectedProjectForCreate.name
+                                            }
+                                            projectId={
+                                                selectedProjectForCreate.id
+                                            }
+                                            fetchData={fetchVideoRecord}
+                                        />
+                                    )}
+                                    <VideoRecordsTable
+                                        videoRecords={videoRecords}
+                                        loading={videoLoading}
+                                        fetchData={fetchVideoRecord}
+                                        projectId={selectedProjectForCreate}
+                                    />
+                                </Stack>
+                            </TabPanel>
+                        </>
+                    ) : (
+                        <Stack spacing={2} padding={3}>
                             {isAdmin && (
                                 <AddAudioRecordForm
                                     author={user.email}
@@ -148,26 +207,13 @@ const ProjectsPage = () => {
                             )}
                             <AudioRecordsTable
                                 audioRecords={audioRecords}
-                                loading={loading}
+                                loading={audioLoading}
                                 fetchData={fetchAudioRecord}
                                 onReorder={handleReorderAudioRecords}
                                 projectId={selectedProjectForCreate}
                             />
                         </Stack>
-                    </TabPanel>
-                    <TabPanel value="video">
-                        <Stack spacing={2}>
-                            {isAdmin && (
-                                <AddVideoRecordForm
-                                    author={user.email}
-                                    project={selectedProjectForCreate.name}
-                                    projectId={selectedProjectForCreate.id}
-                                    fetchData={fetchAudioRecord}
-                                />
-                            )}
-                            <VideoRecordsTable />
-                        </Stack>
-                    </TabPanel>
+                    )}
                 </TabContext>
             </ProjectsPageMainBlock>
         </Box>

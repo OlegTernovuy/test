@@ -4,7 +4,7 @@ import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 
 import { DataGrid, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import {
-    createColumns,
+    createAudioColumns,
     ProjectTitleSearchComponent,
     CustomRowWrapper,
 } from '../../index';
@@ -15,7 +15,7 @@ import {
     updateAudioRecord,
     useDeleteAudioRecord,
     useUpdateAudioRecordsOrder,
-} from '../../../services/Media.service';
+} from '../../../services/Audio.service';
 import {
     useDragAndDrop,
     useEditingHandlers,
@@ -122,7 +122,7 @@ const AudioRecordsTable = ({
     const { apiRef, startEditing, stopEditing, cancelEditing } =
         useEditingHandlers(formik, clearBlobUrl);
 
-    const columns = createColumns(
+    const columns = createAudioColumns(
         isAdmin,
         startEditing,
         stopEditing,

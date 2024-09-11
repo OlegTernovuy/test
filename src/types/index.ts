@@ -60,6 +60,20 @@ interface IAudioRecord {
     audioFileUrl: string;
 }
 
+interface IVideoRecord {
+    id: string;
+    date: {
+        _seconds: number;
+        _nanoseconds: number;
+    };
+    author: string;
+    name: string;
+    project: string;
+    projectId: string;
+    comment: string;
+    videoFileUrl: string;
+}
+
 interface IProjects {
     id: string;
     name: string;
@@ -89,6 +103,7 @@ export {
     type ICustomSelectProps,
     type CustomIconButtonProps,
     type IAudioRecord,
+    type IVideoRecord,
     type IProjects,
     type ICustomMediaRecorder,
     type ICustomMediaRecorderForm,
