@@ -8,7 +8,6 @@ interface ISidebarListItemProps {
     projectName: string;
     editLoading: boolean;
     newProjectName: string;
-    error: string | null;
     setNewProjectName: React.Dispatch<React.SetStateAction<string>>;
     handleSaveEdit: () => void;
     handleCancel: () => void;
@@ -19,7 +18,6 @@ const SidebarListItem = ({
     projectName,
     editLoading,
     newProjectName,
-    error,
     setNewProjectName,
     handleSaveEdit,
     handleCancel,
@@ -32,8 +30,6 @@ const SidebarListItem = ({
                         <TextField
                             value={newProjectName}
                             onChange={(e) => setNewProjectName(e.target.value)}
-                            error={Boolean(error)}
-                            helperText={error && error}
                             variant="outlined"
                             size="small"
                             fullWidth

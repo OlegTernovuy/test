@@ -76,7 +76,6 @@ const Sidebar: React.FC<ISidebarProps> = React.memo(
         const {
             addProject,
             loading: addLoading,
-            error: addProjectError,
             clearError: clearAddProjectError,
         } = useAddProject();
 
@@ -156,7 +155,6 @@ const Sidebar: React.FC<ISidebarProps> = React.memo(
                             newProjectName={newProjectName}
                             setNewProjectName={setNewProjectName}
                             handleAddProject={handleAddProject}
-                            error={addProjectError}
                             addLoading={addLoading}
                             handleCancel={handleCancel}
                         />

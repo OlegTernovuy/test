@@ -19,7 +19,10 @@ import { IProjects } from '../../../types';
 interface ISidebarListProps {
     projects: IProjects[];
     onReorder: (reorderedProjects: IProjects[]) => void;
-    updateProjectsOrder: (updatedProjects: IProjects[], onSuccess: () => void) => Promise<void>;
+    updateProjectsOrder: (
+        updatedProjects: IProjects[],
+        onSuccess: () => void
+    ) => Promise<void>;
     setSelectedProjectUpdate: React.Dispatch<
         React.SetStateAction<string | null>
     >;
@@ -80,7 +83,6 @@ const SidebarList = ({
     const {
         editProject,
         loading: editLoading,
-        error: editProjectError,
         clearError: clearEditProjectError,
     } = useEditProject();
     const { deleteProject, loading: deleteLoading } = useDeleteProject();
@@ -161,7 +163,6 @@ const SidebarList = ({
                                                     setNewProjectName={
                                                         setNewProjectName
                                                     }
-                                                    error={editProjectError}
                                                     handleSaveEdit={() =>
                                                         handleSaveEdit(
                                                             project.id
@@ -216,7 +217,6 @@ const SidebarList = ({
                                 editLoading={editLoading}
                                 newProjectName={newProjectName}
                                 setNewProjectName={setNewProjectName}
-                                error={editProjectError}
                                 handleSaveEdit={() =>
                                     handleSaveEdit(project.id)
                                 }

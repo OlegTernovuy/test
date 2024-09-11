@@ -5,7 +5,6 @@ import { AddProjectFormStyled } from '../../../styled/ProjectsPage.styled';
 interface IAddProjectProps {
     newProjectName: string;
     setNewProjectName: React.Dispatch<React.SetStateAction<string>>;
-    error: string | null;
     handleAddProject: () => void;
     addLoading: boolean;
     handleCancel: () => void;
@@ -15,7 +14,6 @@ const AddNewProjectForm = ({
     newProjectName,
     setNewProjectName,
     handleAddProject,
-    error,
     addLoading,
     handleCancel,
 }: IAddProjectProps) => {
@@ -24,8 +22,6 @@ const AddNewProjectForm = ({
             <TextField
                 value={newProjectName}
                 onChange={(e) => setNewProjectName(e.target.value)}
-                error={Boolean(error)}
-                helperText={error && error}
                 placeholder="Project name"
                 variant="outlined"
                 size="small"

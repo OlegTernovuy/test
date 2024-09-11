@@ -130,6 +130,7 @@ const AddAudioRecordForm = ({
                 rows={4}
                 value={formik.values.comment}
                 onChange={formik.handleChange}
+                $foradd
             />
         </MediaRecordFormStyled>
     );

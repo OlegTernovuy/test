@@ -13,13 +13,13 @@ import {
     AudioPlayerComponent,
     CustomMediaRecorder,
 } from '../../index';
-import { FormattedCommentStyled } from '../../../styled/AudioRecordsTable.styled';
-import { CustomIconButtonProps } from '../../../types';
+import {
+    FormattedCommentStyled,
+    FormattedDateStyled,
+} from '../../../styled/AudioRecordsTable.styled';
 
-const getDate = (timestamp: number) => {
-    const date = new Date(timestamp * 1000);
-    return date.toLocaleDateString('en-US');
-};
+import { CustomIconButtonProps } from '../../../types';
+import { getDate } from '../../../utils/getDate';
 
 const createAudioColumns = (
     isAdmin: boolean,
@@ -93,7 +93,20 @@ const createAudioColumns = (
         flex: 0.5,
         renderCell: (params: GridRenderCellParams) => {
             const date = (params.value as { _seconds: number })?._seconds;
-            return date ? getDate(date) : '';
+            return date ? (
+                <FormattedDateStyled>{getDate(date)}</FormattedDateStyled>
+            ) : (
+                ''
+            );
+        },
+        sortComparator: (v1, v2) => {
+            const date1 = (v1 as { _seconds: number })?._seconds;
+            const date2 = (v2 as { _seconds: number })?._seconds;
+
+            if (date1 && date2) {
+                return date1 - date2;
+            }
+            return date1 ? -1 : 1;
         },
     },
     ...(isAdmin
