@@ -1,4 +1,4 @@
-import { ReactNode, RefObject } from 'react';
+import { ReactNode } from 'react';
 import { StatusMessages } from 'react-media-recorder-2';
 
 import {

@@ -42,7 +42,7 @@ const useFetchVideoRecords = () => {
 const putVideo = async (file: File) => {
     const formData = new FormData();
     formData.append('file', file);
-    const res = await axios.post('/videoFile?project=loki', formData, {
+    const res = await axios.post('/videoFile?project=loki-video', formData, {
         withCredentials: true,
     });
 
@@ -91,9 +91,13 @@ const updateVideoFile = async (file: File, oldFileUrl: string) => {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('oldFileUrl', oldFileUrl);
-        const res = await axios.patch('/videoFile?project=loki', formData, {
-            withCredentials: true,
-        });
+        const res = await axios.patch(
+            '/videoFile?project=loki-video',
+            formData,
+            {
+                withCredentials: true,
+            }
+        );
 
         return res.data;
     } catch (error) {
