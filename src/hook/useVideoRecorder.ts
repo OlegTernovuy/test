@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useReactMediaRecorder, StatusMessages } from 'react-media-recorder-2';
-import { putMedia } from '../services/Media.service';
+
 import { useMediaSettings } from '../Providers/MediaSettingsProvider';
 import { CustomIconButtonProps, ICustomSelectProps } from '../types';
+import { putVideo, updateVideoFile } from '../services/Video.service';
 
 interface UseMediaRecorderReturn {
     status: StatusMessages;
@@ -14,8 +15,9 @@ interface UseMediaRecorderReturn {
     stopRecording: () => void;
     clearBlobUrl: () => void;
     handleDone: () => Promise<void | string>;
-    handleUpdate: (oldFileUrl: string) => Promise<void | string>;
-    setShouldPreview(value: boolean): void;
+    handleUpdate: (oldFileUrl: string) => Promise<string>;
+    setShouldPreview: (value: boolean) => void;
+    selectedInput: string;
 }
 
 const useMediaRecorder = (): UseMediaRecorderReturn => {
@@ -62,11 +64,11 @@ const useMediaRecorder = (): UseMediaRecorderReturn => {
                     type: 'video/mp4',
                 });
 
-                const result = await putMedia(file);
+                const result = await putVideo(file);
 
                 clearBlobUrl();
 
-                return result.data.mediaUrl;
+                return result.data.videoUrl;
             } catch (error) {
                 console.log(error);
             }
@@ -83,11 +85,10 @@ const useMediaRecorder = (): UseMediaRecorderReturn => {
                     type: 'video/mp4',
                 });
 
-                console.log(file, oldFileUrl);
+                const result = await updateVideoFile(file, oldFileUrl);
+                clearBlobUrl();
 
-                // const result = await updateMediaFile(file, oldFileUrl);
-                // clearBlobUrl();
-                // return result.data.mediaUrl;
+                return result.data.videoUrl;
             } catch (error) {
                 console.log(error);
             }
@@ -114,6 +115,7 @@ const useMediaRecorder = (): UseMediaRecorderReturn => {
         handleDone,
         handleUpdate,
         setShouldPreview,
+        selectedInput,
     };
 };
 

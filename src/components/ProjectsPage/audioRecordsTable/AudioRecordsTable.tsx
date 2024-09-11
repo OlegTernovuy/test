@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { useFormik } from 'formik';
 
 import { DataGrid, GridPaginationModel } from '@mui/x-data-grid';
-import { createColumns, ProjectTitleSearchComponent } from '../../index';
+import { createAudioColumns, ProjectTitleSearchComponent } from '../../index';
 import { AudioRecordsTableWrapper } from '../../../styled/AudioRecordsTable.styled';
 
 import {
     IUpdateAudioRecord,
     updateAudioRecord,
     useDeleteAudioRecord,
-} from '../../../services/Media.service';
+} from '../../../services/Audio.service';
 import { IAudioRecord } from '../../../types';
 import useEditingHandlers from '../../../hook/useEditingHandlers';
 import useWaveSurfer from '../../../hook/useWaveSurfer';
@@ -101,7 +101,7 @@ const AudioRecordsTable = ({
     const { apiRef, startEditing, stopEditing, cancelEditing } =
         useEditingHandlers(formik, clearBlobUrl);
 
-    const columns = createColumns(
+    const columns = createAudioColumns(
         isAdmin,
         startEditing,
         stopEditing,

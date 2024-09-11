@@ -7,18 +7,18 @@ import {
     Delete as DeleteIcon,
 } from '@mui/icons-material';
 
-import { IAudioRecord } from '../../../types';
+import { IAudioRecord, IVideoRecord } from '../types';
 
 interface BasicPopoverProps {
-    record: IAudioRecord;
-    startEditing: (record: IAudioRecord) => void;
-    handleDeleteAudioRecord: (id: string, audioFileUrl: string) => void;
+    record: IAudioRecord | IVideoRecord;
+    startEditing: (record: IAudioRecord | IVideoRecord) => void;
+    handleDeleteRecord: (id: string, mediaFileUrl: string) => void;
 }
 
-const EditAudioPopover = ({
+const EditMediaPopover = ({
     record,
     startEditing,
-    handleDeleteAudioRecord,
+    handleDeleteRecord,
 }: BasicPopoverProps) => {
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -54,9 +54,11 @@ const EditAudioPopover = ({
                     </IconButton>
                     <IconButton
                         onClick={() =>
-                            handleDeleteAudioRecord(
+                            handleDeleteRecord(
                                 record.id,
-                                record.audioFileUrl
+                                isVideo(record)
+                                    ? record.videoFileUrl
+                                    : record.audioFileUrl
                             )
                         }
                     >
@@ -68,4 +70,7 @@ const EditAudioPopover = ({
     );
 };
 
-export default EditAudioPopover;
+const isVideo = (record: IAudioRecord | IVideoRecord): record is IVideoRecord =>
+    (record as IVideoRecord).videoFileUrl !== undefined;
+
+export default EditMediaPopover;
