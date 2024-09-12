@@ -38,7 +38,7 @@ const useDragAndDrop = <T>({
 
         const reorderedItems = newItems.map((item, index) => ({
             ...item,
-            index: index + 1,
+            index: newItems.length - index,
         }));
 
         onReorder(reorderedItems);

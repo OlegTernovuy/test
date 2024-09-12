@@ -14,6 +14,7 @@ import {
     IUpdateAudioRecord,
     updateAudioRecord,
     useDeleteAudioRecord,
+    useMoveAudioRecords,
     useUpdateAudioRecordsOrder,
 } from '../../../services/Audio.service';
 import {
@@ -22,7 +23,7 @@ import {
     useWaveSurfer,
 } from '../../../hook';
 import { useAuth } from '../../../Providers/AuthProvider';
-import { IAudioRecord } from '../../../types';
+import { IAudioRecord, IProjects, MoveAudioRecordParams } from '../../../types';
 import { UpdateAudioRecordSchema } from '../../../utils/validationSchema';
 
 interface IAudioRecordProps {
@@ -31,6 +32,7 @@ interface IAudioRecordProps {
     fetchData: (projectId: string) => void;
     onReorder: (reorderedAudioRecords: IAudioRecord[]) => void;
     projectId: { id: string; name: string };
+    projects?: IProjects[];
 }
 
 const AudioRecordsTable = ({
@@ -39,6 +41,7 @@ const AudioRecordsTable = ({
     fetchData,
     onReorder,
     projectId,
+    projects,
 }: IAudioRecordProps) => {
     const { isAdmin } = useAuth();
     const {
@@ -54,6 +57,11 @@ const AudioRecordsTable = ({
 
     const { deleteAudioRecord, loading: deleteLoading } =
         useDeleteAudioRecord();
+    const { updateAudioRecordsOrder, loading: audioRecordsOrderLoading } =
+        useUpdateAudioRecordsOrder();
+    const { moveAudioRecords, loading: moveAudioLoading } =
+        useMoveAudioRecords();
+
     const [paginationModel, setPaginationModel] = useState<GridPaginationModel>(
         {
             pageSize: 30,
@@ -104,15 +112,31 @@ const AudioRecordsTable = ({
         },
     });
 
-    const { updateAudioRecordsOrder, loading: audioRecordsOrderLoading } =
-        useUpdateAudioRecordsOrder();
-
     const handleDeleteAudioRecord = async (
         audioRecordId: string,
         audioFileUrl: string
     ) => {
         try {
             await deleteAudioRecord(projectId.id, audioRecordId, audioFileUrl);
+            await fetchData(projectId.id);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleMoveAudioRecord = async ({
+        oldProjectId,
+        newProjectId,
+        audioRecordId,
+        audioRecordData,
+    }: MoveAudioRecordParams) => {
+        try {
+            await moveAudioRecords(
+                oldProjectId,
+                newProjectId,
+                audioRecordId,
+                audioRecordData
+            );
             await fetchData(projectId.id);
         } catch (error) {
             console.error(error);
@@ -128,12 +152,15 @@ const AudioRecordsTable = ({
         stopEditing,
         cancelEditing,
         handleDeleteAudioRecord,
+        handleMoveAudioRecord,
         status,
         mediaBlobUrl,
         actionButtons,
         startRecording,
         stopRecording,
-        selectedOutput
+        selectedOutput,
+        projects ?? [],
+        projectId.id
     );
 
     const onDragEnd = useDragAndDrop<IAudioRecord>({
@@ -165,7 +192,8 @@ const AudioRecordsTable = ({
                                     loading ||
                                     formik.isSubmitting ||
                                     deleteLoading ||
-                                    audioRecordsOrderLoading
+                                    audioRecordsOrderLoading ||
+                                    moveAudioLoading
                                 }
                                 editMode="row"
                                 getRowHeight={() => 'auto'}

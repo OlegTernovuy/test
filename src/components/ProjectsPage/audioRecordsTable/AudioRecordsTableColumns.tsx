@@ -18,7 +18,7 @@ import {
     FormattedDateStyled,
 } from '../../../styled/AudioRecordsTable.styled';
 
-import { CustomIconButtonProps } from '../../../types';
+import { CustomIconButtonProps, IProjects, MoveAudioRecordParams } from '../../../types';
 import { getDate } from '../../../utils/getDate';
 
 const createAudioColumns = (
@@ -30,12 +30,15 @@ const createAudioColumns = (
         audioRecordId: string,
         audioFileUrl: string
     ) => void,
+    handleMoveAudioRecord: (params: MoveAudioRecordParams) => void,
     status: StatusMessages,
     mediaBlobUrl: string | undefined,
     actionButtons: CustomIconButtonProps[],
     startRecording: () => void,
     stopRecording: () => void,
-    selectedOutput: string
+    selectedOutput: string,
+    projects: IProjects[],
+    projectId: string
 ): GridColDef[] => [
     {
         field: 'name',
@@ -121,6 +124,8 @@ const createAudioColumns = (
                   renderCell: (params: GridRenderCellParams) => (
                       <EditAudioPopover
                           record={params.row}
+                          projects={projects}
+                          projectId={projectId}
                           startEditing={() => startEditing(params.row.id)}
                           handleDeleteRecord={() =>
                               handleDeleteAudioRecord(
@@ -128,6 +133,7 @@ const createAudioColumns = (
                                   params.row.audioFileUrl
                               )
                           }
+                          handleMoveAudioRecord={handleMoveAudioRecord}
                       />
                   ),
                   renderEditCell: (params: GridRenderCellParams) => (

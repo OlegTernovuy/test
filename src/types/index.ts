@@ -54,8 +54,7 @@ interface IAudioRecord {
     };
     author: string;
     name: string;
-    project: string;
-    projectId: string;
+    index: number;
     comment: string;
     audioFileUrl: string;
 }
@@ -95,6 +94,13 @@ interface ICustomMediaRecorderForm extends ICustomMediaRecorder {
     selectors: ICustomSelectProps[];
 }
 
+type MoveAudioRecordParams = {
+    oldProjectId: string;
+    newProjectId: string;
+    audioRecordId: string;
+    audioRecordData: Omit<IAudioRecord, 'id' | 'index'>;
+};
+
 export {
     type IAuthParams,
     type IHandleResetPassword,
@@ -107,4 +113,5 @@ export {
     type IProjects,
     type ICustomMediaRecorder,
     type ICustomMediaRecorderForm,
+    type MoveAudioRecordParams,
 };

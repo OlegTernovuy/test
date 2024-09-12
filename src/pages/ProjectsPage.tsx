@@ -169,6 +169,7 @@ const ProjectsPage = () => {
                                         fetchData={fetchAudioRecord}
                                         onReorder={handleReorderAudioRecords}
                                         projectId={selectedProjectForCreate}
+                                        projects={projects}
                                     />
                                 </Stack>
                             </TabPanel>
