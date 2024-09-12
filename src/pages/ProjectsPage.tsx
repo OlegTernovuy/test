@@ -26,11 +26,11 @@ import {
     VideoRecordsTable,
 } from '../components';
 import { useAuth } from '../Providers/AuthProvider';
+import { useMediaSettings } from '../Providers/MediaSettingsProvider';
 import { useFetchProject } from '../services/Projects.service';
 import { useFetchAudioRecords } from '../services/Audio.service';
-import { IProjects } from '../types';
-import { useMediaSettings } from '../Providers/MediaSettingsProvider';
 import { useFetchVideoRecords } from '../services/Video.service';
+import { IAudioRecord, IProjects } from '../types';
 
 const ProjectsPage = () => {
     const { isAdmin, user, logout } = useAuth();
@@ -72,6 +72,7 @@ const ProjectsPage = () => {
     const {
         data: audioRecords,
         fetchAudioRecord,
+        updatedAudioRecords,
         loading: audioLoading,
     } = useFetchAudioRecords();
     const {
@@ -79,6 +80,13 @@ const ProjectsPage = () => {
         fetchVideoRecord,
         loading: videoLoading,
     } = useFetchVideoRecords();
+
+    const handleReorderAudioRecords = useCallback(
+        (reorderedAudioRecords: IAudioRecord[]) => {
+            updatedAudioRecords(reorderedAudioRecords);
+        },
+        [updatedAudioRecords]
+    );
 
     useEffect(() => {
         fetchProjects();
@@ -159,6 +167,7 @@ const ProjectsPage = () => {
                                         audioRecords={audioRecords}
                                         loading={audioLoading}
                                         fetchData={fetchAudioRecord}
+                                        onReorder={handleReorderAudioRecords}
                                         projectId={selectedProjectForCreate}
                                     />
                                 </Stack>
@@ -200,6 +209,7 @@ const ProjectsPage = () => {
                                 audioRecords={audioRecords}
                                 loading={audioLoading}
                                 fetchData={fetchAudioRecord}
+                                onReorder={handleReorderAudioRecords}
                                 projectId={selectedProjectForCreate}
                             />
                         </Stack>

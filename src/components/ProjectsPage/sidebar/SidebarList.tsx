@@ -1,9 +1,4 @@
-import {
-    DragDropContext,
-    Droppable,
-    Draggable,
-    DropResult,
-} from '@hello-pangea/dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 import { SidebarListItem, EditButtonsBlock } from '../../index';
 import { StyledListItem } from '../../../styled/ProjectsPage.styled';
@@ -15,14 +10,12 @@ import {
 } from '../../../services/Projects.service';
 import { useAuth } from '../../../Providers/AuthProvider';
 import { IProjects } from '../../../types';
+import useDragAndDrop from '../../../hook/useDraAndDrop';
 
 interface ISidebarListProps {
     projects: IProjects[];
     onReorder: (reorderedProjects: IProjects[]) => void;
-    updateProjectsOrder: (
-        updatedProjects: IProjects[],
-        onSuccess: () => void
-    ) => Promise<void>;
+    updateProjectsOrder: (updatedProjects: IProjects[]) => Promise<void>;
     setSelectedProjectUpdate: React.Dispatch<
         React.SetStateAction<string | null>
     >;
@@ -34,14 +27,6 @@ interface ISidebarListProps {
     handleSelectProject: (id: string, name: string) => void;
     handleCancel: () => void;
 }
-
-const reorder = (list: any, startIndex: number, endIndex: number): any => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-
-    return result;
-};
 
 const SidebarList = ({
     projects,
@@ -58,27 +43,12 @@ const SidebarList = ({
 }: ISidebarListProps) => {
     const { isAdmin } = useAuth();
 
-    const onDragEnd = async ({ destination, source }: DropResult) => {
-        if (!destination) return;
-
-        const newItems: IProjects[] = reorder(
-            projects,
-            source.index,
-            destination.index
-        );
-
-        const reorderedProjects = newItems.map((project, index) => ({
-            ...project,
-            index: index + 1,
-        }));
-
-        onReorder(reorderedProjects);
-        try {
-            await updateProjectsOrder(reorderedProjects, fetchProjects);
-        } catch (error) {
-            console.log('error ', error);
-        }
-    };
+    const onDragEnd = useDragAndDrop<IProjects>({
+        items: projects,
+        onReorder,
+        updateOrder: updateProjectsOrder,
+        fetchData: fetchProjects,
+    });
 
     const {
         editProject,

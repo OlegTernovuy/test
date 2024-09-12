@@ -36,7 +36,11 @@ const useFetchAudioRecords = () => {
         }
     };
 
-    return { data, fetchAudioRecord, loading, error };
+    const updatedAudioRecords = (orderedAudioRecords: any) => {
+        setData(orderedAudioRecords);
+    };
+
+    return { data, fetchAudioRecord, updatedAudioRecords, loading, error };
 };
 
 const putMedia = async (file: File) => {
@@ -74,9 +78,13 @@ const updateAudioRecord = async (
     try {
         const filteredData = { ...data };
 
-        await axios.patch(`/audio/${audioRecordId}?projectId=${projectId}`, filteredData, {
-            withCredentials: true,
-        });
+        await axios.patch(
+            `/audio/${audioRecordId}?projectId=${projectId}`,
+            filteredData,
+            {
+                withCredentials: true,
+            }
+        );
     } catch (error) {
         console.error('Error update audio record', error);
     }
@@ -125,6 +133,24 @@ const useDeleteAudioRecord = () => {
     return { deleteAudioRecord, loading, error };
 };
 
+const useUpdateAudioRecordsOrder = () => {
+    const { loading, error, makeRequest, clearError } = useFetch();
+
+    const updateAudioRecordsOrder = async (
+        projectId: string,
+        updatedAudioRecords: IAudioRecord[]
+    ) => {
+        await makeRequest({
+            url: `/audioOrder?projectId=${projectId}`,
+            method: 'POST',
+            data: { updatedAudioRecords },
+            withCredentials: true,
+        });
+    };
+
+    return { updateAudioRecordsOrder, loading, error, clearError };
+};
+
 export {
     useFetchAudioRecords,
     putMedia,
@@ -132,4 +158,5 @@ export {
     updateAudioRecord,
     updateAudioFile,
     useDeleteAudioRecord,
+    useUpdateAudioRecordsOrder,
 };

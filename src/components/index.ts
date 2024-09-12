@@ -21,6 +21,7 @@ import CustomEditTextarea from './ProjectsPage/audioRecordsTable/CustomEditTexta
 import createAudioColumns from './ProjectsPage/audioRecordsTable/AudioRecordsTableColumns';
 import createVideoColumns from './ProjectsPage/videoRecordsTable/VideoRecordsTableColumns';
 import SidebarList from './ProjectsPage/sidebar/SidebarList';
+import CustomRowWrapper from './ProjectsPage/audioRecordsTable/CustomRowWrapper';
 
 export {
     AuthForm,
@@ -46,4 +47,5 @@ export {
     createAudioColumns,
     createVideoColumns,
     SidebarList,
+    CustomRowWrapper,
 };
