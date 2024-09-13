@@ -13,7 +13,7 @@ import {
     MediaRecordWrapper,
     StyledTextarea,
 } from '../../../styled/AddMediaRecordForm.styled';
-import useWaveSurfer from '../../../hook/useWaveSurfer';
+import { useWaveSurfer } from '../../../hook';
 import { AddAudioRecordSchema } from '../../../utils/validationSchema';
 import { addAudioRecord } from '../../../services/Audio.service';
 

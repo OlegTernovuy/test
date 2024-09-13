@@ -1,7 +1,6 @@
 import React, { createContext, useContext } from 'react';
 
-import useAudioDevices from '../hook/useAudioDevices';
-import useVideoDevices from '../hook/useVideoDevices';
+import { useAudioDevices, useVideoDevices } from '../hook';
 
 type MediaSettingsContextType = {
     audioDevices: ReturnType<typeof useAudioDevices>;

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import useFetch from '../hook/useFetch';
+import { useFetch } from '../hook';
 import { IVideoRecord } from '../types';
 import axios from '../utils/axios';
 
@@ -133,6 +133,31 @@ const useDeleteVideoRecord = () => {
     return { deleteVideoRecord, loading, error };
 };
 
+const useMoveVideoRecords = () => {
+    const { loading, error, makeRequest } = useFetch();
+
+    const moveVideoRecords = async (
+        oldProjectId: string,
+        newProjectId: string,
+        videoRecordId: string,
+        videoRecordData: Omit<IVideoRecord, 'id' | 'index'>
+    ) => {
+        await makeRequest({
+            url: `/moveVideoRecord`,
+            method: 'POST',
+            data: {
+                oldProjectId,
+                newProjectId,
+                videoRecordId,
+                videoRecordData,
+            },
+            withCredentials: true,
+        });
+    };
+
+    return { moveVideoRecords, loading, error };
+};
+
 export {
     useFetchVideoRecords,
     putVideo,
@@ -140,4 +165,5 @@ export {
     updateVideoRecord,
     updateVideoFile,
     useDeleteVideoRecord,
+    useMoveVideoRecords,
 };

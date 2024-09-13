@@ -1,4 +1,3 @@
-import { MutableRefObject } from 'react';
 import { StatusMessages } from 'react-media-recorder-2';
 import {
     GridActionsCellItem,
@@ -13,13 +12,17 @@ import {
     EditAudioPopover,
     CustomVideoRecorder,
 } from '../../';
-import { FormattedCommentStyled } from '../../../styled/AudioRecordsTable.styled';
-import { CustomIconButtonProps } from '../../../types';
+import {
+    FormattedCommentStyled,
+    FormattedDateStyled,
+} from '../../../styled/AudioRecordsTable.styled';
 
-const getDate = (timestamp: number) => {
-    const date = new Date(timestamp * 1000);
-    return date.toLocaleDateString('en-US');
-};
+import {
+    CustomIconButtonProps,
+    IProjects,
+    MoveVideoRecordParams,
+} from '../../../types';
+import { getDate } from '../../../utils/getDate';
 
 const createVideoColumns = (
     isAdmin: boolean,
@@ -30,12 +33,15 @@ const createVideoColumns = (
         videoRecordId: string,
         videoFileUrl: string
     ) => void,
+    handleMoveVideoRecord: (params: MoveVideoRecordParams) => void,
     status: StatusMessages,
     mediaBlobUrl: string | undefined,
     actionButtons: CustomIconButtonProps[],
     startRecording: () => void,
     stopRecording: () => void,
-    setVideoRef: (node: HTMLVideoElement | null) => void
+    setVideoRef: (node: HTMLVideoElement | null) => void,
+    projects: IProjects[],
+    projectId: string
 ): GridColDef[] => [
     {
         field: 'name',
@@ -112,7 +118,20 @@ const createVideoColumns = (
         flex: 0.5,
         renderCell: (params: GridRenderCellParams) => {
             const date = (params.value as { _seconds: number })?._seconds;
-            return date ? getDate(date) : '';
+            return date ? (
+                <FormattedDateStyled>{getDate(date)}</FormattedDateStyled>
+            ) : (
+                ''
+            );
+        },
+        sortComparator: (v1, v2) => {
+            const date1 = (v1 as { _seconds: number })?._seconds;
+            const date2 = (v2 as { _seconds: number })?._seconds;
+
+            if (date1 && date2) {
+                return date1 - date2;
+            }
+            return date1 ? -1 : 1;
         },
     },
     ...(isAdmin
@@ -125,6 +144,8 @@ const createVideoColumns = (
                   renderCell: (params: GridRenderCellParams) => (
                       <EditAudioPopover
                           record={params.row}
+                          projects={projects}
+                          projectId={projectId}
                           startEditing={() => startEditing(params.row.id)}
                           handleDeleteRecord={() =>
                               handleDeleteVideoRecord(
@@ -132,6 +153,7 @@ const createVideoColumns = (
                                   params.row.videoFileUrl
                               )
                           }
+                          handleMoveMediaRecord={handleMoveVideoRecord}
                       />
                   ),
                   renderEditCell: (params: GridRenderCellParams) => (

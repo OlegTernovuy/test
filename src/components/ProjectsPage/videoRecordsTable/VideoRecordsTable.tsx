@@ -2,25 +2,25 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { DataGrid, GridPaginationModel } from '@mui/x-data-grid';
 import { useFormik } from 'formik';
 
+import { createVideoColumns, ProjectTitleSearchComponent } from '../../';
 import { VideoRecordsTableWrapper } from '../../../styled/VideoRecordsTable.styled';
-import { IVideoRecord } from '../../../types';
+import { IProjects, IVideoRecord, MoveVideoRecordParams } from '../../../types';
 import { useAuth } from '../../../Providers/AuthProvider';
 import {
     IUpdateVideoRecord,
     updateVideoRecord,
     useDeleteVideoRecord,
+    useMoveVideoRecords,
 } from '../../../services/Video.service';
 import { UpdateVideoRecordSchema } from '../../../utils/validationSchema';
-import useVideoRecorder from '../../../hook/useVideoRecorder';
-import useVideoEditingHandlers from '../../../hook/useVideoEditingHandlers';
-import { createVideoColumns } from '../../';
-import ProjectTitleSearchComponent from '../ProjectTitleSearchComponent';
+import { useVideoEditingHandlers, useVideoRecorder } from '../../../hook';
 
 interface IVideoRecordProps {
     videoRecords: IVideoRecord[];
     loading: boolean;
     fetchData: (projectId: string) => void;
     projectId: { id: string; name: string };
+    projects: IProjects[];
 }
 
 const VideoRecordsTable = ({
@@ -28,6 +28,7 @@ const VideoRecordsTable = ({
     loading,
     fetchData,
     projectId,
+    projects,
 }: IVideoRecordProps) => {
     const { isAdmin } = useAuth();
     const {
@@ -67,11 +68,13 @@ const VideoRecordsTable = ({
         };
     }, [previewStream]);
 
+    const { moveVideoRecords, loading: moveVideoLoading } =
+        useMoveVideoRecords();
     const { deleteVideoRecord, loading: deleteLoading } =
         useDeleteVideoRecord();
     const [paginationModel, setPaginationModel] = useState<GridPaginationModel>(
         {
-            pageSize: 5,
+            pageSize: 30,
             page: 0,
         }
     );
@@ -124,6 +127,25 @@ const VideoRecordsTable = ({
         }
     };
 
+    const handleMoveVideoRecord = async ({
+        oldProjectId,
+        newProjectId,
+        videoRecordId,
+        videoRecordData,
+    }: MoveVideoRecordParams) => {
+        try {
+            await moveVideoRecords(
+                oldProjectId,
+                newProjectId,
+                videoRecordId,
+                videoRecordData
+            );
+            await fetchData(projectId.id);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     const { apiRef, startEditing, stopEditing, cancelEditing } =
         useVideoEditingHandlers(formik, clearBlobUrl);
 
@@ -133,12 +155,15 @@ const VideoRecordsTable = ({
         stopEditing,
         cancelEditing,
         handleDeleteVideoRecord,
+        handleMoveVideoRecord,
         status,
         mediaBlobUrl,
         actionButtons,
         startRecording,
         stopRecording,
-        setVideoRef
+        setVideoRef,
+        projects ?? [],
+        projectId.id
     );
 
     return (
@@ -149,13 +174,18 @@ const VideoRecordsTable = ({
                 columns={columns}
                 autoHeight
                 getRowId={(row) => row.id}
-                loading={loading || formik.isSubmitting || deleteLoading}
+                loading={
+                    loading ||
+                    formik.isSubmitting ||
+                    deleteLoading ||
+                    moveVideoLoading
+                }
                 editMode="row"
                 getRowHeight={() => 'auto'}
                 getEstimatedRowHeight={() => 200}
                 paginationModel={paginationModel}
                 onPaginationModelChange={setPaginationModel}
-                pageSizeOptions={[5, 10, 20]}
+                pageSizeOptions={[30, 75, 100]}
                 disableRowSelectionOnClick
                 onCellDoubleClick={(_, event) => {
                     event.stopPropagation();

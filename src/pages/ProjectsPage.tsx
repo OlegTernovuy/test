@@ -192,6 +192,7 @@ const ProjectsPage = () => {
                                         loading={videoLoading}
                                         fetchData={fetchVideoRecord}
                                         projectId={selectedProjectForCreate}
+                                        projects={projects}
                                     />
                                 </Stack>
                             </TabPanel>

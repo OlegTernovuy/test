@@ -18,7 +18,11 @@ import {
     FormattedDateStyled,
 } from '../../../styled/AudioRecordsTable.styled';
 
-import { CustomIconButtonProps, IProjects, MoveAudioRecordParams } from '../../../types';
+import {
+    CustomIconButtonProps,
+    IProjects,
+    MoveAudioRecordParams,
+} from '../../../types';
 import { getDate } from '../../../utils/getDate';
 
 const createAudioColumns = (
@@ -133,7 +137,7 @@ const createAudioColumns = (
                                   params.row.audioFileUrl
                               )
                           }
-                          handleMoveAudioRecord={handleMoveAudioRecord}
+                          handleMoveMediaRecord={handleMoveAudioRecord}
                       />
                   ),
                   renderEditCell: (params: GridRenderCellParams) => (

@@ -67,8 +67,6 @@ interface IVideoRecord {
     };
     author: string;
     name: string;
-    project: string;
-    projectId: string;
     comment: string;
     videoFileUrl: string;
 }
@@ -101,6 +99,13 @@ type MoveAudioRecordParams = {
     audioRecordData: Omit<IAudioRecord, 'id' | 'index'>;
 };
 
+type MoveVideoRecordParams = {
+    oldProjectId: string;
+    newProjectId: string;
+    videoRecordId: string;
+    videoRecordData: Omit<IVideoRecord, 'id' | 'index'>;
+};
+
 export {
     type IAuthParams,
     type IHandleResetPassword,
@@ -114,4 +119,5 @@ export {
     type ICustomMediaRecorder,
     type ICustomMediaRecorderForm,
     type MoveAudioRecordParams,
+    type MoveVideoRecordParams,
 };

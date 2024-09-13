@@ -1,5 +1,4 @@
 import { useState } from 'react';
-
 import {
     Box,
     Button,
@@ -12,34 +11,41 @@ import {
 import { MoreVert as MoreVertIcon } from '@mui/icons-material';
 
 import {
+    ConfirmMoveButton,
+    OptionsWrapper,
+    SelectedMoveMode,
+} from '../styled/EditMediaPopover.styled';
+
+import {
     IAudioRecord,
     IProjects,
     IVideoRecord,
     MoveAudioRecordParams,
+    MoveVideoRecordParams,
 } from '../types';
 
-interface BasicPopoverProps {
+interface BasicPopoverProps<T> {
     record: IAudioRecord | IVideoRecord;
-    projects?: IProjects[];
-    projectId?: string;
+    projects: IProjects[];
+    projectId: string;
     startEditing: (record: IAudioRecord | IVideoRecord) => void;
     handleDeleteRecord: (id: string, mediaFileUrl: string) => void;
-    handleMoveAudioRecord?: (params: MoveAudioRecordParams) => void;
+    handleMoveMediaRecord: (params: T) => void;
 }
 
-const EditMediaPopover = ({
+const EditMediaPopover = <
+    T extends MoveAudioRecordParams | MoveVideoRecordParams
+>({
     record,
     projects,
     projectId,
     startEditing,
     handleDeleteRecord,
-    handleMoveAudioRecord,
-}: BasicPopoverProps) => {
+    handleMoveMediaRecord,
+}: BasicPopoverProps<T>) => {
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [moveMode, setMoveMode] = useState(false);
-    const [selectedProject, setSelectedProject] = useState(() =>
-        projects && projects.length > 0 ? projects[0].id : null
-    );
+    const [selectedProject, setSelectedProject] = useState(projects[0].id);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -62,26 +68,37 @@ const EditMediaPopover = ({
 
     const handleMoveConfirm = async () => {
         if (selectedProject === projectId) {
-            console.log('Error moving project');
-            return;
-        }
-        if (isVideo(record)) {
+            console.log('Error moving record');
             return;
         }
         const newRecord = {
-            date: record.date,
             author: record.author,
             name: record.name,
             comment: record.comment,
-            audioFileUrl: record.audioFileUrl,
+            date: record.date,
         };
-        if (handleMoveAudioRecord && selectedProject && projectId)
-            await handleMoveAudioRecord({
-                oldProjectId: projectId,
-                newProjectId: selectedProject,
-                audioRecordId: record.id,
-                audioRecordData: newRecord,
-            });
+
+        const commonParams = {
+            oldProjectId: projectId,
+            newProjectId: selectedProject,
+            ...(isVideo(record)
+                ? {
+                      videoRecordId: record.id,
+                      videoRecordData: {
+                          ...newRecord,
+                          videoFileUrl: record.videoFileUrl,
+                      },
+                  }
+                : {
+                      audioRecordId: record.id,
+                      audioRecordData: {
+                          ...newRecord,
+                          audioFileUrl: record.audioFileUrl,
+                      },
+                  }),
+        };
+
+        await handleMoveMediaRecord(commonParams as T);
         handleClose();
     };
 
@@ -89,7 +106,7 @@ const EditMediaPopover = ({
     const id = open ? 'simple-popover' : undefined;
 
     return (
-        <div>
+        <Box>
             <IconButton aria-describedby={id} onClick={handleClick}>
                 <MoreVertIcon />
             </IconButton>
@@ -103,15 +120,9 @@ const EditMediaPopover = ({
                     horizontal: moveMode ? -50 : 'left',
                 }}
             >
-                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <OptionsWrapper>
                     {moveMode ? (
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                padding: '4px',
-                            }}
-                        >
+                        <SelectedMoveMode>
                             <FormControl fullWidth>
                                 <InputLabel variant="standard">
                                     Project
@@ -131,13 +142,10 @@ const EditMediaPopover = ({
                                     ))}
                                 </NativeSelect>
                             </FormControl>
-                            <Button
-                                sx={{ marginTop: 1 }}
-                                onClick={handleMoveConfirm}
-                            >
+                            <ConfirmMoveButton onClick={handleMoveConfirm}>
                                 Confirm
-                            </Button>
-                        </Box>
+                            </ConfirmMoveButton>
+                        </SelectedMoveMode>
                     ) : (
                         <>
                             <Button onClick={() => startEditing(record)}>
@@ -158,9 +166,9 @@ const EditMediaPopover = ({
                             </Button>
                         </>
                     )}
-                </Box>
+                </OptionsWrapper>
             </Popover>
-        </div>
+        </Box>
     );
 };
 
