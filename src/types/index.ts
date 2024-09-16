@@ -54,8 +54,7 @@ interface IAudioRecord {
     };
     author: string;
     name: string;
-    project: string;
-    projectId: string;
+    index: number;
     comment: string;
     audioFileUrl: string;
 }
@@ -68,8 +67,7 @@ interface IVideoRecord {
     };
     author: string;
     name: string;
-    project: string;
-    projectId: string;
+    index: number;
     comment: string;
     videoFileUrl: string;
 }
@@ -95,6 +93,20 @@ interface ICustomMediaRecorderForm extends ICustomMediaRecorder {
     selectors: ICustomSelectProps[];
 }
 
+type MoveAudioRecordParams = {
+    oldProjectId: string;
+    newProjectId: string;
+    audioRecordId: string;
+    audioRecordData: Omit<IAudioRecord, 'id' | 'index'>;
+};
+
+type MoveVideoRecordParams = {
+    oldProjectId: string;
+    newProjectId: string;
+    videoRecordId: string;
+    videoRecordData: Omit<IVideoRecord, 'id' | 'index'>;
+};
+
 export {
     type IAuthParams,
     type IHandleResetPassword,
@@ -107,4 +119,6 @@ export {
     type IProjects,
     type ICustomMediaRecorder,
     type ICustomMediaRecorderForm,
+    type MoveAudioRecordParams,
+    type MoveVideoRecordParams,
 };

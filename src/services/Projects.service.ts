@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import useFetch from '../hook/useFetch';
+import { useFetch } from '../hook';
 import { IProjects } from '../types';
 
 const useFetchProject = () => {

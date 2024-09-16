@@ -10,7 +10,7 @@ import {
 } from '../../../services/Projects.service';
 import { useAuth } from '../../../Providers/AuthProvider';
 import { IProjects } from '../../../types';
-import useDragAndDrop from '../../../hook/useDraAndDrop';
+import { useDragAndDrop } from '../../../hook';
 
 interface ISidebarListProps {
     projects: IProjects[];

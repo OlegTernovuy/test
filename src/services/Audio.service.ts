@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import useFetch from '../hook/useFetch';
+import { useFetch } from '../hook';
 import { IAudioRecord } from '../types';
 import axios from '../utils/axios';
 
@@ -151,6 +151,31 @@ const useUpdateAudioRecordsOrder = () => {
     return { updateAudioRecordsOrder, loading, error, clearError };
 };
 
+const useMoveAudioRecords = () => {
+    const { loading, error, makeRequest } = useFetch();
+
+    const moveAudioRecords = async (
+        oldProjectId: string,
+        newProjectId: string,
+        audioRecordId: string,
+        audioRecordData: Omit<IAudioRecord, 'id' | 'index'>
+    ) => {
+        await makeRequest({
+            url: `/moveAudioRecord`,
+            method: 'POST',
+            data: {
+                oldProjectId,
+                newProjectId,
+                audioRecordId,
+                audioRecordData,
+            },
+            withCredentials: true,
+        });
+    };
+
+    return { moveAudioRecords, loading, error };
+};
+
 export {
     useFetchAudioRecords,
     putMedia,
@@ -159,4 +184,5 @@ export {
     updateAudioFile,
     useDeleteAudioRecord,
     useUpdateAudioRecordsOrder,
+    useMoveAudioRecords,
 };

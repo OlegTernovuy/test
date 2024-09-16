@@ -9,19 +9,11 @@ const CustomEditTextarea = (props: GridRenderEditCellParams) => {
 
     const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInputValue(event.target.value);
-    };
-
-    const handleBlur = () => {
-        api.setEditCellValue({ id, field, value: inputValue });
+        api.setEditCellValue({ id, field, value: event.target.value });
     };
 
     return (
-        <StyledTextarea
-            value={inputValue}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            rows={4}
-        />
+        <StyledTextarea value={inputValue} onChange={handleChange} rows={4} />
     );
 };
 
