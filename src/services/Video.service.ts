@@ -36,7 +36,11 @@ const useFetchVideoRecords = () => {
         }
     };
 
-    return { data, fetchVideoRecord, loading, error };
+    const updatedVideoRecords = (orderedVideoRecords: any) => {
+        setData(orderedVideoRecords);
+    };
+
+    return { data, fetchVideoRecord, updatedVideoRecords, loading, error };
 };
 
 const putVideo = async (file: File) => {
@@ -133,6 +137,24 @@ const useDeleteVideoRecord = () => {
     return { deleteVideoRecord, loading, error };
 };
 
+const useUpdateVideoRecordsOrder = () => {
+    const { loading, error, makeRequest, clearError } = useFetch();
+
+    const updateVideoRecordsOrder = async (
+        projectId: string,
+        updatedVideoRecords: IVideoRecord[]
+    ) => {
+        await makeRequest({
+            url: `/videoOrder?projectId=${projectId}`,
+            method: 'POST',
+            data: { updatedVideoRecords },
+            withCredentials: true,
+        });
+    };
+
+    return { updateVideoRecordsOrder, loading, error, clearError };
+};
+
 const useMoveVideoRecords = () => {
     const { loading, error, makeRequest } = useFetch();
 
@@ -165,5 +187,6 @@ export {
     updateVideoRecord,
     updateVideoFile,
     useDeleteVideoRecord,
+    useUpdateVideoRecordsOrder,
     useMoveVideoRecords,
 };

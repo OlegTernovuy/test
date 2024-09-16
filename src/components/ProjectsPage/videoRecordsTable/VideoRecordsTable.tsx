@@ -1,24 +1,29 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { DataGrid, GridPaginationModel } from '@mui/x-data-grid';
+import { useCallback, useEffect, useRef } from 'react';
 import { useFormik } from 'formik';
 
-import { createVideoColumns, ProjectTitleSearchComponent } from '../../';
-import { VideoRecordsTableWrapper } from '../../../styled/VideoRecordsTable.styled';
-import { IProjects, IVideoRecord, MoveVideoRecordParams } from '../../../types';
-import { useAuth } from '../../../Providers/AuthProvider';
+import { createVideoColumns, MediaTable } from '../../';
+
 import {
     IUpdateVideoRecord,
     updateVideoRecord,
     useDeleteVideoRecord,
     useMoveVideoRecords,
+    useUpdateVideoRecordsOrder,
 } from '../../../services/Video.service';
+import {
+    useDragAndDrop,
+    useVideoEditingHandlers,
+    useVideoRecorder,
+} from '../../../hook';
+import { IProjects, IVideoRecord, MoveVideoRecordParams } from '../../../types';
 import { UpdateVideoRecordSchema } from '../../../utils/validationSchema';
-import { useVideoEditingHandlers, useVideoRecorder } from '../../../hook';
+import { useAuth } from '../../../Providers/AuthProvider';
 
 interface IVideoRecordProps {
     videoRecords: IVideoRecord[];
     loading: boolean;
     fetchData: (projectId: string) => void;
+    onReorder: (reorderedVideoRecords: IVideoRecord[]) => void;
     projectId: { id: string; name: string };
     projects: IProjects[];
 }
@@ -27,6 +32,7 @@ const VideoRecordsTable = ({
     videoRecords,
     loading,
     fetchData,
+    onReorder,
     projectId,
     projects,
 }: IVideoRecordProps) => {
@@ -68,16 +74,12 @@ const VideoRecordsTable = ({
         };
     }, [previewStream]);
 
+    const { updateVideoRecordsOrder, loading: videoRecordsOrderLoading } =
+        useUpdateVideoRecordsOrder();
     const { moveVideoRecords, loading: moveVideoLoading } =
         useMoveVideoRecords();
     const { deleteVideoRecord, loading: deleteLoading } =
         useDeleteVideoRecord();
-    const [paginationModel, setPaginationModel] = useState<GridPaginationModel>(
-        {
-            pageSize: 30,
-            page: 0,
-        }
-    );
 
     const formik = useFormik({
         initialValues: {
@@ -166,40 +168,30 @@ const VideoRecordsTable = ({
         projectId.id
     );
 
+    const onDragEnd = useDragAndDrop<IVideoRecord>({
+        items: videoRecords,
+        onReorder,
+        updateOrder: updateVideoRecordsOrder,
+        fetchData,
+        projectId: projectId.id,
+    });
+
+    const isLoading =
+        loading ||
+        formik.isSubmitting ||
+        deleteLoading ||
+        moveVideoLoading ||
+        videoRecordsOrderLoading;
+
     return (
-        <VideoRecordsTableWrapper>
-            <DataGrid
-                apiRef={apiRef}
-                rows={videoRecords}
-                columns={columns}
-                autoHeight
-                getRowId={(row) => row.id}
-                loading={
-                    loading ||
-                    formik.isSubmitting ||
-                    deleteLoading ||
-                    moveVideoLoading
-                }
-                editMode="row"
-                getRowHeight={() => 'auto'}
-                getEstimatedRowHeight={() => 200}
-                paginationModel={paginationModel}
-                onPaginationModelChange={setPaginationModel}
-                pageSizeOptions={[30, 75, 100]}
-                disableRowSelectionOnClick
-                onCellDoubleClick={(_, event) => {
-                    event.stopPropagation();
-                    event.preventDefault();
-                }}
-                slots={{
-                    toolbar: () => (
-                        <ProjectTitleSearchComponent
-                            projectName={projectId.name}
-                        />
-                    ),
-                }}
-            />
-        </VideoRecordsTableWrapper>
+        <MediaTable
+            onDragEnd={onDragEnd}
+            apiRef={apiRef}
+            mediaRecords={videoRecords}
+            columns={columns}
+            projectName={projectId.name}
+            isLoading={isLoading}
+        />
     );
 };
 

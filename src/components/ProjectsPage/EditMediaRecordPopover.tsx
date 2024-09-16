@@ -14,7 +14,7 @@ import {
     ConfirmMoveButton,
     OptionsWrapper,
     SelectedMoveMode,
-} from '../styled/EditMediaPopover.styled';
+} from '../../styled/EditMediaPopover.styled';
 
 import {
     IAudioRecord,
@@ -22,7 +22,7 @@ import {
     IVideoRecord,
     MoveAudioRecordParams,
     MoveVideoRecordParams,
-} from '../types';
+} from '../../types';
 
 interface BasicPopoverProps<T> {
     record: IAudioRecord | IVideoRecord;

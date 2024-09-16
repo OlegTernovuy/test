@@ -67,6 +67,7 @@ interface IVideoRecord {
     };
     author: string;
     name: string;
+    index: number;
     comment: string;
     videoFileUrl: string;
 }

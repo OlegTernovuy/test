@@ -30,7 +30,7 @@ import { useMediaSettings } from '../Providers/MediaSettingsProvider';
 import { useFetchProject } from '../services/Projects.service';
 import { useFetchAudioRecords } from '../services/Audio.service';
 import { useFetchVideoRecords } from '../services/Video.service';
-import { IAudioRecord, IProjects } from '../types';
+import { IAudioRecord, IProjects, IVideoRecord } from '../types';
 
 const ProjectsPage = () => {
     const { isAdmin, user, logout } = useAuth();
@@ -78,6 +78,7 @@ const ProjectsPage = () => {
     const {
         data: videoRecords,
         fetchVideoRecord,
+        updatedVideoRecords,
         loading: videoLoading,
     } = useFetchVideoRecords();
 
@@ -86,6 +87,13 @@ const ProjectsPage = () => {
             updatedAudioRecords(reorderedAudioRecords);
         },
         [updatedAudioRecords]
+    );
+
+    const handleReorderVideoRecords = useCallback(
+        (reorderedVideoRecords: IVideoRecord[]) => {
+            updatedVideoRecords(reorderedVideoRecords);
+        },
+        [updatedVideoRecords]
     );
 
     useEffect(() => {
@@ -191,6 +199,7 @@ const ProjectsPage = () => {
                                         videoRecords={videoRecords}
                                         loading={videoLoading}
                                         fetchData={fetchVideoRecord}
+                                        onReorder={handleReorderVideoRecords}
                                         projectId={selectedProjectForCreate}
                                         projects={projects}
                                     />

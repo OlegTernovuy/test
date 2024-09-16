@@ -74,6 +74,7 @@ const createVideoColumns = (
         align: 'center',
         flex: 1.5,
         editable: true,
+        sortable: false,
         renderCell: (params: GridRenderCellParams) => (
             <video
                 src={params.row.videoFileUrl}
@@ -140,6 +141,7 @@ const createVideoColumns = (
                   field: 'actions',
                   headerName: 'Actions',
                   editable: true,
+                  sortable: false,
                   flex: 0.5,
                   renderCell: (params: GridRenderCellParams) => (
                       <EditAudioPopover
