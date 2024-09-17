@@ -1,26 +1,48 @@
 import { useEffect, useRef } from 'react';
+import useAudioPlayer from '../../../hook/useAudioPlayer';
 
 const AudioPlayerComponent = ({
     audioUrl,
     selectedOutput,
+    audioId,
 }: {
     audioUrl: string;
     selectedOutput: string;
+    audioId: string;
 }) => {
-    const audioRef = useRef<HTMLAudioElement>(null);
+    const containerId = `audio-player-${audioId}`;
+    const { wavesurfer, isPlaying, togglePlayback, setOutputDevice } =
+        useAudioPlayer(containerId);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const audioElement = audioRef.current;
-        if (audioElement && 'setSinkId' in audioElement) {
-            (audioElement as any)
-                .setSinkId(selectedOutput)
-                .catch((error: any) => {
-                    console.error('Error setting audio output device:', error);
-                });
+        if (containerRef.current) {
+            if (wavesurfer.current) {
+                wavesurfer.current.load(audioUrl);
+            }
+        } else {
+            console.error('Container not found');
         }
-    }, [selectedOutput]);
+    }, [audioUrl, wavesurfer]);
 
-    return <audio ref={audioRef} src={audioUrl} controls />;
+    useEffect(() => {
+        if (wavesurfer.current && selectedOutput) {
+            setOutputDevice(selectedOutput);
+        }
+    }, [selectedOutput, setOutputDevice, wavesurfer]);
+
+    return (
+        <div>
+            <div
+                id={containerId}
+                ref={containerRef}
+                style={{ width: '100%', height: '40px' }}
+            ></div>
+            <button onClick={togglePlayback}>
+                {isPlaying ? 'Pause' : 'Play'}
+            </button>
+        </div>
+    );
 };
 
 export default AudioPlayerComponent;
