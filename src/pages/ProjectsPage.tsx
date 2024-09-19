@@ -105,7 +105,7 @@ const ProjectsPage = () => {
             fetchAudioRecord(selectedProjectForCreate.id);
             fetchVideoRecord(selectedProjectForCreate.id);
         }
-    }, [selectedProjectForCreate.id]);
+    }, [selectedProjectForCreate]);
 
     const showVideoTab = isAdmin || videoRecords.length > 0;
 
