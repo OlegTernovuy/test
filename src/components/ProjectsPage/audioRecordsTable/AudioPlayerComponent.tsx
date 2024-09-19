@@ -1,26 +1,54 @@
 import { useEffect, useRef } from 'react';
 
+import { CustomIconButton } from '../../index';
+import { ActionsContentStyled } from '../../../styled/CustomMediaRecorder.styled';
+import {
+    CustomAudioPlayer,
+    WavesurferAudioPlayer,
+} from '../../../styled/AudioRecordsTable.styled';
+
+import useAudioPlayer from '../../../hook/useAudioPlayer';
+
 const AudioPlayerComponent = ({
     audioUrl,
     selectedOutput,
+    audioId,
 }: {
     audioUrl: string;
     selectedOutput: string;
+    audioId: string;
 }) => {
-    const audioRef = useRef<HTMLAudioElement>(null);
+    const containerId = `audio-player-${audioId}`;
+    const containerRef = useRef<HTMLDivElement>(null);
+    const { wavesurfer, actionButtons } = useAudioPlayer(
+        containerId,
+        selectedOutput,
+    );
 
     useEffect(() => {
-        const audioElement = audioRef.current;
-        if (audioElement && 'setSinkId' in audioElement) {
-            (audioElement as any)
-                .setSinkId(selectedOutput)
-                .catch((error: any) => {
-                    console.error('Error setting audio output device:', error);
-                });
+        if (containerRef.current && wavesurfer.current) {
+            wavesurfer.current.load(audioUrl);
+        } else {
+            wavesurfer.current = null;
         }
-    }, [selectedOutput]);
 
-    return <audio ref={audioRef} src={audioUrl} controls />;
+        return () => {
+            if (wavesurfer.current) {
+                wavesurfer.current.destroy();
+            }
+        };
+    }, [audioUrl, wavesurfer]);
+
+    return (
+        <CustomAudioPlayer>
+            <WavesurferAudioPlayer id={containerId} ref={containerRef} />
+            <ActionsContentStyled>
+                {actionButtons.map((buttonInfo, index) => (
+                    <CustomIconButton key={index} {...buttonInfo} />
+                ))}
+            </ActionsContentStyled>
+        </CustomAudioPlayer>
+    );
 };
 
 export default AudioPlayerComponent;
