@@ -80,7 +80,6 @@ const createAudioColumns = (
             <AudioPlayerComponent
                 audioUrl={params.row.audioFileUrl}
                 selectedOutput={selectedOutput}
-                audioId={params.row.index}
             />
         ),
         renderEditCell: (_: GridRenderEditCellParams) => (
