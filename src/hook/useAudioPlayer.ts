@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 
+import { CustomIconButtonProps } from '../types';
+
 const WAVESURFER_SETTINGS = {
     height: 40,
     cursorWidth: 1,
@@ -11,12 +13,13 @@ const WAVESURFER_SETTINGS = {
 
 interface UseWaveSurferReturn {
     wavesurfer: React.MutableRefObject<WaveSurfer | null>;
-    isPlaying: boolean;
-    togglePlayback: () => void;
-    setOutputDevice: (deviceId: string) => void;
+    actionButtons: CustomIconButtonProps[];
 }
 
-const useAudioPlayer = (containerId: string): UseWaveSurferReturn => {
+const useAudioPlayer = (
+    containerId: string,
+    selectedOutput: string,
+): UseWaveSurferReturn => {
     const wavesurfer = useRef<WaveSurfer | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
 
@@ -31,35 +34,57 @@ const useAudioPlayer = (containerId: string): UseWaveSurferReturn => {
         }
     };
 
-    const setOutputDevice = (deviceId: string) => {
+    useEffect(() => {
+        if (!containerId) return;
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        wavesurfer.current = WaveSurfer.create({
+            ...WAVESURFER_SETTINGS,
+            container: `#${containerId}`,
+        });
+
         if (wavesurfer.current) {
-            wavesurfer.current.setSinkId(deviceId).catch((err) => {
+            wavesurfer.current.on('play', () => setIsPlaying(true));
+            wavesurfer.current.on('pause', () => setIsPlaying(false));
+        }
+
+        if (selectedOutput && wavesurfer.current) {
+            wavesurfer.current.setSinkId(selectedOutput);
+        }
+
+        return () => {
+            if (wavesurfer.current) {
+                setIsPlaying(false);
+                wavesurfer.current.destroy();
+            }
+        };
+    }, [containerId]);
+
+    useEffect(() => {
+        if (wavesurfer.current && selectedOutput) {
+            wavesurfer.current.setSinkId(selectedOutput).catch((err) => {
                 console.error('Error setting sink ID:', err);
             });
         }
+    }, [selectedOutput]);
+
+    const actionButtons: CustomIconButtonProps[] = [
+        {
+            condition: !isPlaying,
+            iconName: 'playArrow',
+            onClick: togglePlayback,
+        },
+        {
+            condition: isPlaying,
+            iconName: 'pause',
+            onClick: togglePlayback,
+        },
+    ];
+
+    return {
+        wavesurfer,
+        actionButtons,
     };
-
-    useEffect(() => {
-        if (containerId) {
-            const container = document.getElementById(containerId);
-            if (container) {
-                wavesurfer.current = WaveSurfer.create({
-                    ...WAVESURFER_SETTINGS,
-                    container: `#${containerId}`,
-                });
-
-                return () => {
-                    if (wavesurfer.current) {
-                        wavesurfer.current.destroy();
-                    }
-                };
-            } else {
-                console.error('Container not found');
-            }
-        }
-    }, [containerId]);
-
-    return { wavesurfer, isPlaying, togglePlayback, setOutputDevice };
 };
 
 export default useAudioPlayer;

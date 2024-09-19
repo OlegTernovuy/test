@@ -1,4 +1,12 @@
 import { useEffect, useRef } from 'react';
+
+import { CustomIconButton } from '../../index';
+import { ActionsContentStyled } from '../../../styled/CustomMediaRecorder.styled';
+import {
+    CustomAudioPlayer,
+    WavesurferAudioPlayer,
+} from '../../../styled/AudioRecordsTable.styled';
+
 import useAudioPlayer from '../../../hook/useAudioPlayer';
 
 const AudioPlayerComponent = ({
@@ -11,37 +19,35 @@ const AudioPlayerComponent = ({
     audioId: string;
 }) => {
     const containerId = `audio-player-${audioId}`;
-    const { wavesurfer, isPlaying, togglePlayback, setOutputDevice } =
-        useAudioPlayer(containerId);
     const containerRef = useRef<HTMLDivElement>(null);
+    const { wavesurfer, actionButtons } = useAudioPlayer(
+        containerId,
+        selectedOutput,
+    );
 
     useEffect(() => {
-        if (containerRef.current) {
-            if (wavesurfer.current) {
-                wavesurfer.current.load(audioUrl);
-            }
+        if (containerRef.current && wavesurfer.current) {
+            wavesurfer.current.load(audioUrl);
         } else {
-            console.error('Container not found');
+            wavesurfer.current = null;
         }
+
+        return () => {
+            if (wavesurfer.current) {
+                wavesurfer.current.destroy();
+            }
+        };
     }, [audioUrl, wavesurfer]);
 
-    useEffect(() => {
-        if (wavesurfer.current && selectedOutput) {
-            setOutputDevice(selectedOutput);
-        }
-    }, [selectedOutput, setOutputDevice, wavesurfer]);
-
     return (
-        <div>
-            <div
-                id={containerId}
-                ref={containerRef}
-                style={{ width: '100%', height: '40px' }}
-            ></div>
-            <button onClick={togglePlayback}>
-                {isPlaying ? 'Pause' : 'Play'}
-            </button>
-        </div>
+        <CustomAudioPlayer>
+            <WavesurferAudioPlayer id={containerId} ref={containerRef} />
+            <ActionsContentStyled>
+                {actionButtons.map((buttonInfo, index) => (
+                    <CustomIconButton key={index} {...buttonInfo} />
+                ))}
+            </ActionsContentStyled>
+        </CustomAudioPlayer>
     );
 };
 

@@ -25,9 +25,20 @@ const FormattedDateStyled = styled.div`
     white-space: pre-line;
 `;
 
+const CustomAudioPlayer = styled(FlexCenterStyled)`
+    gap: 8px;
+`;
+
+const WavesurferAudioPlayer = styled.div`
+    width: 100%;
+    height: 40px;
+`;
+
 export {
     AudioRecordsTableWrapper,
     ProjectTitleSearchStyled,
     FormattedCommentStyled,
     FormattedDateStyled,
+    CustomAudioPlayer,
+    WavesurferAudioPlayer,
 };
