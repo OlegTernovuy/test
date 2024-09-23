@@ -19,6 +19,8 @@ interface UseWaveSurferReturn {
 const useAudioPlayer = (
     containerId: string,
     selectedOutput: string,
+    audioUrl: string,
+    isSelected: boolean
 ): UseWaveSurferReturn => {
     const wavesurfer = useRef<WaveSurfer | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -38,12 +40,13 @@ const useAudioPlayer = (
         if (!containerId) return;
         const container = document.getElementById(containerId);
         if (!container) return;
-        wavesurfer.current = WaveSurfer.create({
-            ...WAVESURFER_SETTINGS,
-            container: `#${containerId}`,
-        });
 
-        if (wavesurfer.current) {
+        if (isSelected) {
+            wavesurfer.current = WaveSurfer.create({
+                ...WAVESURFER_SETTINGS,
+                container: `#${containerId}`,
+            });
+
             wavesurfer.current.on('play', () => setIsPlaying(true));
             wavesurfer.current.on('pause', () => setIsPlaying(false));
         }
@@ -58,7 +61,16 @@ const useAudioPlayer = (
                 wavesurfer.current.destroy();
             }
         };
-    }, [containerId]);
+    }, [containerId, isSelected]);
+
+    useEffect(() => {
+        if (!wavesurfer.current) return;
+        if (isSelected && audioUrl) {
+            wavesurfer.current.load(audioUrl);
+        } else {
+            wavesurfer.current.empty();
+        }
+    }, [audioUrl, isSelected]);
 
     useEffect(() => {
         if (wavesurfer.current && selectedOutput) {

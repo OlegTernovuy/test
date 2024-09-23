@@ -42,7 +42,10 @@ const createAudioColumns = (
     stopRecording: () => void,
     selectedOutput: string,
     projects: IProjects[],
-    projectId: string
+    projectId: string,
+    selectedAudioId: string | null,
+    handleSelectAudio: (id: string) => void,
+
 ): GridColDef[] => [
     {
         field: 'name',
@@ -81,6 +84,8 @@ const createAudioColumns = (
                 audioUrl={params.row.audioFileUrl}
                 selectedOutput={selectedOutput}
                 audioId={params.row.index}
+                isSelected={selectedAudioId === params.row.id}
+                onSelect={() => handleSelectAudio(params.row.id)}
             />
         ),
         renderEditCell: (_: GridRenderEditCellParams) => (
