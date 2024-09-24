@@ -9,7 +9,7 @@ import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
 
 import {
     CustomEditTextarea,
-    EditAudioPopover,
+    EditMediaPopover,
     CustomVideoRecorder,
 } from '../../';
 import { FormattedCommentStyled } from '../../../styled/AudioRecordsTable.styled';
@@ -126,7 +126,7 @@ const createVideoColumns = (
                       editable: true,
                       flex: 0.5,
                       renderCell: (params: GridRenderCellParams) => (
-                          <EditAudioPopover
+                          <EditMediaPopover
                               record={params.row}
                               startEditing={() => startEditing(params.row.id)}
                               handleDeleteRecord={() =>

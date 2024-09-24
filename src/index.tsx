@@ -8,11 +8,11 @@ import App from './App';
 import { theme } from './styled/theme';
 import { GlobalStyle } from './styled/GlobalStyle.styled';
 import {
-    AudioSettingsProvider,
+    MediaSettingsProvider,
     AuthProvider,
     MixedThemeProvider,
+    OBSProvider,
 } from './Providers';
-import { OBSProvider } from './Providers/OBSProvider';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -20,7 +20,7 @@ const root = ReactDOM.createRoot(
 root.render(
     <BrowserRouter>
         <AuthProvider>
-            <AudioSettingsProvider>
+            <MediaSettingsProvider>
                 <OBSProvider>
                     <SnackbarProvider>
                         <MixedThemeProvider theme={theme}>
@@ -30,7 +30,7 @@ root.render(
                         </MixedThemeProvider>
                     </SnackbarProvider>
                 </OBSProvider>
-            </AudioSettingsProvider>
+            </MediaSettingsProvider>
         </AuthProvider>
     </BrowserRouter>
 );

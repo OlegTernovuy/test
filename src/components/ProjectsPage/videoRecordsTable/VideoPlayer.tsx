@@ -7,12 +7,11 @@ import {
 } from '@mui/material';
 import { enqueueSnackbar } from 'notistack';
 
-import useVirtualCamera from '../../../hook/useVirtualCamera';
+import { useVirtualCamera, useReverseVideo } from '../../../hook';
 import {
     updateVideoFile,
     updateVideoRecord,
 } from '../../../services/Video.service';
-import useReverseVideo from '../../../hook/useReverseVideo';
 
 interface VideoPlayerProps {
     videoFileUrl: string;

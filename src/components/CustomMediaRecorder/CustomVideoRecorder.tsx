@@ -12,7 +12,7 @@ import {
 } from '../../styled/CustomMediaRecorder.styled';
 import { CustomIconButtonProps } from '../../types';
 import CustomIconButton from './CustomIconButton';
-import useVirtualCamera from '../../hook/useVirtualCamera';
+import { useVirtualCamera } from '../../hook';
 import { useOBS } from '../../Providers/OBSProvider';
 
 interface ICustomVideoRecorder {

@@ -1,9 +1,6 @@
 import { AuthProvider } from './AuthProvider';
 import { MediaSettingsProvider } from './MediaSettingsProvider';
 import { MixedThemeProvider } from './MixedThemeProvider';
+import { OBSProvider } from './OBSProvider';
 
-export {
-    AuthProvider,
-    MediaSettingsProvider as AudioSettingsProvider,
-    MixedThemeProvider,
-};
+export { AuthProvider, MediaSettingsProvider, MixedThemeProvider, OBSProvider };
