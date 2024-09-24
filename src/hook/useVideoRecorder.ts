@@ -8,22 +8,29 @@ import { putVideo, updateVideoFile } from '../services/Video.service';
 interface UseMediaRecorderReturn {
     status: StatusMessages;
     mediaBlobUrl?: string;
-    previewStream: MediaStream | null;
+    previewInputStream: MediaStream | null;
+    previewOutputStream: MediaStream | null;
     actionButtons: CustomIconButtonProps[];
-    selectors: ICustomSelectProps[];
+    inputSelectors: ICustomSelectProps[];
+    outputSelectors: ICustomSelectProps[];
     startRecording: () => void;
     stopRecording: () => void;
     clearBlobUrl: () => void;
     handleDone: () => Promise<void | string>;
     handleUpdate: (oldFileUrl: string) => Promise<string>;
-    setShouldPreview: (value: boolean) => void;
-    selectedInput: string;
+    setShouldPreviewStream: (value: boolean) => void;
 }
 
 const useMediaRecorder = (): UseMediaRecorderReturn => {
     const { videoDevices } = useMediaSettings();
-    const { selectedInput, selectors, mediaStream, setShouldPreview } =
-        videoDevices;
+    const {
+        selectedInput,
+        inputSelectors,
+        outputSelectors,
+        mediaInputStream,
+        mediaOutputStream,
+        setShouldPreviewStream,
+    } = videoDevices;
 
     const [mediaConstraints, setMediaConstraints] =
         useState<MediaStreamConstraints>({
@@ -106,16 +113,17 @@ const useMediaRecorder = (): UseMediaRecorderReturn => {
     return {
         status,
         mediaBlobUrl,
-        previewStream: mediaStream,
+        previewInputStream: mediaInputStream,
+        previewOutputStream: mediaOutputStream,
         actionButtons,
-        selectors,
+        inputSelectors,
+        outputSelectors,
         startRecording,
         stopRecording,
         clearBlobUrl,
         handleDone,
         handleUpdate,
-        setShouldPreview,
-        selectedInput,
+        setShouldPreviewStream,
     };
 };
 
