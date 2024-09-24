@@ -183,7 +183,6 @@ const AddVideoRecordForm = ({
                                             autoPlay
                                         />
                                     )}
-
                                     {mediaBlobUrl && (
                                         <video
                                             src={mediaBlobUrl}
