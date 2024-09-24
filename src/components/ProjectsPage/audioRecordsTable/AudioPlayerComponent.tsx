@@ -9,6 +9,7 @@ import {
 } from '../../../styled/AudioRecordsTable.styled';
 
 import useAudioPlayer from '../../../hook/useAudioPlayer';
+import { Button } from '@mui/material';
 
 const AudioPlayerComponent = ({
     audioUrl,
