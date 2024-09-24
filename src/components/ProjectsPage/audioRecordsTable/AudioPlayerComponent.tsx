@@ -59,7 +59,7 @@ const AudioPlayerComponent = ({
                 <audio ref={audioRef} src={audioUrl} controls />
             )}
             <Button size='small' onClick={onSelect}>
-                {isSelected ? 'Hide Player' : 'Show Player'}
+                {isSelected ? 'Hide Histogram' : 'Show Histogram'}
             </Button>
         </div>
     );
