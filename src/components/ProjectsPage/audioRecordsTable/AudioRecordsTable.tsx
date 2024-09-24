@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useFormik } from 'formik';
 
 import { createAudioColumns, MediaTable } from '../../index';
@@ -124,6 +125,13 @@ const AudioRecordsTable = ({
     const { apiRef, startEditing, stopEditing, cancelEditing } =
         useEditingHandlers(formik, clearBlobUrl);
 
+     const [selectedAudioId, setSelectedAudioId] = useState<string | null>(null);
+
+    const handleSelectAudio = (id: string) => {
+        setSelectedAudioId((prevId) => (prevId === id ? null : id));
+    };
+    
+
     const columns = createAudioColumns(
         isAdmin,
         startEditing,
@@ -138,7 +146,9 @@ const AudioRecordsTable = ({
         stopRecording,
         selectedOutput,
         projects ?? [],
-        projectId.id
+        projectId.id,
+        selectedAudioId,
+        handleSelectAudio
     );
 
     const onDragEnd = useDragAndDrop<IAudioRecord>({
