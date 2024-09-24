@@ -109,7 +109,13 @@ const AddVideoRecordForm = ({
         if (currentTab?.value === 'video') setShouldPreviewStream(true);
     }, [currentTab]);
 
-    if (!inputSelectors[0].selected && !outputSelectors[0].selected) {
+    const noSelectorsSelected =
+        inputSelectors.length > 0 &&
+        outputSelectors.length > 0 &&
+        !inputSelectors[0].selected &&
+        !outputSelectors[0].selected;
+
+    if (noSelectorsSelected) {
         return (
             <CircularProgressStyled>
                 <CircularProgress />
