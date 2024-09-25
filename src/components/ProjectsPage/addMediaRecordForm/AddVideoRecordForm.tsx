@@ -166,34 +166,32 @@ const AddVideoRecordForm = ({
                         disabled={formik.isSubmitting}
                         isAddingFroms
                     >
-                        {
-                            <>
-                                <Stack direction="row">
+                        <>
+                            <Stack direction="row">
+                                <video
+                                    ref={previewVideoInputRef}
+                                    width={300}
+                                    height={150}
+                                    autoPlay
+                                />
+                                {previewOutputStream && (
                                     <video
-                                        ref={previewVideoInputRef}
+                                        ref={previewVideoOutputRef}
                                         width={300}
                                         height={150}
                                         autoPlay
                                     />
-                                    {previewOutputStream && (
-                                        <video
-                                            ref={previewVideoOutputRef}
-                                            width={300}
-                                            height={150}
-                                            autoPlay
-                                        />
-                                    )}
-                                    {mediaBlobUrl && (
-                                        <video
-                                            src={mediaBlobUrl}
-                                            width={300}
-                                            height={150}
-                                            controls
-                                        />
-                                    )}
-                                </Stack>
-                            </>
-                        }
+                                )}
+                                {mediaBlobUrl && (
+                                    <video
+                                        src={mediaBlobUrl}
+                                        width={300}
+                                        height={150}
+                                        controls
+                                    />
+                                )}
+                            </Stack>
+                        </>
                     </CustomVideoRecorder>
                 </Stack>
             </MediaRecordWrapper>
