@@ -37,15 +37,18 @@ const AddVideoRecordForm = ({
         handleDone,
         status,
         mediaBlobUrl,
-        previewStream,
-        selectors,
+        previewInputStream,
+        previewOutputStream,
+        inputSelectors,
+        outputSelectors,
         actionButtons,
         startRecording,
         stopRecording,
-        setShouldPreview,
+        setShouldPreviewStream,
     } = useVideoRecorder();
 
-    const previewVideoRef = useRef<HTMLVideoElement>(null);
+    const previewVideoInputRef = useRef<HTMLVideoElement>(null);
+    const previewVideoOutputRef = useRef<HTMLVideoElement>(null);
 
     const formik = useFormik({
         initialValues: {
@@ -71,6 +74,7 @@ const AddVideoRecordForm = ({
                     videoFileUrl: result,
                 });
                 fetchData(projectId);
+
                 resetForm();
             } catch (error) {
                 console.error('Error submitting the form: ', error);
@@ -90,16 +94,28 @@ const AddVideoRecordForm = ({
     }, [author, project, projectId]);
 
     useEffect(() => {
-        if (previewVideoRef.current && previewStream) {
-            previewVideoRef.current.srcObject = previewStream;
+        if (previewVideoInputRef.current && previewInputStream) {
+            previewVideoInputRef.current.srcObject = previewInputStream;
         }
-    }, [previewStream]);
+    }, [previewInputStream]);
 
     useEffect(() => {
-        if (currentTab?.value === 'video') setShouldPreview(true);
+        if (previewVideoOutputRef.current && previewOutputStream) {
+            previewVideoOutputRef.current.srcObject = previewOutputStream;
+        }
+    }, [previewOutputStream]);
+
+    useEffect(() => {
+        if (currentTab?.value === 'video') setShouldPreviewStream(true);
     }, [currentTab]);
 
-    if (!selectors[0].selected) {
+    const noSelectorsSelected =
+        inputSelectors.length > 0 &&
+        outputSelectors.length > 0 &&
+        !inputSelectors[0].selected &&
+        !outputSelectors[0].selected;
+
+    if (noSelectorsSelected) {
         return (
             <CircularProgressStyled>
                 <CircularProgress />
@@ -112,7 +128,10 @@ const AddVideoRecordForm = ({
             <MediaRecordWrapper>
                 <MediaStyled>
                     <InputsSelectStyled>
-                        {selectors.map((selector, index) => (
+                        {inputSelectors.map((selector, index) => (
+                            <CustomSelect key={index} {...selector} />
+                        ))}
+                        {outputSelectors.map((selector, index) => (
                             <CustomSelect key={index} {...selector} />
                         ))}
                     </InputsSelectStyled>
@@ -147,24 +166,32 @@ const AddVideoRecordForm = ({
                         disabled={formik.isSubmitting}
                         isAddingFroms
                     >
-                        {
-                            <>
+                        <>
+                            <Stack direction="row">
                                 <video
-                                    ref={previewVideoRef}
-                                    width={320}
-                                    height={160}
+                                    ref={previewVideoInputRef}
+                                    width={300}
+                                    height={150}
                                     autoPlay
                                 />
+                                {previewOutputStream && (
+                                    <video
+                                        ref={previewVideoOutputRef}
+                                        width={300}
+                                        height={150}
+                                        autoPlay
+                                    />
+                                )}
                                 {mediaBlobUrl && (
                                     <video
                                         src={mediaBlobUrl}
-                                        width={320}
-                                        height={160}
+                                        width={300}
+                                        height={150}
                                         controls
                                     />
                                 )}
-                            </>
-                        }
+                            </Stack>
+                        </>
                     </CustomVideoRecorder>
                 </Stack>
             </MediaRecordWrapper>

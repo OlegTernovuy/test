@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
@@ -9,19 +8,20 @@ import App from './App';
 import { theme } from './styled/theme';
 import { GlobalStyle } from './styled/GlobalStyle.styled';
 import {
-    AudioSettingsProvider,
+    MediaSettingsProvider,
     AuthProvider,
     MixedThemeProvider,
+    OBSProvider,
 } from './Providers';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
 );
 root.render(
-    // <React.StrictMode>
-        <BrowserRouter>
-            <AuthProvider>
-                <AudioSettingsProvider>
+    <BrowserRouter>
+        <AuthProvider>
+            <MediaSettingsProvider>
+                <OBSProvider>
                     <SnackbarProvider>
                         <MixedThemeProvider theme={theme}>
                             <CssBaseline />
@@ -29,8 +29,8 @@ root.render(
                             <App />
                         </MixedThemeProvider>
                     </SnackbarProvider>
-                </AudioSettingsProvider>
-            </AuthProvider>
-        </BrowserRouter>
-    // </React.StrictMode>
+                </OBSProvider>
+            </MediaSettingsProvider>
+        </AuthProvider>
+    </BrowserRouter>
 );

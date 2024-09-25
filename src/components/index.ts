@@ -38,7 +38,7 @@ export {
     HeaderMedia,
     AddAudioRecordForm,
     AddVideoRecordForm,
-    EditMediaPopover as EditAudioPopover,
+    EditMediaPopover,
     ProjectTitleSearchComponent,
     AddNewProjectForm,
     EditButtonsBlock,

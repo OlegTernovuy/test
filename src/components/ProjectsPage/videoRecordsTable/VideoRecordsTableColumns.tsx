@@ -9,7 +9,7 @@ import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
 
 import {
     CustomEditTextarea,
-    EditAudioPopover,
+    EditMediaPopover,
     CustomVideoRecorder,
 } from '../../';
 import {
@@ -23,6 +23,7 @@ import {
     MoveVideoRecordParams,
 } from '../../../types';
 import { getDate } from '../../../utils/getDate';
+import VideoPlayer from './VideoPlayer';
 
 const createVideoColumns = (
     isAdmin: boolean,
@@ -40,6 +41,7 @@ const createVideoColumns = (
     startRecording: () => void,
     stopRecording: () => void,
     setVideoRef: (node: HTMLVideoElement | null) => void,
+    fetchData: (projectId: string) => void,
     projects: IProjects[],
     projectId: string
 ): GridColDef[] => [
@@ -76,11 +78,11 @@ const createVideoColumns = (
         editable: true,
         sortable: false,
         renderCell: (params: GridRenderCellParams) => (
-            <video
-                src={params.row.videoFileUrl}
-                width={320}
-                height={160}
-                controls
+            <VideoPlayer
+                videoFileUrl={params.row.videoFileUrl}
+                projectId={projectId}
+                videoRecordId={params.row.id}
+                onDataRefresh={fetchData}
             />
         ),
         renderEditCell: (_: GridRenderEditCellParams) => (
@@ -144,7 +146,7 @@ const createVideoColumns = (
                   sortable: false,
                   flex: 0.5,
                   renderCell: (params: GridRenderCellParams) => (
-                      <EditAudioPopover
+                      <EditMediaPopover
                           record={params.row}
                           projects={projects}
                           projectId={projectId}

@@ -1,5 +1,7 @@
 import { ReactNode } from 'react';
 import { StatusMessages } from 'react-media-recorder-2';
+import { IconButton, Stack, Tooltip } from '@mui/material';
+import SyncIcon from '@mui/icons-material/Sync';
 
 import {
     ActionsButtonStyled,
@@ -10,7 +12,8 @@ import {
 } from '../../styled/CustomMediaRecorder.styled';
 import { CustomIconButtonProps } from '../../types';
 import CustomIconButton from './CustomIconButton';
-import { Stack } from '@mui/material';
+import { useVirtualCamera } from '../../hook';
+import { useOBS } from '../../Providers/OBSProvider';
 
 interface ICustomVideoRecorder {
     children: ReactNode;
@@ -33,6 +36,16 @@ const CustomVideoRecorder = ({
     disabled,
     isAddingFroms,
 }: ICustomVideoRecorder) => {
+    const { setWebcamSource } = useVirtualCamera({
+        sceneName: 'loki-cam',
+        inputName: 'Camera',
+    });
+    const { connected } = useOBS();
+
+    const handleSyncWebcam = async () => {
+        await setWebcamSource();
+    };
+
     return (
         <AudioRecorderStyled>
             <ActionsStyled>
@@ -56,6 +69,16 @@ const CustomVideoRecorder = ({
                         Save
                     </ActionsButtonStyled>
                 )}
+                <Tooltip title="Sync cameras">
+                    <span>
+                        <IconButton
+                            onClick={handleSyncWebcam}
+                            disabled={!connected}
+                        >
+                            <SyncIcon />
+                        </IconButton>
+                    </span>
+                </Tooltip>
             </ActionsStyled>
             <Stack direction="row" alignItems="center" spacing={2}>
                 <Stack direction="row">{children}</Stack>

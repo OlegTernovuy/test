@@ -15,8 +15,13 @@ const getMediaDevices = (devices: MediaDeviceInfo[]): OptionBase[] => {
 // Custom hook to manage video devices
 const useVideoDevices = () => {
     const [videoInputArr, setVideoInputArr] = useState<OptionBase[]>([]);
+    const [videoOutputArr, setVideoOutputArr] = useState<OptionBase[]>([]);
     const [selectedInput, setSelectedInput] = useState<string>('');
-    const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
+    const [selectedOutput, setSelectedOutput] = useState<string>('');
+    const [mediaInputStream, setMediaInputStream] =
+        useState<MediaStream | null>(null);
+    const [mediaOutputStream, setMediaOutputStream] =
+        useState<MediaStream | null>(null);
     const [shouldPreviewStream, setShouldPreviewStream] =
         useState<boolean>(false);
 
@@ -25,17 +30,28 @@ const useVideoDevices = () => {
         try {
             const devices = await navigator.mediaDevices.enumerateDevices();
             const videoInputArr = getMediaDevices(devices);
+            const videoOutputArr = videoInputArr.filter(
+                (device) => device.label === 'OBS Virtual Camera'
+            );
 
             // Update video input options
             setVideoInputArr(videoInputArr);
 
-            // If there are available devices, set the first one as selected
+            // Update video output options
+            setVideoOutputArr(videoOutputArr);
+
+            // If there are available input devices, set the first one as selected
             if (videoInputArr.length > 0) {
                 if (!selectedInput) {
                     setSelectedInput(videoInputArr[0].value);
                 }
-            } else {
-                setSelectedInput('1');
+            }
+
+            // If there are available input devices, set the first one as selected
+            if (videoOutputArr.length > 0) {
+                if (!selectedOutput) {
+                    setSelectedOutput(videoOutputArr[0].value);
+                }
             }
         } catch (error) {
             console.error('Error accessing media devices:', error);
@@ -63,10 +79,22 @@ const useVideoDevices = () => {
                     const stream = await navigator.mediaDevices.getUserMedia({
                         video: { deviceId: selectedInput },
                     });
-                    setMediaStream(stream);
+                    setMediaInputStream(stream);
                 }
 
-                // Retrieve video input devices
+                // Set media stream for the selected input device
+                if (selectedOutput && shouldPreviewStream) {
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            deviceId: {
+                                exact: selectedOutput,
+                            },
+                        },
+                    });
+                    setMediaOutputStream(stream);
+                }
+
+                // Retrieve video devices
                 handleDeviceChange();
             } catch (error) {
                 console.error('Error accessing media devices:', error);
@@ -88,9 +116,9 @@ const useVideoDevices = () => {
                 handleDeviceChange
             );
         };
-    }, [selectedInput, shouldPreviewStream]); // Dependency array includes selectedInput
+    }, [selectedInput, selectedOutput, shouldPreviewStream]); // Dependency array includes selectedInput
 
-    const selectors: ICustomSelectProps[] = [
+    const inputSelectors: ICustomSelectProps[] = [
         {
             selected: selectedInput,
             onHandleChange: setSelectedInput,
@@ -99,13 +127,28 @@ const useVideoDevices = () => {
         },
     ];
 
+    const defaultSelector: ICustomSelectProps = {
+        selected: selectedOutput,
+        onHandleChange: setSelectedOutput,
+        title: 'Video Output',
+        options: videoOutputArr,
+    };
+
+    const outputSelectors: ICustomSelectProps[] = [
+        selectedOutput ? defaultSelector : null,
+    ].filter(Boolean) as ICustomSelectProps[];
+
     return {
         videoInputArr,
         selectedInput,
-        selectors,
+        selectedOutput,
+        inputSelectors,
+        outputSelectors,
+        mediaInputStream,
+        mediaOutputStream,
         setSelectedInput,
-        mediaStream,
-        setShouldPreview: setShouldPreviewStream,
+        setSelectedOutput,
+        setShouldPreviewStream,
     };
 };
 

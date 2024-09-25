@@ -9,6 +9,7 @@ const MediaStyled = styled.div`
 `;
 
 const InputsSelectStyled = styled.div`
+    min-width: 380px;
     display: flex;
     gap: 32px;
 `;

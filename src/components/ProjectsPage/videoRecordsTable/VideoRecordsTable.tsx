@@ -38,7 +38,7 @@ const VideoRecordsTable = ({
 }: IVideoRecordProps) => {
     const { isAdmin } = useAuth();
     const {
-        previewStream,
+        previewInputStream,
         handleUpdate,
         status,
         clearBlobUrl,
@@ -48,23 +48,23 @@ const VideoRecordsTable = ({
         stopRecording,
     } = useVideoRecorder();
 
-    const previewVideoRef = useRef<HTMLVideoElement>();
+    const previewVideoRef = useRef<HTMLVideoElement>(null!);
 
     const setVideoRef = useCallback(
         (node: HTMLVideoElement | null) => {
             if (node) {
                 previewVideoRef.current = node;
-                if (previewStream) {
-                    node.srcObject = previewStream;
+                if (previewInputStream) {
+                    node.srcObject = previewInputStream;
                 }
             }
         },
-        [previewStream]
+        [previewInputStream]
     );
 
     useEffect(() => {
-        if (previewVideoRef.current && previewStream) {
-            previewVideoRef.current.srcObject = previewStream;
+        if (previewVideoRef.current && previewInputStream) {
+            previewVideoRef.current.srcObject = previewInputStream;
         }
 
         return () => {
@@ -72,7 +72,7 @@ const VideoRecordsTable = ({
                 previewVideoRef.current.srcObject = null;
             }
         };
-    }, [previewStream]);
+    }, [previewInputStream]);
 
     const { updateVideoRecordsOrder, loading: videoRecordsOrderLoading } =
         useUpdateVideoRecordsOrder();
@@ -164,6 +164,7 @@ const VideoRecordsTable = ({
         startRecording,
         stopRecording,
         setVideoRef,
+        fetchData,
         projects ?? [],
         projectId.id
     );
