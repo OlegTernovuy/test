@@ -45,7 +45,7 @@ const AudioPlayerComponent = ({
     }, [selectedOutput]);
 
     return (
-        <div >
+        <div>
             {isSelected ? (
                 <CustomAudioPlayer>
                     <WavesurferAudioPlayer id={containerId} />
@@ -56,9 +56,14 @@ const AudioPlayerComponent = ({
                     </ActionsContentStyled>
                 </CustomAudioPlayer>
             ) : (
-                <audio ref={audioRef} src={audioUrl} controls />
+                <audio
+                    ref={audioRef}
+                    src={audioUrl}
+                    crossOrigin="anonymous"
+                    controls
+                />
             )}
-            <Button size='small' onClick={onSelect}>
+            <Button size="small" onClick={onSelect}>
                 {isSelected ? 'Hide Histogram' : 'Show Histogram'}
             </Button>
         </div>
