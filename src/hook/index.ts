@@ -1,5 +1,6 @@
 import useEditingHandlers from './useEditingHandlers';
 import useWaveSurfer from './useWaveSurfer';
+import useDragAndDrop from './useDragAndDrop';
 import useAudioDevices from './useAudioDevices';
 import useFetch from './useFetch';
 import useVideoDevices from './useVideoDevices';
@@ -11,6 +12,7 @@ import useReverseVideo from './useReverseVideo';
 export {
     useEditingHandlers,
     useWaveSurfer,
+    useDragAndDrop,
     useAudioDevices,
     useFetch,
     useVideoDevices,

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import useFetch from '../hook/useFetch';
+import { useFetch } from '../hook';
 import { IVideoRecord } from '../types';
 import axios from '../utils/axios';
 
@@ -36,7 +36,11 @@ const useFetchVideoRecords = () => {
         }
     };
 
-    return { data, fetchVideoRecord, loading, error };
+    const updatedVideoRecords = (orderedVideoRecords: any) => {
+        setData(orderedVideoRecords);
+    };
+
+    return { data, fetchVideoRecord, updatedVideoRecords, loading, error };
 };
 
 const putVideo = async (file: File) => {
@@ -133,6 +137,49 @@ const useDeleteVideoRecord = () => {
     return { deleteVideoRecord, loading, error };
 };
 
+const useUpdateVideoRecordsOrder = () => {
+    const { loading, error, makeRequest, clearError } = useFetch();
+
+    const updateVideoRecordsOrder = async (
+        projectId: string,
+        updatedVideoRecords: IVideoRecord[]
+    ) => {
+        await makeRequest({
+            url: `/videoOrder?projectId=${projectId}`,
+            method: 'POST',
+            data: { updatedVideoRecords },
+            withCredentials: true,
+        });
+    };
+
+    return { updateVideoRecordsOrder, loading, error, clearError };
+};
+
+const useMoveVideoRecords = () => {
+    const { loading, error, makeRequest } = useFetch();
+
+    const moveVideoRecords = async (
+        oldProjectId: string,
+        newProjectId: string,
+        videoRecordId: string,
+        videoRecordData: Omit<IVideoRecord, 'id' | 'index'>
+    ) => {
+        await makeRequest({
+            url: `/moveVideoRecord`,
+            method: 'POST',
+            data: {
+                oldProjectId,
+                newProjectId,
+                videoRecordId,
+                videoRecordData,
+            },
+            withCredentials: true,
+        });
+    };
+
+    return { moveVideoRecords, loading, error };
+};
+
 export {
     useFetchVideoRecords,
     putVideo,
@@ -140,4 +187,6 @@ export {
     updateVideoRecord,
     updateVideoFile,
     useDeleteVideoRecord,
+    useUpdateVideoRecordsOrder,
+    useMoveVideoRecords,
 };

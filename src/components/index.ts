@@ -11,7 +11,7 @@ import CustomSelect from './CustomMediaRecorder/CustomSelect';
 import HeaderMedia from './CustomMediaRecorder/HeaderMedia';
 import AddAudioRecordForm from './ProjectsPage/addMediaRecordForm/AddAudioRecordForm';
 import AddVideoRecordForm from './ProjectsPage/addMediaRecordForm/AddVideoRecordForm';
-import EditMediaPopover from './EditMediaRecordPopover';
+import EditMediaPopover from './ProjectsPage/EditMediaRecordPopover';
 import ProjectTitleSearchComponent from './ProjectsPage/ProjectTitleSearchComponent';
 import AddNewProjectForm from './ProjectsPage/sidebar/AddNewProjectForm';
 import EditButtonsBlock from './ProjectsPage/sidebar/EditButtonsBlock';
@@ -21,6 +21,8 @@ import CustomEditTextarea from './ProjectsPage/audioRecordsTable/CustomEditTexta
 import createAudioColumns from './ProjectsPage/audioRecordsTable/AudioRecordsTableColumns';
 import createVideoColumns from './ProjectsPage/videoRecordsTable/VideoRecordsTableColumns';
 import SidebarList from './ProjectsPage/sidebar/SidebarList';
+import CustomRowWrapper from './ProjectsPage/audioRecordsTable/CustomRowWrapper';
+import MediaTable from './ProjectsPage/MediaTable';
 
 export {
     AuthForm,
@@ -46,4 +48,6 @@ export {
     createAudioColumns,
     createVideoColumns,
     SidebarList,
+    CustomRowWrapper,
+    MediaTable,
 };

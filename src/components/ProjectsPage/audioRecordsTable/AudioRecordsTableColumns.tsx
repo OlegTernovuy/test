@@ -18,7 +18,11 @@ import {
     FormattedDateStyled,
 } from '../../../styled/AudioRecordsTable.styled';
 
-import { CustomIconButtonProps } from '../../../types';
+import {
+    CustomIconButtonProps,
+    IProjects,
+    MoveAudioRecordParams,
+} from '../../../types';
 import { getDate } from '../../../utils/getDate';
 
 const createAudioColumns = (
@@ -30,12 +34,18 @@ const createAudioColumns = (
         audioRecordId: string,
         audioFileUrl: string
     ) => void,
+    handleMoveAudioRecord: (params: MoveAudioRecordParams) => void,
     status: StatusMessages,
     mediaBlobUrl: string | undefined,
     actionButtons: CustomIconButtonProps[],
     startRecording: () => void,
     stopRecording: () => void,
-    selectedOutput: string
+    selectedOutput: string,
+    projects: IProjects[],
+    projectId: string,
+    selectedAudioId: string | null,
+    handleSelectAudio: (id: string) => void,
+
 ): GridColDef[] => [
     {
         field: 'name',
@@ -68,10 +78,14 @@ const createAudioColumns = (
         align: 'center',
         flex: 1.5,
         editable: true,
+        sortable: false,
         renderCell: (params: GridRenderCellParams) => (
             <AudioPlayerComponent
                 audioUrl={params.row.audioFileUrl}
                 selectedOutput={selectedOutput}
+                audioId={params.row.index}
+                isSelected={selectedAudioId === params.row.id}
+                onSelect={() => handleSelectAudio(params.row.id)}
             />
         ),
         renderEditCell: (_: GridRenderEditCellParams) => (
@@ -115,10 +129,13 @@ const createAudioColumns = (
                   field: 'actions',
                   headerName: 'Actions',
                   editable: true,
+                  sortable: false,
                   flex: 0.5,
                   renderCell: (params: GridRenderCellParams) => (
                       <EditMediaPopover
                           record={params.row}
+                          projects={projects}
+                          projectId={projectId}
                           startEditing={() => startEditing(params.row.id)}
                           handleDeleteRecord={() =>
                               handleDeleteAudioRecord(
@@ -126,6 +143,7 @@ const createAudioColumns = (
                                   params.row.audioFileUrl
                               )
                           }
+                          handleMoveMediaRecord={handleMoveAudioRecord}
                       />
                   ),
                   renderEditCell: (params: GridRenderCellParams) => (

@@ -26,11 +26,11 @@ import {
     VideoRecordsTable,
 } from '../components';
 import { useAuth } from '../Providers/AuthProvider';
+import { useMediaSettings } from '../Providers/MediaSettingsProvider';
 import { useFetchProject } from '../services/Projects.service';
 import { useFetchAudioRecords } from '../services/Audio.service';
-import { IProjects } from '../types';
-import { useMediaSettings } from '../Providers/MediaSettingsProvider';
 import { useFetchVideoRecords } from '../services/Video.service';
+import { IAudioRecord, IProjects, IVideoRecord } from '../types';
 
 const ProjectsPage = () => {
     const { isAdmin, user, logout } = useAuth();
@@ -72,13 +72,29 @@ const ProjectsPage = () => {
     const {
         data: audioRecords,
         fetchAudioRecord,
+        updatedAudioRecords,
         loading: audioLoading,
     } = useFetchAudioRecords();
     const {
         data: videoRecords,
         fetchVideoRecord,
+        updatedVideoRecords,
         loading: videoLoading,
     } = useFetchVideoRecords();
+
+    const handleReorderAudioRecords = useCallback(
+        (reorderedAudioRecords: IAudioRecord[]) => {
+            updatedAudioRecords(reorderedAudioRecords);
+        },
+        [updatedAudioRecords]
+    );
+
+    const handleReorderVideoRecords = useCallback(
+        (reorderedVideoRecords: IVideoRecord[]) => {
+            updatedVideoRecords(reorderedVideoRecords);
+        },
+        [updatedVideoRecords]
+    );
 
     useEffect(() => {
         fetchProjects();
@@ -89,7 +105,7 @@ const ProjectsPage = () => {
             fetchAudioRecord(selectedProjectForCreate.id);
             fetchVideoRecord(selectedProjectForCreate.id);
         }
-    }, [selectedProjectForCreate]);
+    }, [selectedProjectForCreate.id]);
 
     const showVideoTab = isAdmin || videoRecords.length > 0;
 
@@ -159,7 +175,9 @@ const ProjectsPage = () => {
                                         audioRecords={audioRecords}
                                         loading={audioLoading}
                                         fetchData={fetchAudioRecord}
+                                        onReorder={handleReorderAudioRecords}
                                         projectId={selectedProjectForCreate}
+                                        projects={projects}
                                     />
                                 </Stack>
                             </TabPanel>
@@ -181,7 +199,9 @@ const ProjectsPage = () => {
                                         videoRecords={videoRecords}
                                         loading={videoLoading}
                                         fetchData={fetchVideoRecord}
+                                        onReorder={handleReorderVideoRecords}
                                         projectId={selectedProjectForCreate}
+                                        projects={projects}
                                     />
                                 </Stack>
                             </TabPanel>
@@ -200,6 +220,7 @@ const ProjectsPage = () => {
                                 audioRecords={audioRecords}
                                 loading={audioLoading}
                                 fetchData={fetchAudioRecord}
+                                onReorder={handleReorderAudioRecords}
                                 projectId={selectedProjectForCreate}
                             />
                         </Stack>

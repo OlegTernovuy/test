@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import useFetch from '../hook/useFetch';
+import { useFetch } from '../hook';
 import { IAudioRecord } from '../types';
 import axios from '../utils/axios';
 
@@ -36,7 +36,11 @@ const useFetchAudioRecords = () => {
         }
     };
 
-    return { data, fetchAudioRecord, loading, error };
+    const updatedAudioRecords = (orderedAudioRecords: any) => {
+        setData(orderedAudioRecords);
+    };
+
+    return { data, fetchAudioRecord, updatedAudioRecords, loading, error };
 };
 
 const putMedia = async (file: File) => {
@@ -74,9 +78,13 @@ const updateAudioRecord = async (
     try {
         const filteredData = { ...data };
 
-        await axios.patch(`/audio/${audioRecordId}?projectId=${projectId}`, filteredData, {
-            withCredentials: true,
-        });
+        await axios.patch(
+            `/audio/${audioRecordId}?projectId=${projectId}`,
+            filteredData,
+            {
+                withCredentials: true,
+            }
+        );
     } catch (error) {
         console.error('Error update audio record', error);
     }
@@ -125,6 +133,49 @@ const useDeleteAudioRecord = () => {
     return { deleteAudioRecord, loading, error };
 };
 
+const useUpdateAudioRecordsOrder = () => {
+    const { loading, error, makeRequest, clearError } = useFetch();
+
+    const updateAudioRecordsOrder = async (
+        projectId: string,
+        updatedAudioRecords: IAudioRecord[]
+    ) => {
+        await makeRequest({
+            url: `/audioOrder?projectId=${projectId}`,
+            method: 'POST',
+            data: { updatedAudioRecords },
+            withCredentials: true,
+        });
+    };
+
+    return { updateAudioRecordsOrder, loading, error, clearError };
+};
+
+const useMoveAudioRecords = () => {
+    const { loading, error, makeRequest } = useFetch();
+
+    const moveAudioRecords = async (
+        oldProjectId: string,
+        newProjectId: string,
+        audioRecordId: string,
+        audioRecordData: Omit<IAudioRecord, 'id' | 'index'>
+    ) => {
+        await makeRequest({
+            url: `/moveAudioRecord`,
+            method: 'POST',
+            data: {
+                oldProjectId,
+                newProjectId,
+                audioRecordId,
+                audioRecordData,
+            },
+            withCredentials: true,
+        });
+    };
+
+    return { moveAudioRecords, loading, error };
+};
+
 export {
     useFetchAudioRecords,
     putMedia,
@@ -132,4 +183,6 @@ export {
     updateAudioRecord,
     updateAudioFile,
     useDeleteAudioRecord,
+    useUpdateAudioRecordsOrder,
+    useMoveAudioRecords,
 };

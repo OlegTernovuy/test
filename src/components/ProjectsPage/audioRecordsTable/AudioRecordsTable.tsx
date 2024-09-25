@@ -1,33 +1,40 @@
 import { useState } from 'react';
 import { useFormik } from 'formik';
 
-import { DataGrid, GridPaginationModel } from '@mui/x-data-grid';
-import { createAudioColumns, ProjectTitleSearchComponent } from '../../index';
-import { AudioRecordsTableWrapper } from '../../../styled/AudioRecordsTable.styled';
+import { createAudioColumns, MediaTable } from '../../index';
 
 import {
     IUpdateAudioRecord,
     updateAudioRecord,
     useDeleteAudioRecord,
+    useMoveAudioRecords,
+    useUpdateAudioRecordsOrder,
 } from '../../../services/Audio.service';
-import { IAudioRecord } from '../../../types';
-import useEditingHandlers from '../../../hook/useEditingHandlers';
-import useWaveSurfer from '../../../hook/useWaveSurfer';
+import {
+    useDragAndDrop,
+    useEditingHandlers,
+    useWaveSurfer,
+} from '../../../hook';
 import { useAuth } from '../../../Providers/AuthProvider';
+import { IAudioRecord, IProjects, MoveAudioRecordParams } from '../../../types';
 import { UpdateAudioRecordSchema } from '../../../utils/validationSchema';
 
 interface IAudioRecordProps {
     audioRecords: IAudioRecord[];
     loading: boolean;
     fetchData: (projectId: string) => void;
+    onReorder: (reorderedAudioRecords: IAudioRecord[]) => void;
     projectId: { id: string; name: string };
+    projects?: IProjects[];
 }
 
 const AudioRecordsTable = ({
     audioRecords,
     loading,
     fetchData,
+    onReorder,
     projectId,
+    projects,
 }: IAudioRecordProps) => {
     const { isAdmin } = useAuth();
     const {
@@ -43,12 +50,10 @@ const AudioRecordsTable = ({
 
     const { deleteAudioRecord, loading: deleteLoading } =
         useDeleteAudioRecord();
-    const [paginationModel, setPaginationModel] = useState<GridPaginationModel>(
-        {
-            pageSize: 30,
-            page: 0,
-        }
-    );
+    const { updateAudioRecordsOrder, loading: audioRecordsOrderLoading } =
+        useUpdateAudioRecordsOrder();
+    const { moveAudioRecords, loading: moveAudioLoading } =
+        useMoveAudioRecords();
 
     const formik = useFormik({
         initialValues: {
@@ -92,7 +97,26 @@ const AudioRecordsTable = ({
     ) => {
         try {
             await deleteAudioRecord(projectId.id, audioRecordId, audioFileUrl);
-            fetchData(projectId.id);
+            await fetchData(projectId.id);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleMoveAudioRecord = async ({
+        oldProjectId,
+        newProjectId,
+        audioRecordId,
+        audioRecordData,
+    }: MoveAudioRecordParams) => {
+        try {
+            await moveAudioRecords(
+                oldProjectId,
+                newProjectId,
+                audioRecordId,
+                audioRecordData
+            );
+            await fetchData(projectId.id);
         } catch (error) {
             console.error(error);
         }
@@ -101,49 +125,56 @@ const AudioRecordsTable = ({
     const { apiRef, startEditing, stopEditing, cancelEditing } =
         useEditingHandlers(formik, clearBlobUrl);
 
+     const [selectedAudioId, setSelectedAudioId] = useState<string | null>(null);
+
+    const handleSelectAudio = (id: string) => {
+        setSelectedAudioId((prevId) => (prevId === id ? null : id));
+    };
+    
+
     const columns = createAudioColumns(
         isAdmin,
         startEditing,
         stopEditing,
         cancelEditing,
         handleDeleteAudioRecord,
+        handleMoveAudioRecord,
         status,
         mediaBlobUrl,
         actionButtons,
         startRecording,
         stopRecording,
-        selectedOutput
+        selectedOutput,
+        projects ?? [],
+        projectId.id,
+        selectedAudioId,
+        handleSelectAudio
     );
 
+    const onDragEnd = useDragAndDrop<IAudioRecord>({
+        items: audioRecords,
+        onReorder,
+        updateOrder: updateAudioRecordsOrder,
+        fetchData,
+        projectId: projectId.id,
+    });
+
+    const isLoading =
+        loading ||
+        formik.isSubmitting ||
+        deleteLoading ||
+        audioRecordsOrderLoading ||
+        moveAudioLoading;
+
     return (
-        <AudioRecordsTableWrapper>
-            <DataGrid
-                apiRef={apiRef}
-                rows={audioRecords}
-                columns={columns}
-                autoHeight
-                getRowId={(row) => row.id}
-                loading={loading || formik.isSubmitting || deleteLoading}
-                editMode="row"
-                getRowHeight={() => 'auto'}
-                getEstimatedRowHeight={() => 200}
-                paginationModel={paginationModel}
-                onPaginationModelChange={setPaginationModel}
-                pageSizeOptions={[30, 75, 100]}
-                disableRowSelectionOnClick
-                onCellDoubleClick={(params, event) => {
-                    event.stopPropagation();
-                    event.preventDefault();
-                }}
-                slots={{
-                    toolbar: () => (
-                        <ProjectTitleSearchComponent
-                            projectName={projectId.name}
-                        />
-                    ),
-                }}
-            />
-        </AudioRecordsTableWrapper>
+        <MediaTable
+            onDragEnd={onDragEnd}
+            apiRef={apiRef}
+            mediaRecords={audioRecords}
+            columns={columns}
+            projectName={projectId.name}
+            isLoading={isLoading}
+        />
     );
 };
 
