@@ -69,6 +69,23 @@ const useVirtualCamera = ({
     const createWebcamInput = async () => {
         const isMac = navigator.userAgent.toLowerCase().includes('mac');
 
+        const { inputs } = await obs.call('GetInputList');
+        const inputExists = inputs.some(
+            (input) => input.inputName === inputName
+        );
+
+        let inputSettings = {};
+
+        if (!inputExists) {
+            console.log('Creating webcam input');
+            await obs.call('CreateInput', {
+                sceneName,
+                inputName,
+                inputKind: isMac ? 'av_capture_input_v2' : 'dshow_input',
+                inputSettings,
+            });
+        }
+
         const { propertyItems } = await obs.call(
             'GetInputPropertiesListPropertyItems',
             {
@@ -83,25 +100,16 @@ const useVirtualCamera = ({
                 item.itemName.toLowerCase().includes('webcam')
         );
 
-        const inputSettings = {
-            device: webcamDevices[0].value,
-        };
-
-        const { inputs } = await obs.call('GetInputList');
-        const inputExists = inputs.some(
-            (input) => input.inputName === inputName
-        );
-
-        if (inputExists) {
-            await obs.call('SetInputSettings', { inputName, inputSettings });
+        if (webcamDevices.length > 0) {
+            inputSettings = {
+                ...inputSettings,
+                device: webcamDevices[0].itemValue,
+            };
         } else {
-            await obs.call('CreateInput', {
-                sceneName,
-                inputName,
-                inputKind: isMac ? 'av_capture_input_v2' : 'dshow_input',
-                inputSettings,
-            });
+            console.warn('No webcam devices found');
         }
+
+        await obs.call('SetInputSettings', { inputName, inputSettings });
 
         const { sceneItems } = await obs.call('GetSceneItemList', {
             sceneName,
