@@ -98,8 +98,8 @@ const EditMediaPopover = <
                   }),
         };
 
-        await handleMoveMediaRecord(commonParams as T);
         handleClose();
+        await handleMoveMediaRecord(commonParams as T);
     };
 
     const open = Boolean(anchorEl);
@@ -153,14 +153,15 @@ const EditMediaPopover = <
                             </Button>
                             <Button onClick={handleMoveClick}>Move</Button>
                             <Button
-                                onClick={() =>
+                                onClick={() => {
+                                    handleClose();
                                     handleDeleteRecord(
                                         record.id,
                                         isVideo(record)
                                             ? record.videoFileUrl
                                             : record.audioFileUrl
-                                    )
-                                }
+                                    );
+                                }}
                             >
                                 Delete
                             </Button>

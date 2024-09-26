@@ -36,7 +36,7 @@ const useFetchVideoRecords = () => {
         }
     };
 
-    const updatedVideoRecords = (orderedVideoRecords: any) => {
+    const updatedVideoRecords = (orderedVideoRecords: IVideoRecord[]) => {
         setData(orderedVideoRecords);
     };
 

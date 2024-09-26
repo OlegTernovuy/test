@@ -64,7 +64,7 @@ const useWaveSurfer = (containerId: string): UseWaveSurferReturn => {
     }, [selectedInput]);
 
     const startRecording = () => {
-        // Clear the previous recording if any
+        // Clear the previous recording if exists
         clearBlobUrl();
         start();
     };

@@ -1,13 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-
-import { AddNewProjectForm, SidebarList } from '../../index';
-import {
-    CircularProgressWrapper,
-    SidebarHeaderStyled,
-    SidebarHeaderTitle,
-    SidebarStyled,
-} from '../../../styled/ProjectsPage.styled';
 import {
     CircularProgress,
     Drawer,
@@ -18,6 +10,14 @@ import {
     AddCircle as AddCircleIcon,
     Close as CloseIcon,
 } from '@mui/icons-material';
+
+import { AddNewProjectForm, SidebarList } from '../../index';
+import {
+    CircularProgressWrapper,
+    SidebarHeaderStyled,
+    SidebarHeaderTitle,
+    SidebarStyled,
+} from '../../../styled/ProjectsPage.styled';
 
 import {
     useAddProject,

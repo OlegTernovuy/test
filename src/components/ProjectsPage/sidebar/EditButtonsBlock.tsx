@@ -1,5 +1,6 @@
 import { IconButton } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+
 import { IconContainer } from '../../../styled/ProjectsPage.styled';
 
 interface IEditButtonsProps {

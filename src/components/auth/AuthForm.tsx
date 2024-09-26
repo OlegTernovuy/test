@@ -12,7 +12,7 @@ interface IFormProps {
     children: ReactNode;
     title: string;
     link?: string;
-    onSubmit: any;
+    onSubmit: (e?: React.FormEvent<HTMLFormElement>) => void;
     hideLink?: boolean;
     isSubmiting?: boolean;
 }

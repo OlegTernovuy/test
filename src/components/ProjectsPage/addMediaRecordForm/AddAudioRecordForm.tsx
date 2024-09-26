@@ -13,6 +13,7 @@ import {
     MediaRecordWrapper,
     StyledTextarea,
 } from '../../../styled/AddMediaRecordForm.styled';
+
 import { useWaveSurfer } from '../../../hook';
 import { AddAudioRecordSchema } from '../../../utils/validationSchema';
 import { addAudioRecord } from '../../../services/Audio.service';
@@ -118,7 +119,6 @@ const AddAudioRecordForm = ({
                         rows={4}
                         value={formik.values.comment}
                         onChange={formik.handleChange}
-                        $foradd
                     />
                 </MediaStyled>
                 <CustomMediaRecorder

@@ -26,7 +26,7 @@ const useFetch = () => {
             }
             return response.data;
         } catch (err: any) {
-            setError(err.response.data.error);
+            setError(err.response?.data?.error || 'Something went wrong');
             if (onError) {
                 onError(err);
             }

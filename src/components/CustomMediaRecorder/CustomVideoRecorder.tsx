@@ -3,6 +3,7 @@ import { StatusMessages } from 'react-media-recorder-2';
 import { IconButton, Stack, Tooltip } from '@mui/material';
 import SyncIcon from '@mui/icons-material/Sync';
 
+import { CustomIconButton } from '../index';
 import {
     ActionsButtonStyled,
     ActionsContentStyled,
@@ -10,8 +11,8 @@ import {
     AudioRecorderStyled,
     ListenAudioStyled,
 } from '../../styled/CustomMediaRecorder.styled';
+
 import { CustomIconButtonProps } from '../../types';
-import CustomIconButton from './CustomIconButton';
 import { useVirtualCamera } from '../../hook';
 import { useOBS } from '../../Providers/OBSProvider';
 

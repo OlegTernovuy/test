@@ -23,7 +23,8 @@ const CustomFormSelectStyled = styled(FormControl)`
     max-width: 180px;
 `;
 
-const StyledTextarea = styled.textarea<{ $foradd?: boolean }>`
+const StyledTextarea = styled.textarea`
+    width: 100%;
     padding: 8px 14px;
     border-radius: 4px;
     border-color: #0000003b;

@@ -22,7 +22,7 @@ const useFetchProject = () => {
         }
     };
 
-    const updatedProjects = (orderedProjects: any) => {
+    const updatedProjects = (orderedProjects: IProjects[]) => {
         setData(orderedProjects);
     };
 

@@ -1,5 +1,6 @@
 import { IconButton, TextField } from '@mui/material';
 import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
+
 import { AddProjectFormStyled } from '../../../styled/ProjectsPage.styled';
 
 interface IAddProjectProps {

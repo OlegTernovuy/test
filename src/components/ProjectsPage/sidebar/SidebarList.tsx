@@ -1,8 +1,8 @@
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { List } from '@mui/material';
 
 import { SidebarListItem, EditButtonsBlock } from '../../index';
 import { StyledListItem } from '../../../styled/ProjectsPage.styled';
-import { List } from '@mui/material';
 
 import {
     useDeleteProject,

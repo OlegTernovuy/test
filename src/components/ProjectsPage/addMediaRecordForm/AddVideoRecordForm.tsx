@@ -3,7 +3,7 @@ import { useFormik } from 'formik';
 import { CircularProgress, Stack, TextField } from '@mui/material';
 import { useTabContext } from '@mui/lab';
 
-import { CustomSelect } from '../../';
+import { CustomSelect, CustomVideoRecorder } from '../../';
 import {
     CircularProgressStyled,
     InputsSelectStyled,
@@ -14,9 +14,9 @@ import {
     MediaRecordWrapper,
     StyledTextarea,
 } from '../../../styled/AddMediaRecordForm.styled';
+
 import { AddVideoRecordSchema } from '../../../utils/validationSchema';
 import useVideoRecorder from '../../../hook/useVideoRecorder';
-import { CustomVideoRecorder } from '../../';
 import { addVideoRecord } from '../../../services/Video.service';
 
 interface IVideoDataProps {

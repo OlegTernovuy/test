@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { OptionBase, ICustomSelectProps } from '../types';
+
 type IKind = 'audioinput' | 'audiooutput';
 
 // Function to filter and map media devices based on their type (audioinput/audiooutput)

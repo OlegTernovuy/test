@@ -1,7 +1,7 @@
 import React from 'react';
-
 import { MenuItem } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+
 import { CustomFormSelectStyled } from '../../styled/AddMediaRecordForm.styled';
 
 import { ICustomSelectProps } from '../../types';

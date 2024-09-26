@@ -25,8 +25,8 @@ import {
     AddVideoRecordForm,
     VideoRecordsTable,
 } from '../components';
-import { useAuth } from '../Providers/AuthProvider';
-import { useMediaSettings } from '../Providers/MediaSettingsProvider';
+
+import { useAuth, useMediaSettings } from '../Providers/index';
 import { useFetchProject } from '../services/Projects.service';
 import { useFetchAudioRecords } from '../services/Audio.service';
 import { useFetchVideoRecords } from '../services/Video.service';

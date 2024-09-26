@@ -1,7 +1,12 @@
 import { Draggable } from '@hello-pangea/dnd';
-import { GridRow } from '@mui/x-data-grid';
+import { GridRow, GridRowProps } from '@mui/x-data-grid';
 
-const CustomRowWrapper = (props: any) => {
+interface CustomRowWrapperProps extends GridRowProps {
+    row: any;
+    index: number;
+}
+
+const CustomRowWrapper = (props: CustomRowWrapperProps) => {
     const { row, index, ...rest } = props;
 
     return (

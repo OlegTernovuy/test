@@ -36,7 +36,7 @@ const useFetchAudioRecords = () => {
         }
     };
 
-    const updatedAudioRecords = (orderedAudioRecords: any) => {
+    const updatedAudioRecords = (orderedAudioRecords: IAudioRecord[]) => {
         setData(orderedAudioRecords);
     };
 
