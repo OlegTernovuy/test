@@ -1,5 +1,8 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { CircularProgress } from '@mui/material';
+
+import { CircularProgressWrapper } from '../styled/ProjectsPage.styled';
 
 import { useAuth } from '../Providers/AuthProvider';
 
@@ -11,7 +14,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const { user, loading } = useAuth();
 
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+            <CircularProgressWrapper>
+                <CircularProgress />
+            </CircularProgressWrapper>
+        );
     }
 
     if (!user) {

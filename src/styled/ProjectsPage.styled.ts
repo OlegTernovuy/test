@@ -1,7 +1,8 @@
 import styled from 'styled-components';
-
 import { Box, ListItem } from '@mui/material';
+
 import { FlexCenterStyled } from './GlobalStyle.styled';
+
 import { theme } from './theme';
 
 const SidebarStyled = styled(Box)`

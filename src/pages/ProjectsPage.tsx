@@ -153,78 +153,52 @@ const ProjectsPage = () => {
                             </IconButton>
                         </ProfileBlockStyled>
                     </ProjectPageHeaderStyled>
-                    {showVideoTab ? (
-                        <>
-                            <TabPanel value="audio">
-                                <Stack spacing={2}>
-                                    {isAdmin ? (
-                                        <AddAudioRecordForm
-                                            author={user.email}
-                                            project={
-                                                selectedProjectForCreate.name
-                                            }
-                                            projectId={
-                                                selectedProjectForCreate.id
-                                            }
-                                            fetchData={fetchAudioRecord}
-                                        />
-                                    ) : (
-                                        <CustomSelect {...selectorOutput} />
-                                    )}
-                                    <AudioRecordsTable
-                                        audioRecords={audioRecords}
-                                        loading={audioLoading}
+                    <>
+                        <TabPanel value="audio">
+                            <Stack spacing={2}>
+                                {isAdmin ? (
+                                    <AddAudioRecordForm
+                                        author={user.email}
+                                        project={selectedProjectForCreate.name}
+                                        projectId={selectedProjectForCreate.id}
                                         fetchData={fetchAudioRecord}
-                                        onReorder={handleReorderAudioRecords}
-                                        projectId={selectedProjectForCreate}
-                                        projects={projects}
                                     />
-                                </Stack>
-                            </TabPanel>
-                            <TabPanel value="video">
-                                <Stack spacing={2}>
-                                    {isAdmin && (
-                                        <AddVideoRecordForm
-                                            author={user.email}
-                                            project={
-                                                selectedProjectForCreate.name
-                                            }
-                                            projectId={
-                                                selectedProjectForCreate.id
-                                            }
-                                            fetchData={fetchVideoRecord}
-                                        />
-                                    )}
-                                    <VideoRecordsTable
-                                        videoRecords={videoRecords}
-                                        loading={videoLoading}
-                                        fetchData={fetchVideoRecord}
-                                        onReorder={handleReorderVideoRecords}
-                                        projectId={selectedProjectForCreate}
-                                        projects={projects}
-                                    />
-                                </Stack>
-                            </TabPanel>
-                        </>
-                    ) : (
-                        <Stack spacing={2} padding={3}>
-                            {isAdmin && (
-                                <AddAudioRecordForm
-                                    author={user.email}
-                                    project={selectedProjectForCreate.name}
-                                    projectId={selectedProjectForCreate.id}
+                                ) : showVideoTab ? (
+                                    <CustomSelect {...selectorOutput} />
+                                ) : (
+                                    ''
+                                )}
+                                <AudioRecordsTable
+                                    audioRecords={audioRecords}
+                                    loading={audioLoading}
                                     fetchData={fetchAudioRecord}
+                                    onReorder={handleReorderAudioRecords}
+                                    projectId={selectedProjectForCreate}
+                                    projects={projects}
                                 />
-                            )}
-                            <AudioRecordsTable
-                                audioRecords={audioRecords}
-                                loading={audioLoading}
-                                fetchData={fetchAudioRecord}
-                                onReorder={handleReorderAudioRecords}
-                                projectId={selectedProjectForCreate}
-                            />
-                        </Stack>
-                    )}
+                            </Stack>
+                        </TabPanel>
+                        <TabPanel value="video">
+                            <Stack spacing={2}>
+                                {isAdmin && (
+                                    <AddVideoRecordForm
+                                        author={user.email}
+                                        project={selectedProjectForCreate.name}
+                                        projectId={selectedProjectForCreate.id}
+                                        fetchData={fetchVideoRecord}
+                                    />
+                                )}
+                                <VideoRecordsTable
+                                    videoRecords={videoRecords}
+                                    loading={videoLoading}
+                                    fetchData={fetchVideoRecord}
+                                    onReorder={handleReorderVideoRecords}
+                                    projectId={selectedProjectForCreate}
+                                    projects={projects}
+                                />
+                            </Stack>
+                        </TabPanel>
+                    </>
                 </TabContext>
             </ProjectsPageMainBlock>
         </Box>

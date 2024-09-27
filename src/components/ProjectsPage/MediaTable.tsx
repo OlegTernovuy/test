@@ -9,7 +9,7 @@ import {
 } from '@mui/x-data-grid';
 
 import { ProjectTitleSearchComponent, CustomRowWrapper } from '../index';
-import { VideoRecordsTableWrapper } from '../../styled/VideoRecordsTable.styled';
+import { MediaRecordsTableWrapper } from '../../styled/AudioRecordsTable.styled';
 
 import { useAuth } from '../../Providers/AuthProvider';
 import { IAudioRecord, IVideoRecord } from '../../types';
@@ -46,7 +46,7 @@ const MediaTable = ({
         setSortModel(newSortModel);
     };
     return (
-        <VideoRecordsTableWrapper>
+        <MediaRecordsTableWrapper>
             <DragDropContext onDragEnd={onDragEnd}>
                 <Droppable droppableId="droppable-table-list">
                     {(provided) => (
@@ -91,7 +91,7 @@ const MediaTable = ({
                     )}
                 </Droppable>
             </DragDropContext>
-        </VideoRecordsTableWrapper>
+        </MediaRecordsTableWrapper>
     );
 };
 

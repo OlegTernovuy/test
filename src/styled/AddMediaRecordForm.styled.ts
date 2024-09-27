@@ -1,5 +1,5 @@
-import { FormControl } from '@mui/material';
 import styled from 'styled-components';
+import { FormControl } from '@mui/material';
 
 import { theme } from './theme';
 
@@ -12,11 +12,6 @@ const MediaRecordFormStyled = styled.form`
     display: flex;
     flex-direction: column;
     gap: 20px;
-`;
-
-const SaveButtonStyled = styled.div`
-    display: flex;
-    align-items: start;
 `;
 
 const CustomFormSelectStyled = styled(FormControl)`
@@ -36,7 +31,6 @@ const StyledTextarea = styled.textarea`
 `;
 
 export {
-    SaveButtonStyled,
     MediaRecordFormStyled,
     MediaRecordWrapper,
     CustomFormSelectStyled,

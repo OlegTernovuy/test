@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-
 import { Box, Paper, Typography } from '@mui/material';
+
 import { theme } from './theme';
 
 const AuthStyled = styled(Box)`

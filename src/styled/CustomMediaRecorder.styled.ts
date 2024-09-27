@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-
 import { Button, IconButton } from '@mui/material';
 
 const MediaStyled = styled.div`

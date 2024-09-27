@@ -41,6 +41,9 @@ export const theme = createTheme({
                         paddingBottom: '15px',
                         backgroundColor: '#fff',
                     },
+                    '&.MuiDataGrid-root .MuiDataGrid-virtualScroller': {
+                        overflowX: 'hidden',
+                    }
                 },
             },
         },
