@@ -44,26 +44,14 @@ const AudioPlayerComponent = ({
 
     return (
         <div>
-            {isSelected ? (
-                <CustomAudioPlayer>
-                    <WavesurferAudioPlayer id={containerId} />
-                    <ActionsContentStyled>
-                        {actionButtons.map((buttonInfo, index) => (
-                            <CustomIconButton key={index} {...buttonInfo} />
-                        ))}
-                    </ActionsContentStyled>
-                </CustomAudioPlayer>
-            ) : (
-                <audio
-                    ref={audioRef}
-                    src={audioUrl}
-                    crossOrigin="anonymous"
-                    controls
-                />
-            )}
-            <Button size="small" onClick={onSelect}>
-                {isSelected ? 'Hide Histogram' : 'Show Histogram'}
-            </Button>
+            <CustomAudioPlayer>
+                <WavesurferAudioPlayer id={containerId} />
+                <ActionsContentStyled>
+                    {actionButtons.map((buttonInfo, index) => (
+                        <CustomIconButton key={index} {...buttonInfo} />
+                    ))}
+                </ActionsContentStyled>
+            </CustomAudioPlayer>
         </div>
     );
 };
