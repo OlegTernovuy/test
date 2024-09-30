@@ -83,7 +83,7 @@ const createAudioColumns = (
             <AudioPlayerComponent
                 audioUrl={params.row.audioFileUrl}
                 selectedOutput={selectedOutput}
-                audioId={params.row.index}
+                audioId={params.row.id}
                 isSelected={selectedAudioId === params.row.id}
                 onSelect={() => handleSelectAudio(params.row.id)}
             />

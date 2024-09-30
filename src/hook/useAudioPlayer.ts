@@ -63,7 +63,6 @@ const useAudioPlayer = (
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        // if (isSelected) {
         wavesurfer.current = WaveSurfer.create({
             ...WAVESURFER_SETTINGS,
             container: `#${containerId}`,
@@ -71,7 +70,6 @@ const useAudioPlayer = (
 
         wavesurfer.current.on('play', () => setIsPlaying(true));
         wavesurfer.current.on('pause', () => setIsPlaying(false));
-        // }
 
         if (selectedOutput && wavesurfer.current) {
             wavesurfer.current.setSinkId(selectedOutput);
