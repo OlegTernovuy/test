@@ -41,7 +41,7 @@ const useAudioPlayer = (
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        // if (isSelected) {
+        if (isSelected) {
             wavesurfer.current = WaveSurfer.create({
                 ...WAVESURFER_SETTINGS,
                 container: `#${containerId}`,
@@ -49,7 +49,7 @@ const useAudioPlayer = (
 
             wavesurfer.current.on('play', () => setIsPlaying(true));
             wavesurfer.current.on('pause', () => setIsPlaying(false));
-        // }
+        }
 
         if (selectedOutput && wavesurfer.current) {
             wavesurfer.current.setSinkId(selectedOutput);
@@ -61,16 +61,16 @@ const useAudioPlayer = (
                 wavesurfer.current.destroy();
             }
         };
-    }, [containerId]);
+    }, [containerId, isSelected]);
 
     useEffect(() => {
         if (!wavesurfer.current) return;
-        if (audioUrl) {
+        if (isSelected && audioUrl) {
             wavesurfer.current.load(audioUrl);
         } else {
             wavesurfer.current.empty();
         }
-    }, [audioUrl]);
+    }, [audioUrl, isSelected]);
 
     useEffect(() => {
         if (wavesurfer.current && selectedOutput) {
