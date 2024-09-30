@@ -24,6 +24,7 @@ const useAudioPlayer = (
 ): UseWaveSurferReturn => {
     const wavesurfer = useRef<WaveSurfer | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
 
     const togglePlayback = () => {
         if (wavesurfer.current) {
@@ -37,18 +38,39 @@ const useAudioPlayer = (
     };
 
     useEffect(() => {
-        if (!containerId) return;
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        setIsVisible(true);
+                        observer.disconnect();
+                    }
+                });
+            },
+            { threshold: 0.1 }
+        );
+
+        observer.observe(container);
+
+        return () => observer.disconnect();
+    }, [containerId]);
+
+    useEffect(() => {
+        if (!containerId || !isVisible) return;
         const container = document.getElementById(containerId);
         if (!container) return;
 
         // if (isSelected) {
-            wavesurfer.current = WaveSurfer.create({
-                ...WAVESURFER_SETTINGS,
-                container: `#${containerId}`,
-            });
+        wavesurfer.current = WaveSurfer.create({
+            ...WAVESURFER_SETTINGS,
+            container: `#${containerId}`,
+        });
 
-            wavesurfer.current.on('play', () => setIsPlaying(true));
-            wavesurfer.current.on('pause', () => setIsPlaying(false));
+        wavesurfer.current.on('play', () => setIsPlaying(true));
+        wavesurfer.current.on('pause', () => setIsPlaying(false));
         // }
 
         if (selectedOutput && wavesurfer.current) {
@@ -61,16 +83,16 @@ const useAudioPlayer = (
                 wavesurfer.current.destroy();
             }
         };
-    }, [containerId]);
+    }, [containerId, isVisible]);
 
     useEffect(() => {
         if (!wavesurfer.current) return;
-        if (audioUrl) {
+        if (audioUrl && isVisible) {
             wavesurfer.current.load(audioUrl);
         } else {
             wavesurfer.current.empty();
         }
-    }, [audioUrl]);
+    }, [audioUrl, isVisible]);
 
     useEffect(() => {
         if (wavesurfer.current && selectedOutput) {
