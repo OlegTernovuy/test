@@ -22,8 +22,18 @@ const getMediaDevices = (devices: MediaDeviceInfo[], name: IKind): OptionBase[] 
 const useAudioDevices = () => {
     const [audioInputArr, setAudioInputArr] = useState<OptionBase[]>([]);
     const [audioOutputArr, setAudioOutputArr] = useState<OptionBase[]>([]);
-    const [selectedInput, setSelectedInput] = useState<string>('');
-    const [selectedOutput, setSelectedOutput] = useState<string>('');
+    const [selectedInput, setSelectedInputState] = useState<string>('');
+    const [selectedOutput, setSelectedOutputState] = useState<string>('');    
+
+    const setSelectedInput = (input: string) => {
+        setSelectedInputState(input);
+        localStorage.setItem('audioInput', input) 
+    }
+
+    const setSelectedOutput = (output: string) => {
+        setSelectedOutputState(output);
+        localStorage.setItem('audioOutput', output) 
+    }
 
     // UseEffect to retrieve and set audio devices (microphones and speakers)
     useEffect(() => {
@@ -44,13 +54,23 @@ const useAudioDevices = () => {
                 // Filter and format audio output devices (speakers, headphones)
                 const audioOutputArr = getMediaDevices(devices, 'audiooutput');
 
+                const storedInput = localStorage.getItem('audioInput')
+                const storedOutput = localStorage.getItem('audioOutput')
+
                 if (audioInputArr.length > 0) {
-                    const audioInputId = audioInputArr[0].value;
+                    const audioInputId = storedInput && audioInputArr.some((audioInput) => audioInput.value === storedInput)
+                        ? storedInput
+                        : audioInputArr[0].value;
                     setSelectedInput(audioInputId);
+                    localStorage.setItem('audioInput', audioInputId);
                 }
+                
                 if (audioOutputArr.length > 0) {
-                    const audioOutputId = audioOutputArr[0].value;
+                    const audioOutputId = storedOutput && audioOutputArr.some((audioOutput) => audioOutput.value === storedOutput)
+                        ? storedOutput
+                        : audioOutputArr[0].value;
                     setSelectedOutput(audioOutputId);
+                    localStorage.setItem('audioOutput', audioOutputId);
                 }
 
                 setAudioInputArr(audioInputArr);
